@@ -66,14 +66,14 @@ th, td {
 }
 td:first-child, th:first-child { text-align: left; } /* left-justify first column */
 
-/* Column colors */
+/* Column colors - lighter */
 th:nth-child(2), td:nth-child(2),
 th:nth-child(3), td:nth-child(3),
 th:nth-child(4), td:nth-child(4),
-th:nth-child(5), td:nth-child(5) { background: #a593c2; } /* LL Bean-style purple for all chores */
-th:nth-child(6), td:nth-child(6) { background: #fff176; } /* Reading - yellow */
-th:nth-child(7), td:nth-child(7) { background: #ffb74d; } /* Practice - LL Bean-style orange */
-th:nth-child(8), td:nth-child(8) { background: #8d6e63; } /* Workout - LL Bean-style brown */
+th:nth-child(5), td:nth-child(5) { background: #d9c9f2; } /* light purple chores */
+th:nth-child(6), td:nth-child(6) { background: #fff9a0; } /* soft yellow reading */
+th:nth-child(7), td:nth-child(7) { background: #ffd6a5; } /* soft orange practice */
+th:nth-child(8), td:nth-child(8) { background: #d9cbb1; } /* soft brown workout */
 
 /* Inputs inherit column color */
 td:nth-child(2) input,
@@ -83,18 +83,18 @@ td:nth-child(3) input[type="checkbox"],
 td:nth-child(4) input,
 td:nth-child(4) input[type="checkbox"],
 td:nth-child(5) input,
-td:nth-child(5) input[type="checkbox"] { background-color: #a593c2; }
+td:nth-child(5) input[type="checkbox"] { background-color: #d9c9f2; }
 
 td:nth-child(6) input,
-td:nth-child(6) input[type="number"] { background-color: #fff176; }
+td:nth-child(6) input[type="number"] { background-color: #fff9a0; }
 td:nth-child(7) input,
-td:nth-child(7) input[type="number"] { background-color: #ffb74d; }
+td:nth-child(7) input[type="number"] { background-color: #ffd6a5; }
 td:nth-child(8) input,
-td:nth-child(8) input[type="number"] { background-color: #8d6e63; }
+td:nth-child(8) input[type="number"] { background-color: #d9cbb1; }
 
-tr.total-row td { background: #b5d7a3; font-weight: 500; } /* totals row greenish */
-tr.rank-row td { background: #cbb0e0; font-weight: 500; } /* rank row purplish */
-.past-day { background: #ffe6cc; } /* light orange for past days */
+tr.total-row td { background: #e3e4d9; font-weight: 500; } /* totals row light green */
+tr.rank-row td { background: #e5d7f5; font-weight: 500; } /* rank row light purple */
+.past-day { background: #fff0d6; } /* light orange for past days */
 
 /* Inputs */
 input[type="number"] {
@@ -138,8 +138,8 @@ input[type="checkbox"] { transform: scale(1.2); }
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const chores=[
-  { key:"showerTeeth", label:"Shower/Teeth"},
-  { key:"bedRoom", label:"Bed/Room"},
+  { key:"showerTeeth", label:"Shower, Teeth"},
+  { key:"bedRoom", label:"Bed, Room"},
   { key:"clothes", label:"Clothes"},
   { key:"other", label:"Other"}
 ];
@@ -152,7 +152,7 @@ kids.forEach(kid=>{
   <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}
   <th>Reading</th><th>Practice</th><th>Workout</th></tr></thead><tbody>`;
   
-  const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1; // Sunday=6
+  const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
   days.forEach((day,i)=>{
     html+=`<tr class="${i<todayIndex?'past-day':''}">
       <td>${day}</td>${chores.map(c=>`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`).join("")}
@@ -224,10 +224,16 @@ function updateTotals(){
     const bar=document.getElementById(`${kid}-progress`);
     bar.style.width=percent+"%";
     bar.textContent="$"+money.toFixed(2);
-    totals[kid]={...totals[kid],totalChores,readingTotal,practiceTotal,workoutTotal};
+    totals[kid]={showerTeeth:0, bedRoom:0, clothes:0, other:0, reading:0, practice:0, workout:0};
+    chores.forEach(c=>{
+      totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0]) || 0;
+    });
+    totals[kid].reading = readingTotal;
+    totals[kid].practice = practiceTotal;
+    totals[kid].workout = workoutTotal;
   });
 
-  // Calculate ranks for each column across all kids
+  // Ranks by column
   ["showerTeeth","bedRoom","clothes","other","reading","practice","workout"].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
     vals.sort((a,b)=>b.value-a.value); // descending

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chore Tracker</title>
+<title>Kids Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body {
@@ -28,7 +28,11 @@ h2 {
 }
 .tab {
   flex: 1;
-  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px; /* match table row */
+  padding: 0.5rem;
   text-align: center;
   color: #fff;
   cursor: pointer;
@@ -78,7 +82,7 @@ th, td {
 }
 td:first-child, th:first-child { text-align: left; }
 th.icon-header { font-size: 18px; padding-bottom: 2px; }
-/* Total row */
+/* Totals row */
 tr.total-row td { background: #f5f2ea; font-weight: 500; }
 /* Inputs */
 input[type="number"], input[type="text"] {
@@ -94,21 +98,18 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 .progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
-/* Current day row border */
-tr.current-day { border: 2px solid #355e3b; }
-tr.current-day td { border: none; }
-tr.current-day td:first-child { border-left: 2px solid #355e3b; border-radius: 4px 0 0 4px; }
-tr.current-day td:last-child { border-right: 2px solid #355e3b; border-radius: 0 4px 4px 0; }
-/* Mobile */
+/* Current day highlight (entire column) */
+.highlight-col {
+  background: #d9ead3 !important;
+}
 @media (max-width: 768px){
   .table-container { overflow-x: auto; }
-  table { min-width: 700px; }
 }
 </style>
 </head>
 <body>
 
-<h2>Chore Tracker</h2>
+<h2>Kids Chore Tracker</h2>
 
 <div class="tab-container">
   <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
@@ -122,179 +123,67 @@ tr.current-day td:last-child { border-right: 2px solid #355e3b; border-radius: 0
 <div id="Henry" class="table-container"></div>
 <div id="Sonny" class="table-container"></div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAO_SS5Q1SDNTq9wK5B7bTyp5nhPT5Pf84",
-  authDomain: "chores-18a66.firebaseapp.com",
-  projectId: "chores-18a66",
-  storageBucket: "chores-18a66.firebasestorage.app",
-  messagingSenderId: "785602926667",
-  appId: "1:785602926667:web:f87426009cc83bc77095ce",
-  measurementId: "G-DELL5N4DTG"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// App data
+// --- Config ---
 const kids=["Ryan","Jack","Henry","Sonny"];
-const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const chores=[
-  { key:"showerTeeth", label:"Shower", icon:"🛁" },
-  { key:"bedRoom", label:"Room", icon:"🛏️" },
+  { key:"showerTeeth", label:"Shower, Teeth", icon:"🛁" },
+  { key:"bedRoom", label:"Bed, Room", icon:"🛏️" },
   { key:"clothes", label:"Clothes", icon:"👕" },
   { key:"other", label:"Other", icon:"⭐" }
 ];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖", practice:"🏈", workout:"💪"};
-const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
 
-// Today index
+// Current day index
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-// Build tables
+// Build transposed tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
-  let html=`<table><thead>
-  <tr><th></th>${[...chores.map(c=>c.icon), "➖", ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
-  <tr><th>Day</th>
-    ${chores.map(c=>`<th>${c.label}</th>`).join("")}
-    <th>Deduction</th>
-    ${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}
-  </tr></thead><tbody>`;
-  
-  days.forEach((day,i)=>{
-    const currentClass = i===todayIndex ? 'current-day' : '';
-    html+=`<tr class="${currentClass}">
-      <td>${day}</td>
-      ${chores.map(c=>`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`).join("")}
-      <td><input type="number" data-kid="${kid}" data-day="${i}" data-type="deduction"></td>
-      ${activities.map(a=>`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></td>`).join("")}
-    </tr>`;
+
+  let html=`<table><thead><tr><th>Task</th>`;
+  days.forEach((d,i)=>{
+    let cls = i===todayIndex ? 'highlight-col' : '';
+    html+=`<th class="${cls}">${d}</th>`;
   });
-  
-  html+=`<tr class="total-row">
-    <th>Total</th>
-    ${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}
-    <td id="${kid}-deduction-total">0</td>
-    ${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}
-  </tr></tbody></table>
+  html+=`<th>Total</th></tr></thead><tbody>`;
+
+  // Chores
+  chores.forEach(c=>{
+    html+=`<tr><td>${c.icon} ${c.label}</td>`;
+    days.forEach((d,i)=>{
+      let cls = i===todayIndex ? 'highlight-col' : '';
+      html+=`<td class="${cls}"><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+    });
+    html+=`<td id="${kid}-${c.key}-total">0/7</td></tr>`;
+  });
+
+  // Deduction
+  html+=`<tr><td>➖ Deduction</td>`;
+  days.forEach((d,i)=>{
+    let cls = i===todayIndex ? 'highlight-col' : '';
+    html+=`<td class="${cls}"><input type="number" data-kid="${kid}" data-day="${i}" data-type="deduction"></td>`;
+  });
+  html+=`<td id="${kid}-deduction-total">0</td></tr>`;
+
+  // Activities
+  activities.forEach(a=>{
+    html+=`<tr><td>${activityIcons[a]} ${a.charAt(0).toUpperCase()+a.slice(1)}</td>`;
+    days.forEach((d,i)=>{
+      let cls = i===todayIndex ? 'highlight-col' : '';
+      html+=`<td class="${cls}"><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></td>`;
+    });
+    html+=`<td id="${kid}-${a}-total">0</td></tr>`;
+  });
+
+  html+=`</tbody></table>
   <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
-  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
-  
+  <button class="clear-btn">Clear Week</button>`;
+
   container.innerHTML=html;
 });
-
-// Save to Firestore
-function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), "deduction", ...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input){
-        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
-        else data[`${i}-${type}`]=input.value;
-      }
-    });
-  });
-  db.collection("chores").doc(kid).set(data).then(updateTotals);
-}
-
-// Load from Firestore
-function loadData(){
-  kids.forEach(kid=>{
-    db.collection("chores").doc(kid).get().then(doc=>{
-      if(doc.exists){
-        const data=doc.data();
-        days.forEach((day,i)=>{
-          [...chores.map(c=>c.key), "deduction", ...activities].forEach(type=>{
-            const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-            if(input){
-              if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
-              else input.value=data[`${i}-${type}`]||"";
-            }
-          });
-        });
-      }
-      updateTotals();
-    });
-  });
-}
-
-// Clear
-function clearKid(kid){
-  db.collection("chores").doc(kid).delete();
-  document.querySelectorAll(`#${kid} input`).forEach(i=>{
-    if(i.type==='checkbox') i.checked=false; else i.value="";
-  });
-  updateTotals();
-}
-
-// Totals
-function updateTotals(){
-  const totals={};
-  kids.forEach(kid=>{
-    let totalChores=0;
-    let actTotals={};
-    activities.forEach(a=>actTotals[a]=0);
-    let deductionTotal=0;
-    
-    // Chores
-    chores.forEach(c=>{
-      let count=0;
-      days.forEach((day,i)=>{
-        const box=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(box && box.checked){count++; totalChores++;}
-      });
-      document.getElementById(`${kid}-${c.key}-total`).textContent=`${count}/7`;
-    });
-    
-    // Activities + deduction
-    days.forEach((day,i)=>{
-      const deductionInput=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="deduction"]`);
-      if(deductionInput && deductionInput.value) deductionTotal += parseFloat(deductionInput.value)||0;
-      activities.forEach(a=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) actTotals[a]+=parseInt(input.value)||0;
-      });
-    });
-    document.getElementById(`${kid}-deduction-total`).textContent=deductionTotal;
-    activities.forEach(a=>document.getElementById(`${kid}-${a}-total`).textContent=actTotals[a]);
-    
-    // Money
-    const money=(totalChores*CHORE_VALUE) + Object.values(actTotals).reduce((sum,v)=>sum+v*MINUTE_VALUE,0) + deductionTotal;
-    const percent=Math.min(100,Math.round((money/20)*100));
-    const bar=document.getElementById(`${kid}-progress`);
-    bar.style.width=percent+"%";
-    bar.textContent="$"+money.toFixed(2);
-    
-    totals[kid]={...actTotals, money, deduction:deductionTotal};
-    chores.forEach(c=>totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0])||0);
-  });
-  
-  // Rank
-  let overall=kids.map(k=>({kid:k,value:totals[k].money}));
-  overall.sort((a,b)=>b.value-a.value);
-  overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
-}
-
-// Events
-document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-
-// Tabs
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.kid).classList.add("active");
-  });
-});
-
-loadData();
 </script>
 </body>
 </html>

@@ -25,17 +25,19 @@ h2 {
 .tab-container {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap; /* wrap for mobile */
   background: #3a5a40;
   border-bottom: 2px solid #cbbf9a;
 }
 .tab {
-  flex: 1;
-  padding: 14px;
+  flex: 1 1 45%;
+  padding: 12px 6px;
   text-align: center;
   color: #fff;
   cursor: pointer;
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
+  border-bottom: 1px solid #7b5e3b;
   position: relative;
 }
 .tab:last-child { border-right: none; }
@@ -43,10 +45,12 @@ h2 {
 
 .tab .rank-circle {
   position: absolute;
-  top: 4px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
+  top: 50%;
+  left: 6px;
+  right: auto;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #ffd700;
   color: #000;
@@ -60,9 +64,9 @@ h2 {
 /* Table */
 .table-container {
   display: none;
-  padding: 1rem;
-  max-width: 1200px;
-  margin: auto;
+  padding: 0.5rem;
+  max-width: 100%;
+  overflow-x: auto; /* horizontal scroll for mobile */
 }
 .table-container.active { display: block; }
 
@@ -74,8 +78,8 @@ table {
   table-layout: fixed;
 }
 th, td {
-  padding: 8px;
-  font-size: 14px;
+  padding: 6px;
+  font-size: 12px;
   border-bottom: 1px solid #cbbf9a;
   text-align: center;
   word-wrap: break-word;
@@ -85,7 +89,7 @@ td:first-child, th:first-child { text-align: left; }
 
 /* Icon row above headers */
 th.icon-header {
-  font-size: 18px;
+  font-size: 16px;
   padding-bottom: 2px;
 }
 
@@ -110,24 +114,29 @@ tr.current-day td {
 
 /* Inputs */
 input[type="number"], input[type="text"] {
-  width: 60px;
+  width: 50px;
   border: none;
   text-align: center;
   border-radius: 4px;
   background: #f5f2ea;
+  font-size: 12px;
 }
-input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
+input[type="checkbox"] { transform: scale(1.1); background: #f5f2ea; }
 
 /* Progress bar */
-.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
-.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
+.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 24px; border: 1px solid #cbbf9a; margin-top: 6px; }
+.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 24px; font-weight: 500; transition: width 0.3s; }
 
-.clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.clear-btn { display: block; margin: 6px auto; padding: 4px 10px; font-size: 12px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
+/* Responsive adjustments */
 @media (max-width: 600px){
-  table, th, td { font-size: 11px; }
-  input[type="number"] { width: 45px; }
+  .tab { flex: 1 1 100%; font-size: 12px; padding: 10px 4px; }
+  table, th, td { font-size: 10px; }
+  input[type="number"] { width: 40px; font-size: 10px; }
+  .progress { height: 20px; }
+  .progress-bar { line-height: 20px; font-size: 10px; }
 }
 </style>
 </head>

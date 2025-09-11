@@ -10,7 +10,7 @@ body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f5f2ea; /* LL Bean cream */
+  background: #f5f2ea; /* light brown */
   color: #3b3b3b;
 }
 
@@ -36,9 +36,27 @@ h2 {
   cursor: pointer;
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
+  position: relative;
 }
 .tab:last-child { border-right: none; }
-.tab.active { background: #6e5a3e; } /* brownish highlight */
+.tab.active { background: #6e5a3e; }
+
+/* Circle for overall rank */
+.tab .rank-circle {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd700; /* gold */
+  color: #000;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 /* Table */
 .table-container {
@@ -53,48 +71,22 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 8px;
-  background: #fff7eb;
-  table-layout: fixed; /* all columns same width */
+  background: #f5f2ea; /* same as page */
+  table-layout: fixed;
 }
 th, td {
   padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
-  text-align: center; /* center all by default */
+  text-align: center;
   word-wrap: break-word;
   white-space: normal;
 }
-td:first-child, th:first-child { text-align: left; } /* left-justify first column */
+td:first-child, th:first-child { text-align: left; }
 
-/* Column colors - lighter */
-th:nth-child(2), td:nth-child(2),
-th:nth-child(3), td:nth-child(3),
-th:nth-child(4), td:nth-child(4),
-th:nth-child(5), td:nth-child(5) { background: #d9c9f2; } /* light purple chores */
-th:nth-child(6), td:nth-child(6) { background: #fff9a0; } /* soft yellow reading */
-th:nth-child(7), td:nth-child(7) { background: #ffd6a5; } /* soft orange practice */
-th:nth-child(8), td:nth-child(8) { background: #d9cbb1; } /* soft brown workout */
-
-/* Inputs inherit column color */
-td:nth-child(2) input,
-td:nth-child(2) input[type="checkbox"],
-td:nth-child(3) input,
-td:nth-child(3) input[type="checkbox"],
-td:nth-child(4) input,
-td:nth-child(4) input[type="checkbox"],
-td:nth-child(5) input,
-td:nth-child(5) input[type="checkbox"] { background-color: #d9c9f2; }
-
-td:nth-child(6) input,
-td:nth-child(6) input[type="number"] { background-color: #fff9a0; }
-td:nth-child(7) input,
-td:nth-child(7) input[type="number"] { background-color: #ffd6a5; }
-td:nth-child(8) input,
-td:nth-child(8) input[type="number"] { background-color: #d9cbb1; }
-
-tr.total-row td { background: #e3e4d9; font-weight: 500; } /* totals row light green */
-tr.rank-row td { background: #e5d7f5; font-weight: 500; } /* rank row light purple */
-.past-day { background: #fff0d6; } /* light orange for past days */
+tr.total-row td { background: #e3e4d9; font-weight: 500; }
+tr.rank-row td { background: #e5d7f5; font-weight: 500; }
+.past-day { background: #fff0d6; }
 
 /* Inputs */
 input[type="number"] {
@@ -102,8 +94,9 @@ input[type="number"] {
   border: none;
   text-align: center;
   border-radius: 4px;
+  background: #f5f2ea;
 }
-input[type="checkbox"] { transform: scale(1.2); }
+input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 
 /* Progress bar */
 .progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
@@ -123,10 +116,10 @@ input[type="checkbox"] { transform: scale(1.2); }
 <h2>Kids Chore Tracker</h2>
 
 <div class="tab-container">
-  <div class="tab active" data-kid="Ryan">Ryan</div>
-  <div class="tab" data-kid="Jack">Jack</div>
-  <div class="tab" data-kid="Henry">Henry</div>
-  <div class="tab" data-kid="Sonny">Sonny</div>
+  <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
+  <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">-</div></div>
+  <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">-</div></div>
+  <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
 </div>
 
 <div id="Ryan" class="table-container active"></div>
@@ -170,7 +163,7 @@ kids.forEach(kid=>{
   container.innerHTML=html;
 });
 
-// Load, save, clear functions
+// Load, save, clear
 function clearKid(kid){
   localStorage.removeItem(kid);
   document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
@@ -193,7 +186,7 @@ function loadData(){
   updateTotals();
 }
 
-// Calculate totals and ranks
+// Totals and ranks
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
@@ -219,12 +212,14 @@ function updateTotals(){
     document.getElementById(`${kid}-reading-total`).textContent=readingTotal;
     document.getElementById(`${kid}-practice-total`).textContent=practiceTotal;
     document.getElementById(`${kid}-workout-total`).textContent=workoutTotal;
+
     const money=(totalChores*CHORE_VALUE)+((readingTotal+practiceTotal+workoutTotal)*MINUTE_VALUE);
     const percent=Math.min(100,Math.round((money/20)*100));
     const bar=document.getElementById(`${kid}-progress`);
     bar.style.width=percent+"%";
     bar.textContent="$"+money.toFixed(2);
-    totals[kid]={showerTeeth:0, bedRoom:0, clothes:0, other:0, reading:0, practice:0, workout:0};
+
+    totals[kid]={showerTeeth:0, bedRoom:0, clothes:0, other:0, reading:0, practice:0, workout:0, money};
     chores.forEach(c=>{
       totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0]) || 0;
     });
@@ -236,8 +231,15 @@ function updateTotals(){
   // Ranks by column
   ["showerTeeth","bedRoom","clothes","other","reading","practice","workout"].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
-    vals.sort((a,b)=>b.value-a.value); // descending
+    vals.sort((a,b)=>b.value-a.value);
     vals.forEach((v,i)=>document.getElementById(`${v.kid}-${type}-rank`).textContent=i+1);
+  });
+
+  // Overall rank circle in tabs by money
+  let overall=kids.map(k=>({kid:k,value:totals[k].money}));
+  overall.sort((a,b)=>b.value-a.value);
+  overall.forEach((v,i)=>{
+    document.getElementById(`rank-${v.kid}`).textContent=i+1;
   });
 }
 

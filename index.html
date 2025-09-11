@@ -61,29 +61,25 @@ h2 {
 .table-container {
   display: none;
   padding: 1rem;
-  max-width: 1200px;
+  max-width: 100%;
   margin: auto;
+  overflow-x: auto; /* horizontal scroll */
 }
 .table-container.active { display: block; }
 
-.table-wrapper {
-  overflow-x: auto; /* horizontal scroll for mobile */
-}
-
 table {
-  width: 100%;
+  width: max-content; /* allow horizontal scrolling */
   border-collapse: collapse;
   margin-bottom: 8px;
   background: #f5f2ea;
-  table-layout: fixed;
+  table-layout: auto; /* remove fixed layout */
 }
 th, td {
   padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
   text-align: center;
-  word-wrap: break-word;
-  white-space: normal;
+  white-space: nowrap; /* prevent wrapping */
 }
 td:first-child, th:first-child { text-align: left; }
 
@@ -128,13 +124,6 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
-
-/* Make tables scrollable on mobile */
-@media (max-width: 600px){
-  .table-wrapper {
-    overflow-x: auto;
-  }
-}
 </style>
 </head>
 <body>
@@ -179,7 +168,7 @@ const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
-  let html=`<div class="table-wrapper"><table><thead>
+  let html=`<table><thead>
   <tr><th></th>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
   <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}</tr></thead><tbody>`;
   
@@ -193,7 +182,7 @@ kids.forEach(kid=>{
   });
   
   html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr>
-  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table></div>
+  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table>
   <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   
@@ -223,7 +212,6 @@ function loadData(){
   updateTotals();
 }
 
-// Totals and ranks
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
@@ -258,7 +246,6 @@ function updateTotals(){
     chores.forEach(c=>totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0])||0);
   });
 
-  // Rank row gradient
   [...chores.map(c=>c.key), ...activities].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
     vals.sort((a,b)=>b.value-a.value);
@@ -272,7 +259,6 @@ function updateTotals(){
     });
   });
 
-  // First "Rank" cell gradient
   kids.forEach(kid=>{
     const rankRow = document.querySelector(`#${kid} .rank-row`);
     const vals = [...chores.map(c=>c.key), ...activities].map(t=>totals[kid][t]);
@@ -282,7 +268,6 @@ function updateTotals(){
     rankRow.querySelector("th").style.background = getRankColor(ratio);
   });
 
-  // Overall rank in tabs
   let overall=kids.map(k=>({kid:k,value:totals[k].money}));
   overall.sort((a,b)=>b.value-a.value);
   overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
@@ -306,7 +291,6 @@ function saveData(kid){
   updateTotals();
 }
 
-// Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
   tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));

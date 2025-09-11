@@ -25,7 +25,7 @@ h2 {
 .tab-container {
   display: flex;
   justify-content: center;
-  background: #4b3a2f; /* deep brown */
+  background: #3a5a40; /* LL Bean dark green */
   border-bottom: 2px solid #cbbf9a;
 }
 .tab {
@@ -38,7 +38,7 @@ h2 {
   border-right: 1px solid #7b5e3b;
 }
 .tab:last-child { border-right: none; }
-.tab.active { background: #7b5e3b; }
+.tab.active { background: #6e5a3e; } /* brownish highlight */
 
 /* Table */
 .table-container {
@@ -54,29 +54,60 @@ table {
   border-collapse: collapse;
   margin-bottom: 8px;
   background: #fff7eb;
+  table-layout: fixed; /* all columns same width */
 }
 th, td {
   padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
+  text-align: center; /* center all by default */
 }
-td:first-child { text-align: left; }
-tr.total-row td { background: #e4d8c0; font-weight: 500; }
-tr.rank-row td { background: #d3c4a8; font-weight: 500; }
+td:first-child, th:first-child { text-align: left; } /* left-justify first column */
 
-input[type="number"] { width: 60px; border: none; background: transparent; text-align: center; }
+/* Column colors */
+th:nth-child(2), td:nth-child(2) { background: #d7e4c0; } /* Shower/Teeth - light green */
+th:nth-child(3), td:nth-child(3) { background: #e2d0f0; } /* Bed/Room - light purple */
+th:nth-child(4), td:nth-child(4) { background: #ffe6cc; } /* Clothes - light orange */
+th:nth-child(5), td:nth-child(5) { background: #f0d1b5; } /* Other - light brown */
+th:nth-child(6), td:nth-child(6) { background: #d0f0f0; } /* Reading - pale teal */
+th:nth-child(7), td:nth-child(7) { background: #f0d0d0; } /* Practice - pale red */
+th:nth-child(8), td:nth-child(8) { background: #f0f0d0; } /* Workout - pale yellow */
+
+/* Inputs inherit column color */
+td:nth-child(2) input,
+td:nth-child(2) input[type="checkbox"] { background-color: #d7e4c0; }
+td:nth-child(3) input,
+td:nth-child(3) input[type="checkbox"] { background-color: #e2d0f0; }
+td:nth-child(4) input,
+td:nth-child(4) input[type="checkbox"] { background-color: #ffe6cc; }
+td:nth-child(5) input,
+td:nth-child(5) input[type="checkbox"] { background-color: #f0d1b5; }
+td:nth-child(6) input,
+td:nth-child(6) input[type="number"] { background-color: #d0f0f0; }
+td:nth-child(7) input,
+td:nth-child(7) input[type="number"] { background-color: #f0d0d0; }
+td:nth-child(8) input,
+td:nth-child(8) input[type="number"] { background-color: #f0f0d0; }
+
+tr.total-row td { background: #b5d7a3; font-weight: 500; } /* totals row greenish */
+tr.rank-row td { background: #cbb0e0; font-weight: 500; } /* rank row purplish */
+.past-day { background: #ffe6cc; } /* light orange for past days */
+
+/* Inputs */
+input[type="number"] {
+  width: 60px;
+  border: none;
+  text-align: center;
+  border-radius: 4px;
+}
 input[type="checkbox"] { transform: scale(1.2); }
 
+/* Progress bar */
 .progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
-.progress-bar { background: #4caf50; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
-
-.icon-label { display: flex; flex-direction: column; align-items: center; font-size: 12px; color: #3b3b3b; }
-.icon-label svg { width: 20px; height: 20px; margin-bottom: 2px; fill: #4a3f35; }
+.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
 
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
-
-.past-day { background: #e9e1d3; }
 
 @media (max-width: 600px){
   table, th, td { font-size: 11px; }

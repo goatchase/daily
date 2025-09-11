@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Day - Kids Chore Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f7fa;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    /* Tabs */
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      background: #333;
+    }
+    .tab {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      color: white;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: #007acc;
+    }
+
+    /* Table */
+    .table-container {
+      display: none;
+      padding: 1rem;
+    }
+    .table-container.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background: #eee;
+    }
+    input[type="number"] {
+      width: 60px;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      table, th, td {
+        font-size: 12px;
+      }
+      input[type="number"] {
+        width: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Kids Chore Tracker</h2>
+
+  <!-- Tabs -->
+  <div class="tab-container">
+    <div class="tab active" data-kid="Ryan">Ryan</div>
+    <div class="tab" data-kid="Jack">Jack</div>
+    <div class="tab" data-kid="Henry">Henry</div>
+    <div class="tab" data-kid="Sonny">Sonny</div>
+  </div>
+
+  <!-- Tables -->
+  <div id="Ryan" class="table-container active"></div>
+  <div id="Jack" class="table-container"></div>
+  <div id="Henry" class="table-container"></div>
+  <div id="Sonny" class="table-container"></div>
+
+  <script>
+    const kids = ["Ryan", "Jack", "Henry", "Sonny"];
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    // Build tables for each kid
+    kids.forEach(kid => {
+      const container = document.getElementById(kid);
+      let html = `<h3>${kid}'s Week</h3><table><thead>
+        <tr><th>Day</th><th>Chores</th><th>Reading (min)</th><th>Practice (min)</th><th>Workout (min)</th></tr>
+      </thead><tbody>`;
+
+      days.forEach((day, i) => {
+        html += `<tr>
+          <td>${day}</td>
+          <td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="chores"></td>
+          <td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="reading"></td>
+          <td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="practice"></td>
+          <td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="workout"></td>
+        </tr>`;
+      });
+
+      html += `<tr><th>Total</th>
+        <td id="${kid}-chores-total">0/7</td>
+        <td id="${kid}-reading-total">0</td>
+        <td id="${kid}-practice-total">0</td>
+        <td id="${kid}-workout-total">0</td>
+      </tr>`;
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    });
+
+    // Load saved data
+    function loadData() {
+      kids.forEach(kid => {
+        const data = JSON.parse(localStorage.getItem(kid)) || {};
+        days.forEach((day, i) => {
+          ["chores", "reading", "practice", "workout"].forEach(type => {
+            const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+            if (input) {
+              if (type === "chores") {
+                input.checked = data[`${i}-${type}`] || false;
+              } else {
+                input.value = data[`${i}-${type}`] || "";
+              }
+            }
+          });
+        });
+        updateTotals(kid);
+      });
+    }
+
+    // Save data
+    function saveData(kid) {
+      const data = {};
+      days.forEach((day, i) => {
+        ["chores", "reading", "practice", "workout"].forEach(type => {
+          const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+          if (input) {
+            if (type === "chores") {
+              data[`${i}-${type}`] = input.checked;
+            } else {
+              data[`${i}-${type}`] = input.value;
+            }
+          }
+        });
+      });
+      localStorage.setItem(kid, JSON.stringify(data));
+      updateTotals(kid);
+    }
+
+    // Update totals
+    function updateTotals(kid) {
+      let choresCount = 0, readingTotal = 0, practiceTotal = 0, workoutTotal = 0;
+      days.forEach((day, i) => {
+        const chores = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="chores"]`);
+        const reading = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="reading"]`);
+        const practice = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="practice"]`);
+        const workout = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="workout"]`);
+        if (chores && chores.checked) choresCount++;
+        if (reading && reading.value) readingTotal += parseInt(reading.value) || 0;
+        if (practice && practice.value) practiceTotal += parseInt(practice.value) || 0;
+        if (workout && workout.value) workoutTotal += parseInt(workout.value) || 0;
+      });
+      document.getElementById(`${kid}-chores-total`).textContent = `${choresCount}/7`;
+      document.getElementById(`${kid}-reading-total`).textContent = readingTotal;
+      document.getElementById(`${kid}-practice-total`).textContent = practiceTotal;
+      document.getElementById(`${kid}-workout-total`).textContent = workoutTotal;
+    }
+
+    // Event listeners
+    document.body.addEventListener("input", e => {
+      if (e.target.dataset.kid) {
+        saveData(e.target.dataset.kid);
+      }
+    });
+    document.body.addEventListener("change", e => {
+      if (e.target.dataset.kid) {
+        saveData(e.target.dataset.kid);
+      }
+    });
+
+    // Tabs
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".table-container").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.kid).classList.add("active");
+      });
+    });
+
+    loadData();
+  </script>
+</body>
+</html>

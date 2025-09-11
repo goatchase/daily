@@ -61,33 +61,36 @@ th, td {
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
   text-align: center; /* center all by default */
+  word-wrap: break-word;
+  white-space: normal;
 }
 td:first-child, th:first-child { text-align: left; } /* left-justify first column */
 
 /* Column colors */
-th:nth-child(2), td:nth-child(2) { background: #d7e4c0; } /* Shower/Teeth - light green */
-th:nth-child(3), td:nth-child(3) { background: #e2d0f0; } /* Bed/Room - light purple */
-th:nth-child(4), td:nth-child(4) { background: #ffe6cc; } /* Clothes - light orange */
-th:nth-child(5), td:nth-child(5) { background: #f0d1b5; } /* Other - light brown */
-th:nth-child(6), td:nth-child(6) { background: #d0f0f0; } /* Reading - pale teal */
-th:nth-child(7), td:nth-child(7) { background: #f0d0d0; } /* Practice - pale red */
-th:nth-child(8), td:nth-child(8) { background: #f0f0d0; } /* Workout - pale yellow */
+th:nth-child(2), td:nth-child(2),
+th:nth-child(3), td:nth-child(3),
+th:nth-child(4), td:nth-child(4),
+th:nth-child(5), td:nth-child(5) { background: #a593c2; } /* LL Bean-style purple for all chores */
+th:nth-child(6), td:nth-child(6) { background: #fff176; } /* Reading - yellow */
+th:nth-child(7), td:nth-child(7) { background: #ffb74d; } /* Practice - LL Bean-style orange */
+th:nth-child(8), td:nth-child(8) { background: #8d6e63; } /* Workout - LL Bean-style brown */
 
 /* Inputs inherit column color */
 td:nth-child(2) input,
-td:nth-child(2) input[type="checkbox"] { background-color: #d7e4c0; }
+td:nth-child(2) input[type="checkbox"],
 td:nth-child(3) input,
-td:nth-child(3) input[type="checkbox"] { background-color: #e2d0f0; }
+td:nth-child(3) input[type="checkbox"],
 td:nth-child(4) input,
-td:nth-child(4) input[type="checkbox"] { background-color: #ffe6cc; }
+td:nth-child(4) input[type="checkbox"],
 td:nth-child(5) input,
-td:nth-child(5) input[type="checkbox"] { background-color: #f0d1b5; }
+td:nth-child(5) input[type="checkbox"] { background-color: #a593c2; }
+
 td:nth-child(6) input,
-td:nth-child(6) input[type="number"] { background-color: #d0f0f0; }
+td:nth-child(6) input[type="number"] { background-color: #fff176; }
 td:nth-child(7) input,
-td:nth-child(7) input[type="number"] { background-color: #f0d0d0; }
+td:nth-child(7) input[type="number"] { background-color: #ffb74d; }
 td:nth-child(8) input,
-td:nth-child(8) input[type="number"] { background-color: #f0f0d0; }
+td:nth-child(8) input[type="number"] { background-color: #8d6e63; }
 
 tr.total-row td { background: #b5d7a3; font-weight: 500; } /* totals row greenish */
 tr.rank-row td { background: #cbb0e0; font-weight: 500; } /* rank row purplish */
@@ -141,8 +144,6 @@ const chores=[
   { key:"other", label:"Other"}
 ];
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
-
-function getDayIndex(dayName){return days.indexOf(dayName);}
 
 // Build tables
 kids.forEach(kid=>{
@@ -226,10 +227,10 @@ function updateTotals(){
     totals[kid]={...totals[kid],totalChores,readingTotal,practiceTotal,workoutTotal};
   });
 
-  // Calculate ranks
+  // Calculate ranks for each column across all kids
   ["showerTeeth","bedRoom","clothes","other","reading","practice","workout"].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
-    vals.sort((a,b)=>b.value-a.value);
+    vals.sort((a,b)=>b.value-a.value); // descending
     vals.forEach((v,i)=>document.getElementById(`${v.kid}-${type}-rank`).textContent=i+1);
   });
 }

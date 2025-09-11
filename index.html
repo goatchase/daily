@@ -78,7 +78,7 @@ th, td {
   padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
-  text-align: center; /* all center justified */
+  text-align: center; /* center justify all columns */
   white-space: nowrap;
 }
 
@@ -88,23 +88,59 @@ th.current-day {
 }
 
 /* Total row */
-tr.total-row td { background: #f5f2ea; font-weight: 500; }
+tr.total-row td { 
+  background: #f5f2ea; 
+  font-weight: 500; 
+}
 
 /* Inputs */
+input[type="checkbox"] { 
+  transform: scale(1.2); 
+  background: #f5f2ea; 
+  vertical-align: middle;
+}
 input[type="number"], input[type="text"] {
-  width: 60px;
+  width: 30px;
   border: none;
   text-align: center;
+  font-size: 14px;
+  font-weight: 500;
   border-radius: 4px;
   background: #f5f2ea;
+  vertical-align: middle;
 }
-input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 
 /* Progress bar */
-.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
-.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
+.progress { 
+  background: #eee2d5; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  height: 28px; 
+  border: 1px solid #cbbf9a; 
+  margin-top: 8px; 
+}
+.progress-bar { 
+  background: #3a5a40; 
+  height: 100%; 
+  width: 0; 
+  text-align: center; 
+  color: #fff; 
+  line-height: 28px; 
+  font-weight: 500; 
+  transition: width 0.3s; 
+}
 
-.clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.clear-btn { 
+  display: block; 
+  margin: 8px auto; 
+  padding: 6px 12px; 
+  font-size: 14px; 
+  background: #c77b39; 
+  color: #fff; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+}
 .clear-btn:hover { background: #b06527; }
 
 /* Mobile */
@@ -158,23 +194,23 @@ kids.forEach(kid=>{
   [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
     html+=`<tr><td>${c.icon}</td>`;
     days.forEach((day,i)=>{
-      if(c.key==="deduction"){
-        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-      } else if(["reading","practice","workout"].includes(c.key)){
-        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-      } else {
+      // deduction now a checkbox
+      if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
         html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+      } else {
+        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
       }
     });
     html+=`</tr>`;
   });
 
+  // Totals row: chores 0/7 style, activities sum
   html+=`<tr class="total-row"><td>Total</td>`;
   days.forEach((day,i)=>{
-    html+=`<td id="${kid}-total-${i}">$0.00</td>`;
+    html+=`<td id="${kid}-total-${i}">0/7</td>`;
   });
   html+=`</tr></tbody></table>
-  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
@@ -202,31 +238,23 @@ function loadData(){
 }
 
 function updateTotals(){
-  const totals={};
   kids.forEach(kid=>{
     days.forEach((day,i)=>{
-      let dayTotal=0;
+      let choreCount=0;
       chores.forEach(c=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input){
-          if(c.key==="deduction") dayTotal-=(parseInt(input.value)||0);
-          else if(input.type==='checkbox' && input.checked) dayTotal+=CHORE_VALUE;
-        }
+        if(input && input.checked) choreCount++;
       });
-      activities.forEach(a=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=(parseInt(input.value)||0)*MINUTE_VALUE;
-      });
-      document.getElementById(`${kid}-total-${i}`).textContent="$"+dayTotal.toFixed(2);
+      document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
     });
   });
 
-  // Overall rank in tabs
+  // Overall rank in tabs based on total chores
   let overall=kids.map(k=>{
     let total=0;
     days.forEach((day,i)=>{
-      const val=parseFloat(document.getElementById(`${k}-total-${i}`).textContent.replace('$',''))||0;
-      total+=val;
+      const val=document.getElementById(`${k}-total-${i}`).textContent.split('/')[0]||0;
+      total+=parseInt(val);
     });
     return {kid:k,value:total};
   });

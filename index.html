@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Chore Tracker</title>
+<title>Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body {
@@ -108,7 +108,7 @@ tr.current-day td:last-child { border-right: 2px solid #355e3b; border-radius: 0
 </head>
 <body>
 
-<h2>Kids Chore Tracker</h2>
+<h2>Chore Tracker</h2>
 
 <div class="tab-container">
   <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
@@ -142,8 +142,8 @@ const db = firebase.firestore();
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const chores=[
-  { key:"showerTeeth", label:"Shower, Teeth", icon:"🛁" },
-  { key:"bedRoom", label:"Bed, Room", icon:"🛏️" },
+  { key:"showerTeeth", label:"Shower", icon:"🛁" },
+  { key:"bedRoom", label:"Room", icon:"🛏️" },
   { key:"clothes", label:"Clothes", icon:"👕" },
   { key:"other", label:"Other", icon:"⭐" }
 ];

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Chore Tracker</title>
+<title>Data Day Scores by Cheah</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body {
@@ -53,30 +53,33 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 8px;
-  background: #fff7eb;
 }
 th, td {
   padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
+  height: 40px;
 }
-td:first-child { text-align: left; }
-tr.total-row td { background: #e4d8c0; font-weight: 500; }
-tr.rank-row td { background: #d3c4a8; font-weight: 500; }
+td:first-child { text-align: left; width: 100px; }
+td:not(:first-child) { text-align: center; }
+tr { background-color: #fef7ed; } /* default row color */
 
-input[type="number"] { width: 60px; border: none; background: transparent; text-align: center; }
-input[type="checkbox"] { transform: scale(1.2); }
+/* Conditional shading for past days */
+.past-day { background: #e9e1d3; }
 
+/* Total row */
+tr.total-row td { background: #d7c9b4; font-weight: 500; }
+
+/* Rank row */
+tr.rank-row td { background: #cbb89b; font-weight: 500; }
+
+/* Progress bar */
 .progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
-.progress-bar { background: #4caf50; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
+.progress-bar { height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
 
-.icon-label { display: flex; flex-direction: column; align-items: center; font-size: 12px; color: #3b3b3b; }
-.icon-label svg { width: 20px; height: 20px; margin-bottom: 2px; fill: #4a3f35; }
-
+/* Buttons */
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
-
-.past-day { background: #e9e1d3; }
 
 @media (max-width: 600px){
   table, th, td { font-size: 11px; }
@@ -110,8 +113,6 @@ const chores=[
   { key:"other", label:"Other"}
 ];
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
-
-function getDayIndex(dayName){return days.indexOf(dayName);}
 
 // Build tables
 kids.forEach(kid=>{
@@ -191,16 +192,26 @@ function updateTotals(){
     const percent=Math.min(100,Math.round((money/20)*100));
     const bar=document.getElementById(`${kid}-progress`);
     bar.style.width=percent+"%";
+    bar.style.backgroundColor=getColorLLBean(kid); // Different LL Bean colors
     bar.textContent="$"+money.toFixed(2);
-    totals[kid]={...totals[kid],totalChores,readingTotal,practiceTotal,workoutTotal};
+    totals[kid]={total:money};
   });
 
-  // Calculate ranks
-  ["showerTeeth","bedRoom","clothes","other","reading","practice","workout"].forEach(type=>{
-    let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
-    vals.sort((a,b)=>b.value-a.value);
-    vals.forEach((v,i)=>document.getElementById(`${v.kid}-${type}-rank`).textContent=i+1);
+  // Calculate rank based on total money
+  const sorted=kids.map(k=>({kid:k,value:totals[k].total})).sort((a,b)=>b.value-a.value);
+  sorted.forEach((v,i)=>{
+    const kid=v.kid;
+    document.querySelectorAll(`#${kid} .rank-row td`).forEach((td,idx)=>{
+      if(idx>0) td.textContent=i+1;
+    });
   });
+}
+
+// LL Bean color palette
+const colors=["#4a633d","#7f5b3b","#4f5665","#8c5e3b","#63764c","#c4a15c"];
+function getColorLLBean(kid){
+  const idx=kids.indexOf(kid);
+  return colors[idx % colors.length];
 }
 
 // Event listeners

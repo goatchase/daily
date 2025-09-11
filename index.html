@@ -1,213 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kids Chore Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f5f0e6;
-      margin: 0;
-      padding: 0;
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin: 10px 0;
-    }
-    .tab {
-      background: #386641;
-      color: white;
-      padding: 10px;
-      border-radius: 8px 8px 0 0;
-      margin: 0 5px;
-      cursor: pointer;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px; /* match table row height */
-      position: relative;
-    }
-    .tab.active {
-      background: #6a994e;
-    }
-    .rank-bubble {
-      background: #bc4749;
-      color: white;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 14px;
-      margin-right: 8px;
-    }
-    .table-container {
-      overflow-x: auto;
-      padding: 10px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      table-layout: fixed;
-      min-width: 800px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    th:first-child, td:first-child {
-      text-align: left;
-      width: 120px;
-    }
-    .total-row {
-      font-weight: bold;
-      background-color: #eee;
-    }
-    .current-day {
-      background-color: #d5e3d0 !important;
-    }
-    .icon {
-      font-size: 18px;
-      display: block;
-      text-align: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids Chore Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f2ea;
+  color: #3b3b3b;
+}
+h2 {
+  text-align: center;
+  margin: 1rem 0;
+  color: #2b2b2b;
+  font-weight: 500;
+}
+/* Tabs */
+.tab-container {
+  display: flex;
+  justify-content: center;
+  background: #3a5a40;
+  border-bottom: 2px solid #cbbf9a;
+}
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.5rem;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  border-right: 1px solid #7b5e3b;
+  position: relative;
+}
+.tab:last-child { border-right: none; }
+.tab.active { background: #6e5a3e; }
+.tab .rank-circle {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd700;
+  color: #000;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Table */
+.table-container {
+  display: none;
+  padding: 1rem;
+  max-width: 100%;
+  margin: auto;
+  overflow-x: auto;
+}
+.table-container.active { display: block; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  background: #f5f2ea;
+  table-layout: fixed;
+}
+th, td {
+  padding: 8px;
+  font-size: 14px;
+  border-bottom: 1px solid #cbbf9a;
+  text-align: center;
+  white-space: nowrap;
+}
+td:first-child, th:first-child { text-align: left; }
+th.icon-header { font-size: 18px; padding-bottom: 2px; }
+tr.total-row td { background: #f5f2ea; font-weight: 500; }
+/* Inputs */
+input[type="number"], input[type="text"] {
+  width: 60px;
+  border: none;
+  text-align: center;
+  border-radius: 4px;
+  background: #f5f2ea;
+}
+input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
+/* Progress bar */
+.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
+.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
+.clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.clear-btn:hover { background: #b06527; }
+/* Current day highlight */
+.highlight-col { background: #d9ead3 !important; }
+@media (max-width: 768px){
+  .table-container { overflow-x: auto; }
+}
+</style>
 </head>
 <body>
-  <div class="tabs" id="tabs"></div>
-  <div class="table-container">
-    <table id="choreTable"></table>
-  </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAO_SS5Q1SDNTq9wK5B7bTyp5nhPT5Pf84",
-      authDomain: "chores-18a66.firebaseapp.com",
-      projectId: "chores-18a66",
-      storageBucket: "chores-18a66.firebasestorage.app",
-      messagingSenderId: "785602926667",
-      appId: "1:785602926667:web:f87426009cc83bc77095ce",
-      measurementId: "G-DELL5N4DTG"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<h2>Kids Chore Tracker</h2>
 
-    const kids = ["Ryan", "Jack", "Henry", "Sonny"];
-    const chores = [
-      { key: "shower", icon: "🚿" },
-      { key: "teeth", icon: "🦷" },
-      { key: "bedroom", icon: "🛏️" },
-      { key: "clothes", icon: "👕" },
-      { key: "other", icon: "📦" },
-      { key: "deduction", icon: "➖" },
-      { key: "reading", icon: "📚" },
-      { key: "practice", icon: "🎻" },
-      { key: "workout", icon: "💪" }
-    ];
-    const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-    let currentKid = kids[0];
-    let data = {};
+<div class="tab-container">
+  <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
+  <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">-</div></div>
+  <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">-</div></div>
+  <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
+</div>
 
-    function renderTabs() {
-      const tabsDiv = document.getElementById("tabs");
-      tabsDiv.innerHTML = "";
-      kids.forEach(kid => {
-        const tab = document.createElement("div");
-        tab.className = "tab" + (kid === currentKid ? " active" : "");
-        const rankBubble = document.createElement("div");
-        rankBubble.className = "rank-bubble";
-        rankBubble.textContent = 0;
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = kid;
-        tab.appendChild(rankBubble);
-        tab.appendChild(nameSpan);
-        tab.onclick = () => {
-          currentKid = kid;
-          renderTabs();
-          renderTable();
-        };
-        tabsDiv.appendChild(tab);
-      });
-    }
+<div id="Ryan" class="table-container active"></div>
+<div id="Jack" class="table-container"></div>
+<div id="Henry" class="table-container"></div>
+<div id="Sonny" class="table-container"></div>
 
-    function renderTable() {
-      const table = document.getElementById("choreTable");
-      table.innerHTML = "";
+<script>
+const kids=["Ryan","Jack","Henry","Sonny"];
+const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const chores=[
+  { key:"showerTeeth", label:"Shower, Teeth", icon:"🛁" },
+  { key:"bedRoom", label:"Bed, Room", icon:"🛏️" },
+  { key:"clothes", label:"Clothes", icon:"👕" },
+  { key:"other", label:"Other", icon:"⭐" }
+];
+const activities=["reading","practice","workout"];
+const activityIcons={reading:"📖", practice:"🏈", workout:"💪"};
+const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
 
-      // header row with days
-      let headerRow = "<tr><th></th>";
-      days.forEach((day, i) => {
-        const isToday = new Date().getDay() === (i+1)%7;
-        headerRow += `<th class="${isToday ? 'current-day':''}">${day}</th>`;
-      });
-      headerRow += "<th>Total</th></tr>";
-      table.innerHTML += headerRow;
+// Today index
+const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-      // rows for chores
-      chores.forEach(chore => {
-        let row = `<tr><td class="icon">${chore.icon}</td>`;
-        days.forEach((day, i) => {
-          const val = data?.[currentKid]?.[chore.key]?.[i] || "";
-          row += `<td contenteditable onblur="saveData('${currentKid}','${chore.key}',${i}, this.innerText)">${val}</td>`;
-        });
-        const total = (data?.[currentKid]?.[chore.key] || []).reduce((a,b) => a + (parseInt(b)||0),0);
-        row += `<td>${total}</td></tr>`;
-        table.innerHTML += row;
-      });
-    }
+// Build transposed tables
+kids.forEach(kid=>{
+  const container=document.getElementById(kid);
+  let html=`<table><thead><tr><th>Task</th>`;
+  days.forEach((d,i)=>{
+    let cls=i===todayIndex?'highlight-col':'';
+    html+=`<th class="${cls}">${d}</th>`;
+  });
+  html+=`<th>Total</th></tr></thead><tbody>`;
 
-    function saveData(kid, chore, dayIndex, value) {
-      if (!data[kid]) data[kid] = {};
-      if (!data[kid][chore]) data[kid][chore] = [];
-      data[kid][chore][dayIndex] = value;
+  // Chores
+  chores.forEach(c=>{
+    html+=`<tr><td>${c.icon} ${c.label}</td>`;
+    days.forEach((d,i)=>{
+      let cls=i===todayIndex?'highlight-col':'';
+      html+=`<td class="${cls}"><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+    });
+    html+=`<td id="${kid}-${c.key}-total">0/7</td></tr>`;
+  });
 
-      db.collection("chores").doc(kid).set(data[kid]);
-    }
+  // Deduction
+  html+=`<tr><td>➖ Deduction</td>`;
+  days.forEach((d,i)=>{
+    let cls=i===todayIndex?'highlight-col':'';
+    html+=`<td class="${cls}"><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="deduction"></td>`;
+  });
+  html+=`<td id="${kid}-deduction-total">0</td></tr>`;
 
-    function loadData() {
-      kids.forEach(kid => {
-        db.collection("chores").doc(kid).onSnapshot(doc => {
-          if (doc.exists) {
-            data[kid] = doc.data();
-            if (kid === currentKid) renderTable();
-            updateRanks();
+  // Activities
+  activities.forEach(a=>{
+    html+=`<tr><td>${activityIcons[a]} ${a.charAt(0).toUpperCase()+a.slice(1)}</td>`;
+    days.forEach((d,i)=>{
+      let cls=i===todayIndex?'highlight-col':'';
+      html+=`<td class="${cls}"><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></td>`;
+    });
+    html+=`<td id="${kid}-${a}-total">0</td></tr>`;
+  });
+
+  html+=`</tbody></table>
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
+  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
+
+  container.innerHTML=html;
+});
+
+// --- Data Functions ---
+function clearKid(kid){
+  localStorage.removeItem(kid);
+  document.querySelectorAll(`#${kid} input`).forEach(i=>{
+    if(i.type==='checkbox') i.checked=false;
+    else i.value="";
+  });
+  updateTotals();
+}
+
+function loadData(){
+  kids.forEach(kid=>{
+    const data=JSON.parse(localStorage.getItem(kid))||{};
+    [...chores.map(c=>c.key), "deduction", ...activities].forEach(type=>{
+      days.forEach((d,i)=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+        if(input){
+          if(type==="deduction" || activities.includes(type)){
+            input.value=data[`${i}-${type}`]||"";
+          } else {
+            input.checked=data[`${i}-${type}`]||false;
           }
-        });
-      });
-    }
-
-    function updateRanks() {
-      const totals = kids.map(kid => {
-        let total = 0;
-        for (const choreKey in data[kid]) {
-          total += (data[kid][choreKey]||[]).reduce((a,b) => a+(parseInt(b)||0),0);
         }
-        return { kid, total };
-      }).sort((a,b)=>b.total-a.total);
-
-      kids.forEach((kid, i) => {
-        const tab = document.querySelectorAll(".tab")[kids.indexOf(kid)];
-        const bubble = tab.querySelector(".rank-bubble");
-        const rank = totals.findIndex(t => t.kid === kid)+1;
-        bubble.textContent = rank;
       });
-    }
+    });
+  });
+  updateTotals();
+}
 
-    renderTabs();
-    renderTable();
-    loadData();
-  </script>
+function saveData(kid){
+  const data={};
+  [...chores.map(c=>c.key), "deduction", ...activities].forEach(type=>{
+    days.forEach((d,i)=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input){
+        if(type==="deduction" || activities.includes(type)){
+          data[`${i}-${type}`]=input.value;
+        } else {
+          data[`${i}-${type}`]=input.checked;
+        }
+      }
+    });
+  });
+  localStorage.setItem(kid,JSON.stringify(data));
+  updateTotals();
+}
+
+function updateTotals(){
+  const totals={};
+  kids.forEach(kid=>{
+    let totalChores=0;
+    let actTotals={};
+    let deductions=0;
+    activities.forEach(a=>actTotals[a]=0);
+
+    // Chores
+    chores.forEach(c=>{
+      let count=0;
+      days.forEach((d,i)=>{
+        const box=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
+        if(box && box.checked){count++; totalChores++;}
+      });
+      document.getElementById(`${kid}-${c.key}-total`).textContent=`${count}/7`;
+    });
+
+    // Deduction
+    days.forEach((d,i)=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="deduction"]`);
+      if(input && input.value) deductions+=parseInt(input.value)||0;
+    });
+    document.getElementById(`${kid}-deduction-total`).textContent=deductions;
+
+    // Activities
+    activities.forEach(a=>{
+      days.forEach((d,i)=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
+        if(input && input.value) actTotals[a]+=parseInt(input.value)||0;
+      });
+      document.getElementById(`${kid}-${a}-total`).textContent=actTotals[a];
+    });
+
+    const money=(totalChores*CHORE_VALUE) + Object.values(actTotals).reduce((s,v)=>s+v*MINUTE_VALUE,0) - deductions;
+    const percent=Math.min(100,Math.round((money/20)*100));
+    const bar=document.getElementById(`${kid}-progress`);
+    bar.style.width=percent+"%";
+    bar.textContent="$"+money.toFixed(2);
+
+    totals[kid]={...actTotals, deductions, money};
+  });
+
+  // Ranks
+  let overall=kids.map(k=>({kid:k,value:totals[k].money}));
+  overall.sort((a,b)=>b.value-a.value);
+  overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
+}
+
+document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
+document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
+
+loadData();
+</script>
 </body>
 </html>

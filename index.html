@@ -61,8 +61,7 @@ h2 {
 .table-container {
   display: none;
   padding: 1rem;
-  max-width: 100%;
-  margin: auto;
+  width: 100%;
   overflow-x: auto;
 }
 .table-container.active { display: block; }
@@ -93,13 +92,8 @@ th.icon-header {
 tr.total-row td { background: #f5f2ea; font-weight: 500; }
 
 /* Current day border */
-tr.current-day {
-  border: 2px solid #355e3b;
-}
 tr.current-day td {
   border: 2px solid #355e3b;
-  border-left: none;
-  border-right: none;
 }
 
 /* Inputs */
@@ -119,9 +113,10 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
-/* Mobile scrollable table */
+/* Responsive */
 @media (max-width: 800px){
   .table-container { overflow-x: auto; }
+  table { min-width: 800px; }
 }
 </style>
 </head>
@@ -154,8 +149,18 @@ const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖", practice:"🏈", workout:"💪"};
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
 
+function getRankColor(ratio){
+  const r1=53, g1=94, b1=59;  // hunter green
+  const r2=139, g2=94, b2=60; // brown
+  const r=Math.round(r1 + (r2-r1)*ratio);
+  const g=Math.round(g1 + (g2-g1)*ratio);
+  const b=Math.round(b1 + (b2-b1)*ratio);
+  return `rgb(${r},${g},${b})`;
+}
+
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
+// Generate tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
   let html=`<table><thead>
@@ -171,14 +176,14 @@ kids.forEach(kid=>{
     </tr>`;
   });
   
-  html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr>
-  </tbody></table>
+  html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr></tbody></table>
   <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   
   container.innerHTML=html;
 });
 
+// Load, save, clear functions
 function clearKid(kid){
   localStorage.removeItem(kid);
   document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
@@ -201,7 +206,9 @@ function loadData(){
   updateTotals();
 }
 
+// Totals
 function updateTotals(){
+  const totals={};
   kids.forEach(kid=>{
     let totalChores=0;
     let actTotals={};
@@ -229,7 +236,15 @@ function updateTotals(){
     const bar=document.getElementById(`${kid}-progress`);
     bar.style.width=percent+"%";
     bar.textContent="$"+money.toFixed(2);
+
+    totals[kid]={...actTotals, money};
+    chores.forEach(c=>totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0])||0);
   });
+
+  // Overall rank in tabs
+  let overall=kids.map(k=>({kid:k,value:totals[k].money}));
+  overall.sort((a,b)=>b.value-a.value);
+  overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
 document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});

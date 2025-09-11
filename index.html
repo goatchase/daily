@@ -27,7 +27,6 @@ h2 {
   justify-content: center;
   background: #3a5a40;
   border-bottom: 2px solid #cbbf9a;
-  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 .tab {
   flex: 1;
@@ -38,7 +37,6 @@ h2 {
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
   position: relative;
-  min-width: 80px; /* ensure tabs don't get too small */
 }
 .tab:last-child { border-right: none; }
 .tab.active { background: #6e5a3e; }
@@ -65,9 +63,12 @@ h2 {
   padding: 1rem;
   max-width: 1200px;
   margin: auto;
-  overflow-x: auto; /* horizontal scroll on small screens */
 }
 .table-container.active { display: block; }
+
+.table-wrapper {
+  overflow-x: auto; /* horizontal scroll for mobile */
+}
 
 table {
   width: 100%;
@@ -128,11 +129,11 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
-/* Mobile adjustments */
+/* Make tables scrollable on mobile */
 @media (max-width: 600px){
-  table, th, td { font-size: 12px; }
-  input[type="number"] { width: 45px; }
-  th.icon-header { font-size: 16px; }
+  .table-wrapper {
+    overflow-x: auto;
+  }
 }
 </style>
 </head>
@@ -178,7 +179,7 @@ const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
-  let html=`<table><thead>
+  let html=`<div class="table-wrapper"><table><thead>
   <tr><th></th>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
   <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}</tr></thead><tbody>`;
   
@@ -192,7 +193,7 @@ kids.forEach(kid=>{
   });
   
   html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr>
-  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table>
+  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table></div>
   <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   

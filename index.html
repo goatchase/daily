@@ -61,9 +61,9 @@ h2 {
 .table-container {
   display: none;
   padding: 1rem;
-  max-width: 100%;
+  max-width: 1200px;
   margin: auto;
-  overflow-x: auto; /* horizontal scroll */
+  overflow-x: auto;
 }
 .table-container.active { display: block; }
 
@@ -79,7 +79,7 @@ th, td {
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
   text-align: center;
-  white-space: nowrap; /* prevent wrapping */
+  white-space: nowrap;
 }
 td:first-child, th:first-child { text-align: left; }
 
@@ -91,6 +91,18 @@ th.icon-header {
 
 /* Total row */
 tr.total-row td { background: #f5f2ea; font-weight: 500; }
+
+/* Current day border */
+tr.current-day td:first-child {
+  border-left: 2px solid #355e3b;
+}
+tr.current-day td:last-child {
+  border-right: 2px solid #355e3b;
+}
+tr.current-day td {
+  border-top: 2px solid #355e3b;
+  border-bottom: 2px solid #355e3b;
+}
 
 /* Inputs */
 input[type="number"], input[type="text"] {
@@ -108,24 +120,6 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
-
-/* Current day row border */
-tr.current-day {
-  border: 2px solid #355e3b;
-}
-tr.current-day td {
-  border: none;
-}
-
-/* Make first and last cells have side borders */
-tr.current-day td:first-child { border-left: 2px solid #355e3b; border-radius: 4px 0 0 4px; }
-tr.current-day td:last-child { border-right: 2px solid #355e3b; border-radius: 0 4px 4px 0; }
-
-/* Mobile */
-@media (max-width: 768px){
-  .table-container { overflow-x: auto; }
-  table { min-width: 600px; } /* force horizontal scroll */
-}
 </style>
 </head>
 <body>
@@ -143,6 +137,24 @@ tr.current-day td:last-child { border-right: 2px solid #355e3b; border-radius: 0
 <div id="Jack" class="table-container"></div>
 <div id="Henry" class="table-container"></div>
 <div id="Sonny" class="table-container"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAO_SS5Q1SDNTq9wK5B7bTyp5nhPT5Pf84",
+  authDomain: "chores-18a66.firebaseapp.com",
+  projectId: "chores-18a66",
+  storageBucket: "chores-18a66.firebasestorage.app",
+  messagingSenderId: "785602926667",
+  appId: "1:785602926667:web:f87426009cc83bc77095ce",
+  measurementId: "G-DELL5N4DTG"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 
 <script>
 const kids=["Ryan","Jack","Henry","Sonny"];
@@ -190,28 +202,41 @@ kids.forEach(kid=>{
   container.innerHTML=html;
 });
 
-function clearKid(kid){
-  localStorage.removeItem(kid);
-  document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
-  updateTotals();
+// Firestore functions
+function saveData(kid){
+  const data={};
+  days.forEach((day,i)=>{
+    [...chores.map(c=>c.key), ...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input){
+        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
+        else data[`${i}-${type}`]=input.value;
+      }
+    });
+  });
+  db.collection("chores").doc(kid).set(data).then(()=>updateTotals());
 }
 
 function loadData(){
-  kids.forEach(kid=>{
-    const data=JSON.parse(localStorage.getItem(kid))||{};
-    days.forEach((day,i)=>{
-      [...chores.map(c=>c.key), ...activities].forEach(type=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input){
-          if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
-          else input.value=data[`${i}-${type}`]||"";
-        }
+  const promises = kids.map(kid=>{
+    return db.collection("chores").doc(kid).get().then(doc=>{
+      const data = doc.exists ? doc.data() : {};
+      days.forEach((day,i)=>{
+        [...chores.map(c=>c.key), ...activities].forEach(type=>{
+          const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+          if(input){
+            if(chores.some(c=>c.key===type)) input.checked = data[`${i}-${type}`]||false;
+            else input.value = data[`${i}-${type}`]||"";
+          }
+        });
       });
     });
   });
-  updateTotals();
+
+  Promise.all(promises).then(()=>updateTotals());
 }
 
+// Totals
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
@@ -252,23 +277,17 @@ function updateTotals(){
   overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
+// Clear
+function clearKid(kid){
+  db.collection("chores").doc(kid).delete().then(()=>{
+    document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
+    updateTotals();
+  });
+}
+
+// Input listeners
 document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
 document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-
-function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), ...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input){
-        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
-        else data[`${i}-${type}`]=input.value;
-      }
-    });
-  });
-  localStorage.setItem(kid,JSON.stringify(data));
-  updateTotals();
-}
 
 // Tabs
 document.querySelectorAll(".tab").forEach(tab=>{

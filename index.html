@@ -98,12 +98,14 @@ tr.rank-row th, tr.rank-row td {
   font-weight: 500; 
 }
 
-/* Past day shading */
-.past-day { 
-  background: #fff0d6; 
+/* Current day border */
+tr.current-day {
+  border: 2px solid #355e3b;
 }
-.past-day input { 
-  background: #fff0d6; 
+tr.current-day td {
+  border: 2px solid #355e3b;
+  border-left: none;
+  border-right: none;
 }
 
 /* Inputs */
@@ -167,18 +169,20 @@ function getRankColor(ratio){
   return `rgb(${r},${g},${b})`;
 }
 
+const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
+
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
   let html=`<table><thead>
-  <tr>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
+  <tr><th></th>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
   <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}</tr></thead><tbody>`;
   
-  const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
   days.forEach((day,i)=>{
-    html+=`<tr class="${i<todayIndex?'past-day':''}">
+    const currentClass = i===todayIndex ? 'current-day' : '';
+    html+=`<tr class="${currentClass}">
       <td>${day}</td>
       ${chores.map(c=>`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`).join("")}
-      ${activities.map(a=>`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}" class="${i<todayIndex?'past-day':''}"></td>`).join("")}
+      ${activities.map(a=>`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></td>`).join("")}
     </tr>`;
   });
   

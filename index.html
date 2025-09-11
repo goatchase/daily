@@ -10,7 +10,7 @@ body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f5f2ea; /* light brown */
+  background: #f5f2ea;
   color: #3b3b3b;
 }
 
@@ -41,7 +41,6 @@ h2 {
 .tab:last-child { border-right: none; }
 .tab.active { background: #6e5a3e; }
 
-/* Circle for overall rank */
 .tab .rank-circle {
   position: absolute;
   top: 4px;
@@ -84,12 +83,23 @@ th, td {
 }
 td:first-child, th:first-child { text-align: left; }
 
-tr.total-row td { background: #f5f2ea; font-weight: 500; } /* match main rows */
-tr.rank-row td { background: #d98c52; color: #fff; font-weight: 500; } /* burnt orange rank row */
-.past-day { background: #fff0d6; }
+tr.total-row td { background: #f5f2ea; font-weight: 500; }
+
+/* Rank row gradient colors are set dynamically via JS */
+tr.rank-row th, tr.rank-row td { 
+  color: #fff; 
+  font-weight: 500; 
+}
+
+.past-day { 
+  background: #fff0d6; 
+}
+.past-day input { 
+  background: #fff0d6; 
+}
 
 /* Inputs */
-input[type="number"] {
+input[type="number"], input[type="text"] {
   width: 60px;
   border: none;
   text-align: center;
@@ -138,6 +148,16 @@ const chores=[
 ];
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
 
+// Helper for rank color gradient (0=green, 1=brown)
+function getRankColor(ratio){
+  const r1=53, g1=94, b1=59;  // hunter green
+  const r2=139, g2=94, b2=60; // brown
+  const r=Math.round(r1 + (r2-r1)*ratio);
+  const g=Math.round(g1 + (g2-g1)*ratio);
+  const b=Math.round(b1 + (b2-b1)*ratio);
+  return `rgb(${r},${g},${b})`;
+}
+
 // Build tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
@@ -163,7 +183,7 @@ kids.forEach(kid=>{
   container.innerHTML=html;
 });
 
-// Load, save, clear
+// Remaining JS: loadData, saveData, updateTotals
 function clearKid(kid){
   localStorage.removeItem(kid);
   document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
@@ -186,7 +206,6 @@ function loadData(){
   updateTotals();
 }
 
-// Totals and ranks
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
@@ -223,19 +242,26 @@ function updateTotals(){
     chores.forEach(c=>{
       totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0]) || 0;
     });
-    totals[kid].reading = readingTotal;
-    totals[kid].practice = practiceTotal;
-    totals[kid].workout = workoutTotal;
+    totals[kid].reading=readingTotal;
+    totals[kid].practice=practiceTotal;
+    totals[kid].workout=workoutTotal;
   });
 
-  // Ranks by column
+  // Ranks with color gradient
   ["showerTeeth","bedRoom","clothes","other","reading","practice","workout"].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
-    vals.sort((a,b)=>b.value-a.value);
-    vals.forEach((v,i)=>document.getElementById(`${v.kid}-${type}-rank`).textContent=i+1);
+    vals.sort((a,b)=>b.value-a.value); // highest first
+    const minV=vals[vals.length-1].value;
+    const maxV=vals[0].value;
+    vals.forEach((v,i)=>{
+      const el=document.getElementById(`${v.kid}-${type}-rank`);
+      el.textContent=i+1;
+      let ratio = maxV===minV ? 0 : (v.value - minV)/(maxV-minV);
+      el.style.background = getRankColor(ratio);
+    });
   });
 
-  // Overall rank circle in tabs by money
+  // Overall rank in tabs by money
   let overall=kids.map(k=>({kid:k,value:totals[k].money}));
   overall.sort((a,b)=>b.value-a.value);
   overall.forEach((v,i)=>{

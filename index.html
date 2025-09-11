@@ -24,19 +24,20 @@ h2 {
 /* Tabs */
 .tab-container {
   display: flex;
-  justify-content: center;
+  overflow-x: auto;
   background: #3a5a40;
   border-bottom: 2px solid #cbbf9a;
 }
 .tab {
-  flex: 1;
-  padding: 14px;
+  flex: 1 0 auto;
+  padding: 10px;
   text-align: center;
   color: #fff;
   cursor: pointer;
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
   position: relative;
+  min-width: 80px;
 }
 .tab:last-child { border-right: none; }
 .tab.active { background: #6e5a3e; }
@@ -44,29 +45,30 @@ h2 {
 .tab .rank-circle {
   position: absolute;
   top: 50%;
-  left: 4px; /* left-justify */
+  left: 4px;
   transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #ffd700;
   color: #000;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Table */
-.table-container {
-  display: none;
-  padding: 1rem;
-  max-width: 1200px;
-  margin: auto;
+/* Table wrapper for scroll */
+.table-wrapper {
+  overflow: auto;
+  padding: 0.5rem;
+  max-width: 100%;
+  max-height: 400px;
+  border: 1px solid #cbbf9a;
 }
-.table-container.active { display: block; }
 
+/* Table */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -75,27 +77,39 @@ table {
   table-layout: fixed;
 }
 th, td {
-  padding: 8px;
-  font-size: 14px;
+  padding: 6px;
+  font-size: 13px;
   border-bottom: 1px solid #cbbf9a;
   text-align: center;
   word-wrap: break-word;
   white-space: normal;
 }
-td:first-child, th:first-child { text-align: left; }
-
-/* Icon row above headers - remove all borders */
-th.icon-header {
-  font-size: 18px;
-  padding-bottom: 2px;
-  border: none !important;
+td:first-child, th:first-child { 
+  text-align: left; 
+  background: #f5f2ea;
+  position: sticky;
+  left: 0;
+  z-index: 2;
 }
-th.icon-header:first-child { border: none !important; }
+
+/* Sticky header row */
+thead th {
+  position: sticky;
+  top: 0;
+  background: #f5f2ea;
+  z-index: 3;
+}
+
+/* Icon row */
+th.icon-header {
+  font-size: 16px;
+  padding-bottom: 2px;
+}
 
 /* Total row */
 tr.total-row td { background: #f5f2ea; font-weight: 500; }
 
-/* Rank row colors set via JS gradient */
+/* Rank row colors via JS */
 tr.rank-row th, tr.rank-row td { 
   color: #fff; 
   font-weight: 500; 
@@ -108,27 +122,29 @@ tr.current-day td {
 
 /* Inputs */
 input[type="number"], input[type="text"] {
-  width: 60px;
+  width: 50px;
   border: none;
   text-align: center;
   border-radius: 4px;
   background: #f5f2ea;
 }
-input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
+input[type="checkbox"] { transform: scale(1.1); background: #f5f2ea; }
 
 /* Progress bar */
-.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
-.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
+.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 24px; border: 1px solid #cbbf9a; margin-top: 6px; }
+.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 24px; font-weight: 500; transition: width 0.3s; }
 
-.clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.clear-btn { display: block; margin: 6px auto; padding: 5px 10px; font-size: 12px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
-/* Mobile friendly */
+/* Mobile adjustments */
 @media (max-width: 600px){
   table, th, td { font-size: 11px; }
-  input[type="number"] { width: 45px; }
-  .tab { font-size: 12px; padding: 10px; }
-  .tab .rank-circle { width: 22px; height: 22px; font-size: 11px; }
+  input[type="number"] { width: 40px; }
+  .tab { padding: 8px; min-width: 70px; font-size: 12px; }
+  .tab .rank-circle { width: 20px; height: 20px; font-size: 10px; }
+  .progress { height: 20px; }
+  .progress-bar { line-height: 20px; font-size: 11px; }
 }
 </style>
 </head>
@@ -149,7 +165,7 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 <div id="Sonny" class="table-container"></div>
 
 <script>
-// JS code remains the same as your last working version
+// Data setup
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const chores=[
@@ -161,22 +177,12 @@ const chores=[
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖", practice:"🏈", workout:"💪"};
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
-
-function getRankColor(ratio){
-  const r1=53, g1=94, b1=59;  // hunter green
-  const r2=139, g2=94, b2=60; // brown
-  const r=Math.round(r1 + (r2-r1)*ratio);
-  const g=Math.round(g1 + (g2-g1)*ratio);
-  const b=Math.round(b1 + (b2-b1)*ratio);
-  return `rgb(${r},${g},${b})`;
-}
-
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-// Build tables (same as last version)
+// Create tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
-  let html=`<table><thead>
+  let html=`<div class="table-wrapper"><table><thead>
   <tr><th></th>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
   <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}</tr></thead><tbody>`;
   
@@ -190,14 +196,14 @@ kids.forEach(kid=>{
   });
   
   html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr>
-  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table>
+  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table></div>
   <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   
   container.innerHTML=html;
 });
 
-// Load, save, totals, ranks functions (same as last working code)
+// Load/Save functions
 function clearKid(kid){
   localStorage.removeItem(kid);
   document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
@@ -220,7 +226,7 @@ function loadData(){
   updateTotals();
 }
 
-// Totals and ranks code remains the same
+// Totals and ranks
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
@@ -255,16 +261,20 @@ function updateTotals(){
     chores.forEach(c=>totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0])||0);
   });
 
+  // Ranks per column
   [...chores.map(c=>c.key), ...activities].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
     vals.sort((a,b)=>b.value-a.value);
-    const minV=vals[vals.length-1].value;
-    const maxV=vals[0].value;
-    vals.forEach(v=>{
+    vals.forEach((v,i)=>{
       const el=document.getElementById(`${v.kid}-${type}-rank`);
-      el.textContent = vals.indexOf(v)+1;
-      let ratio = maxV===minV?0:(v.value-minV)/(maxV-minV);
-      el.style.background = `rgb(${53 + (139-53)*ratio},${94 + (94-94)*ratio},${59 + (60-59)*ratio})`;
+      el.textContent=i+1;
+      const ratio = vals.length>1 ? i/(vals.length-1) : 0;
+      const r1=53, g1=94, b1=59; // hunter green
+      const r2=139, g2=94, b2=60; // brown
+      const r=Math.round(r1 + (r2-r1)*ratio);
+      const g=Math.round(g1 + (g2-g1)*ratio);
+      const b=Math.round(b1 + (b2-b1)*ratio);
+      el.style.background=`rgb(${r},${g},${b})`;
     });
   });
 

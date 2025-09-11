@@ -31,7 +31,7 @@ h2 {
 .tab {
   flex: 1;
   padding: 14px;
-  text-align: center;
+  text-align: left;
   color: #fff;
   cursor: pointer;
   font-weight: 500;
@@ -44,8 +44,8 @@ h2 {
 .tab .rank-circle {
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 8px;
+  transform: translateY(-50%);
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -90,6 +90,7 @@ th.icon-header {
   padding-bottom: 2px;
   border-bottom: none; /* remove border under icons */
 }
+th.icon-header:first-child { border-bottom: none; }
 
 /* Total row */
 tr.total-row td { background: #f5f2ea; font-weight: 500; }
@@ -101,13 +102,8 @@ tr.rank-row th, tr.rank-row td {
 }
 
 /* Current day border */
-tr.current-day {
-  border: 2px solid #355e3b;
-}
 tr.current-day td {
   border: 2px solid #355e3b;
-  border-left: none;
-  border-right: none;
 }
 
 /* Inputs */
@@ -138,10 +134,10 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 <h2>Kids Chore Tracker</h2>
 
 <div class="tab-container">
-  <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
-  <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">-</div></div>
-  <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">-</div></div>
-  <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
+  <div class="tab active" data-kid="Ryan"><div class="rank-circle" id="rank-Ryan">-</div> Ryan</div>
+  <div class="tab" data-kid="Jack"><div class="rank-circle" id="rank-Jack">-</div> Jack</div>
+  <div class="tab" data-kid="Henry"><div class="rank-circle" id="rank-Henry">-</div> Henry</div>
+  <div class="tab" data-kid="Sonny"><div class="rank-circle" id="rank-Sonny">-</div> Sonny</div>
 </div>
 
 <div id="Ryan" class="table-container active"></div>

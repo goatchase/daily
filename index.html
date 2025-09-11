@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Chore Tracker - Mobile Cards</title>
+<title>Kids Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body {
@@ -25,19 +25,17 @@ h2 {
 .tab-container {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   background: #3a5a40;
   border-bottom: 2px solid #cbbf9a;
 }
 .tab {
-  flex: 1 1 45%;
-  padding: 12px 6px;
+  flex: 1;
+  padding: 14px;
   text-align: center;
   color: #fff;
   cursor: pointer;
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
-  border-bottom: 1px solid #7b5e3b;
   position: relative;
 }
 .tab:last-child { border-right: none; }
@@ -45,11 +43,10 @@ h2 {
 
 .tab .rank-circle {
   position: absolute;
-  top: 50%;
-  left: 6px;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  top: 4px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: #ffd700;
   color: #000;
@@ -60,76 +57,77 @@ h2 {
   align-items: center;
 }
 
-/* Card layout */
+/* Table */
 .table-container {
   display: none;
-  padding: 0.5rem;
-  max-width: 600px;
+  padding: 1rem;
+  max-width: 1200px;
   margin: auto;
 }
 .table-container.active { display: block; }
 
-.day-card {
-  background: #fff;
-  border: 2px solid #cbbf9a;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  padding: 10px;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  background: #f5f2ea;
+  table-layout: fixed;
 }
-.day-card.current-day { border-color: #355e3b; }
-
-.day-card h3 {
-  margin: 0 0 6px 0;
-  font-size: 16px;
+th, td {
+  padding: 8px;
+  font-size: 14px;
+  border-bottom: 1px solid #cbbf9a;
   text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
+}
+td:first-child, th:first-child { text-align: left; }
+
+/* Icon row above headers */
+th.icon-header {
+  font-size: 18px;
+  padding-bottom: 2px;
+}
+
+/* Total row */
+tr.total-row td { background: #f5f2ea; font-weight: 500; }
+
+/* Rank row colors set via JS gradient */
+tr.rank-row th, tr.rank-row td { 
+  color: #fff; 
+  font-weight: 500; 
+}
+
+/* Current day border */
+tr.current-day {
+  border: 2px solid #355e3b;
+}
+tr.current-day td {
+  border: 2px solid #355e3b;
+  border-left: none;
+  border-right: none;
 }
 
 /* Inputs */
-.chore, .activity {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 4px 0;
+input[type="number"], input[type="text"] {
+  width: 60px;
+  border: none;
+  text-align: center;
+  border-radius: 4px;
+  background: #f5f2ea;
 }
-.chore label, .activity label { flex: 1; }
-input[type="checkbox"], input[type="number"] { flex: 0 0 auto; width: 40px; }
+input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 
 /* Progress bar */
-.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 24px; border: 1px solid #cbbf9a; margin-top: 6px; }
-.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 24px; font-weight: 500; transition: width 0.3s; }
+.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
+.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
 
-.clear-btn { display: block; margin: 6px auto; padding: 6px 12px; font-size: 12px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
-/* Totals & rank cards */
-.totals-card {
-  background: #f5f2ea;
-  border: 2px solid #cbbf9a;
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-.rank-label { font-weight: 500; margin: 2px 0; }
-.rank-value {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 12px;
-  line-height: 24px;
-  text-align: center;
-  margin-left: 6px;
-}
-
-/* Responsive */
-@media(max-width: 400px){
-  .tab { flex: 1 1 100%; font-size: 12px; padding: 10px 4px; }
-  .day-card h3 { font-size: 14px; }
-  input[type="number"] { width: 35px; }
-  .progress { height: 20px; }
-  .progress-bar { line-height: 20px; font-size: 10px; }
+@media (max-width: 600px){
+  table, th, td { font-size: 11px; }
+  input[type="number"] { width: 45px; }
 }
 </style>
 </head>
@@ -175,25 +173,28 @@ const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
-  let html = "";
-
+  let html=`<table><thead>
+  <tr><th></th>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
+  <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}</tr></thead><tbody>`;
+  
   days.forEach((day,i)=>{
     const currentClass = i===todayIndex ? 'current-day' : '';
-    html += `<div class="day-card ${currentClass}" data-day="${i}">
-      <h3>${day}</h3>
-      ${chores.map(c=>`<div class="chore"><label>${c.icon} ${c.label}</label><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></div>`).join('')}
-      ${activities.map(a=>`<div class="activity"><label>${activityIcons[a]} ${a.charAt(0).toUpperCase()+a.slice(1)}</label><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></div>`).join('')}
-    </div>`;
+    html+=`<tr class="${currentClass}">
+      <td>${day}</td>
+      ${chores.map(c=>`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`).join("")}
+      ${activities.map(a=>`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></td>`).join("")}
+    </tr>`;
   });
-
-  html += `<div class="totals-card">
-    <div class="rank-label">Progress: <span id="${kid}-progress">$0.00</span></div>
-    <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>
-  </div>`;
-
-  container.innerHTML = html;
+  
+  html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr>
+  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table>
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
+  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
+  
+  container.innerHTML=html;
 });
 
+// Load, save, clear functions
 function clearKid(kid){
   localStorage.removeItem(kid);
   document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
@@ -216,6 +217,7 @@ function loadData(){
   updateTotals();
 }
 
+// Totals and ranks
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
@@ -229,26 +231,52 @@ function updateTotals(){
         const box=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
         if(box && box.checked){count++; totalChores++;}
       });
-      totals[kid] = totals[kid] || {};
-      totals[kid][c.key] = count;
+      document.getElementById(`${kid}-${c.key}-total`).textContent=`${count}/7`;
     });
     
     activities.forEach(a=>{
-      let sum = 0;
       days.forEach((day,i)=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) sum += parseInt(input.value)||0;
+        if(input && input.value) actTotals[a]+=parseInt(input.value)||0;
       });
-      totals[kid][a] = sum;
+      document.getElementById(`${kid}-${a}-total`).textContent=actTotals[a];
     });
     
-    const money=(totalChores*CHORE_VALUE) + Object.values(activities).reduce((sum,v)=>sum+totals[kid][v]*MINUTE_VALUE,0);
-    totals[kid].money = money;
-    
-    document.getElementById(`${kid}-progress`).textContent="$"+money.toFixed(2);
+    const money=(totalChores*CHORE_VALUE) + Object.values(actTotals).reduce((sum,v)=>sum+v*MINUTE_VALUE,0);
+    const percent=Math.min(100,Math.round((money/20)*100));
+    const bar=document.getElementById(`${kid}-progress`);
+    bar.style.width=percent+"%";
+    bar.textContent="$"+money.toFixed(2);
+
+    totals[kid]={...actTotals, money};
+    chores.forEach(c=>totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0])||0);
   });
 
-  // Update overall rank in tabs
+  // Rank row gradient
+  [...chores.map(c=>c.key), ...activities].forEach(type=>{
+    let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
+    vals.sort((a,b)=>b.value-a.value);
+    const minV=vals[vals.length-1].value;
+    const maxV=vals[0].value;
+    vals.forEach(v=>{
+      const el=document.getElementById(`${v.kid}-${type}-rank`);
+      el.textContent = vals.indexOf(v)+1;
+      let ratio = maxV===minV?0:(v.value-minV)/(maxV-minV);
+      el.style.background = getRankColor(ratio);
+    });
+  });
+
+  // First "Rank" cell gradient
+  kids.forEach(kid=>{
+    const rankRow = document.querySelector(`#${kid} .rank-row`);
+    const vals = [...chores.map(c=>c.key), ...activities].map(t=>totals[kid][t]);
+    const minV = Math.min(...vals);
+    const maxV = Math.max(...vals);
+    const ratio = maxV===minV ? 0 : (totals[kid][chores[0].key]-minV)/(maxV-minV);
+    rankRow.querySelector("th").style.background = getRankColor(ratio);
+  });
+
+  // Overall rank in tabs
   let overall=kids.map(k=>({kid:k,value:totals[k].money}));
   overall.sort((a,b)=>b.value-a.value);
   overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);

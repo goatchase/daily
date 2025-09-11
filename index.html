@@ -63,16 +63,16 @@ h2 {
   padding: 1rem;
   max-width: 100%;
   margin: auto;
-  overflow-x: auto; /* horizontal scroll */
+  overflow-x: auto; /* horizontal scroll if needed */
 }
 .table-container.active { display: block; }
 
 table {
-  width: max-content; /* allow horizontal scrolling */
+  width: 100%; /* fill screen width */
   border-collapse: collapse;
   margin-bottom: 8px;
   background: #f5f2ea;
-  table-layout: auto; /* remove fixed layout */
+  table-layout: fixed; /* equal column width */
 }
 th, td {
   padding: 8px;

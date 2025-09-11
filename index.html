@@ -10,7 +10,7 @@ body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f5f2ea;
+  background: #f5f2ea; /* LL Bean cream */
   color: #3b3b3b;
 }
 
@@ -24,127 +24,94 @@ h2 {
 /* Tabs */
 .tab-container {
   display: flex;
-  overflow-x: auto;
-  background: #3a5a40;
+  justify-content: center;
+  background: #3a5a40; /* LL Bean dark green */
   border-bottom: 2px solid #cbbf9a;
 }
 .tab {
-  flex: 1 0 auto;
-  padding: 10px;
+  flex: 1;
+  padding: 14px;
   text-align: center;
   color: #fff;
   cursor: pointer;
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
-  position: relative;
-  min-width: 80px;
 }
 .tab:last-child { border-right: none; }
-.tab.active { background: #6e5a3e; }
-
-.tab .rank-circle {
-  position: absolute;
-  top: 50%;
-  left: 4px;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #ffd700;
-  color: #000;
-  font-size: 12px;
-  font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Table wrapper for scroll */
-.table-wrapper {
-  overflow: auto;
-  padding: 0.5rem;
-  max-width: 100%;
-  max-height: 400px;
-  border: 1px solid #cbbf9a;
-}
+.tab.active { background: #6e5a3e; } /* brownish highlight */
 
 /* Table */
+.table-container {
+  display: none;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+.table-container.active { display: block; }
+
 table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 8px;
-  background: #f5f2ea;
-  table-layout: fixed;
+  background: #fff7eb;
+  table-layout: fixed; /* all columns same width */
 }
 th, td {
-  padding: 6px;
-  font-size: 13px;
+  padding: 8px;
+  font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
-  text-align: center;
-  word-wrap: break-word;
-  white-space: normal;
+  text-align: center; /* center all by default */
 }
-td:first-child, th:first-child { 
-  text-align: left; 
-  background: #f5f2ea;
-  position: sticky;
-  left: 0;
-  z-index: 2;
-}
+td:first-child, th:first-child { text-align: left; } /* left-justify first column */
 
-/* Sticky header row */
-thead th {
-  position: sticky;
-  top: 0;
-  background: #f5f2ea;
-  z-index: 3;
-}
+/* Column colors */
+th:nth-child(2), td:nth-child(2) { background: #d7e4c0; } /* Shower/Teeth - light green */
+th:nth-child(3), td:nth-child(3) { background: #e2d0f0; } /* Bed/Room - light purple */
+th:nth-child(4), td:nth-child(4) { background: #ffe6cc; } /* Clothes - light orange */
+th:nth-child(5), td:nth-child(5) { background: #f0d1b5; } /* Other - light brown */
+th:nth-child(6), td:nth-child(6) { background: #d0f0f0; } /* Reading - pale teal */
+th:nth-child(7), td:nth-child(7) { background: #f0d0d0; } /* Practice - pale red */
+th:nth-child(8), td:nth-child(8) { background: #f0f0d0; } /* Workout - pale yellow */
 
-/* Icon row */
-th.icon-header {
-  font-size: 16px;
-  padding-bottom: 2px;
-}
+/* Inputs inherit column color */
+td:nth-child(2) input,
+td:nth-child(2) input[type="checkbox"] { background-color: #d7e4c0; }
+td:nth-child(3) input,
+td:nth-child(3) input[type="checkbox"] { background-color: #e2d0f0; }
+td:nth-child(4) input,
+td:nth-child(4) input[type="checkbox"] { background-color: #ffe6cc; }
+td:nth-child(5) input,
+td:nth-child(5) input[type="checkbox"] { background-color: #f0d1b5; }
+td:nth-child(6) input,
+td:nth-child(6) input[type="number"] { background-color: #d0f0f0; }
+td:nth-child(7) input,
+td:nth-child(7) input[type="number"] { background-color: #f0d0d0; }
+td:nth-child(8) input,
+td:nth-child(8) input[type="number"] { background-color: #f0f0d0; }
 
-/* Total row */
-tr.total-row td { background: #f5f2ea; font-weight: 500; }
-
-/* Rank row colors via JS */
-tr.rank-row th, tr.rank-row td { 
-  color: #fff; 
-  font-weight: 500; 
-}
-
-/* Current day border */
-tr.current-day td {
-  border: 2px solid #355e3b;
-}
+tr.total-row td { background: #b5d7a3; font-weight: 500; } /* totals row greenish */
+tr.rank-row td { background: #cbb0e0; font-weight: 500; } /* rank row purplish */
+.past-day { background: #ffe6cc; } /* light orange for past days */
 
 /* Inputs */
-input[type="number"], input[type="text"] {
-  width: 50px;
+input[type="number"] {
+  width: 60px;
   border: none;
   text-align: center;
   border-radius: 4px;
-  background: #f5f2ea;
 }
-input[type="checkbox"] { transform: scale(1.1); background: #f5f2ea; }
+input[type="checkbox"] { transform: scale(1.2); }
 
 /* Progress bar */
-.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 24px; border: 1px solid #cbbf9a; margin-top: 6px; }
-.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 24px; font-weight: 500; transition: width 0.3s; }
+.progress { background: #eee2d5; border-radius: 8px; overflow: hidden; height: 28px; border: 1px solid #cbbf9a; margin-top: 8px; }
+.progress-bar { background: #3a5a40; height: 100%; width: 0; text-align: center; color: #fff; line-height: 28px; font-weight: 500; transition: width 0.3s; }
 
-.clear-btn { display: block; margin: 6px auto; padding: 5px 10px; font-size: 12px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
-/* Mobile adjustments */
 @media (max-width: 600px){
   table, th, td { font-size: 11px; }
-  input[type="number"] { width: 40px; }
-  .tab { padding: 8px; min-width: 70px; font-size: 12px; }
-  .tab .rank-circle { width: 20px; height: 20px; font-size: 10px; }
-  .progress { height: 20px; }
-  .progress-bar { line-height: 20px; font-size: 11px; }
+  input[type="number"] { width: 45px; }
 }
 </style>
 </head>
@@ -153,10 +120,10 @@ input[type="checkbox"] { transform: scale(1.1); background: #f5f2ea; }
 <h2>Kids Chore Tracker</h2>
 
 <div class="tab-container">
-  <div class="tab active" data-kid="Ryan"><div class="rank-circle" id="rank-Ryan">-</div> Ryan</div>
-  <div class="tab" data-kid="Jack"><div class="rank-circle" id="rank-Jack">-</div> Jack</div>
-  <div class="tab" data-kid="Henry"><div class="rank-circle" id="rank-Henry">-</div> Henry</div>
-  <div class="tab" data-kid="Sonny"><div class="rank-circle" id="rank-Sonny">-</div> Sonny</div>
+  <div class="tab active" data-kid="Ryan">Ryan</div>
+  <div class="tab" data-kid="Jack">Jack</div>
+  <div class="tab" data-kid="Henry">Henry</div>
+  <div class="tab" data-kid="Sonny">Sonny</div>
 </div>
 
 <div id="Ryan" class="table-container active"></div>
@@ -165,45 +132,44 @@ input[type="checkbox"] { transform: scale(1.1); background: #f5f2ea; }
 <div id="Sonny" class="table-container"></div>
 
 <script>
-// Data setup
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const chores=[
-  { key:"showerTeeth", label:"Shower, Teeth", icon:"🛁" },
-  { key:"bedRoom", label:"Bed, Room", icon:"🛏️" },
-  { key:"clothes", label:"Clothes", icon:"👕" },
-  { key:"other", label:"Other", icon:"⭐" }
+  { key:"showerTeeth", label:"Shower/Teeth"},
+  { key:"bedRoom", label:"Bed/Room"},
+  { key:"clothes", label:"Clothes"},
+  { key:"other", label:"Other"}
 ];
-const activities=["reading","practice","workout"];
-const activityIcons={reading:"📖", practice:"🏈", workout:"💪"};
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
-const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-// Create tables
+function getDayIndex(dayName){return days.indexOf(dayName);}
+
+// Build tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
-  let html=`<div class="table-wrapper"><table><thead>
-  <tr><th></th>${[...chores.map(c=>c.icon), ...activities.map(a=>activityIcons[a])].map(i=>`<th class="icon-header">${i}</th>`).join("")}</tr>
-  <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}${activities.map(a=>`<th>${a.charAt(0).toUpperCase()+a.slice(1)}</th>`).join("")}</tr></thead><tbody>`;
+  let html=`<table><thead>
+  <tr><th>Day</th>${chores.map(c=>`<th>${c.label}</th>`).join("")}
+  <th>Reading</th><th>Practice</th><th>Workout</th></tr></thead><tbody>`;
   
+  const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1; // Sunday=6
   days.forEach((day,i)=>{
-    const currentClass = i===todayIndex ? 'current-day' : '';
-    html+=`<tr class="${currentClass}">
-      <td>${day}</td>
-      ${chores.map(c=>`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`).join("")}
-      ${activities.map(a=>`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${a}"></td>`).join("")}
+    html+=`<tr class="${i<todayIndex?'past-day':''}">
+      <td>${day}</td>${chores.map(c=>`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`).join("")}
+      <td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="reading"></td>
+      <td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="practice"></td>
+      <td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="workout"></td>
     </tr>`;
   });
   
-  html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-total">0</td>`).join("")}</tr>
-  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}${activities.map(a=>`<td id="${kid}-${a}-rank">-</td>`).join("")}</tr></tbody></table></div>
+  html+=`<tr class="total-row"><th>Total</th>${chores.map(c=>`<td id="${kid}-${c.key}-total">0/7</td>`).join("")}<td id="${kid}-reading-total">0</td><td id="${kid}-practice-total">0</td><td id="${kid}-workout-total">0</td></tr>
+  <tr class="rank-row"><th>Rank</th>${chores.map(c=>`<td id="${kid}-${c.key}-rank">-</td>`).join("")}<td id="${kid}-reading-rank">-</td><td id="${kid}-practice-rank">-</td><td id="${kid}-workout-rank">-</td></tr></tbody></table>
   <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   
   container.innerHTML=html;
 });
 
-// Load/Save functions
+// Load, save, clear functions
 function clearKid(kid){
   localStorage.removeItem(kid);
   document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
@@ -214,7 +180,7 @@ function loadData(){
   kids.forEach(kid=>{
     const data=JSON.parse(localStorage.getItem(kid))||{};
     days.forEach((day,i)=>{
-      [...chores.map(c=>c.key), ...activities].forEach(type=>{
+      [...chores.map(c=>c.key),"reading","practice","workout"].forEach(type=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
         if(input){
           if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
@@ -226,14 +192,11 @@ function loadData(){
   updateTotals();
 }
 
-// Totals and ranks
+// Calculate totals and ranks
 function updateTotals(){
   const totals={};
   kids.forEach(kid=>{
-    let totalChores=0;
-    let actTotals={};
-    activities.forEach(a=>actTotals[a]=0);
-    
+    let totalChores=0, readingTotal=0, practiceTotal=0, workoutTotal=0;
     chores.forEach(c=>{
       let count=0;
       days.forEach((day,i)=>{
@@ -242,55 +205,43 @@ function updateTotals(){
       });
       document.getElementById(`${kid}-${c.key}-total`).textContent=`${count}/7`;
     });
-    
-    activities.forEach(a=>{
-      days.forEach((day,i)=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) actTotals[a]+=parseInt(input.value)||0;
+    days.forEach((day,i)=>{
+      ["reading","practice","workout"].forEach(type=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+        if(input && input.value){
+          if(type==="reading") readingTotal+=parseInt(input.value)||0;
+          if(type==="practice") practiceTotal+=parseInt(input.value)||0;
+          if(type==="workout") workoutTotal+=parseInt(input.value)||0;
+        }
       });
-      document.getElementById(`${kid}-${a}-total`).textContent=actTotals[a];
     });
-    
-    const money=(totalChores*CHORE_VALUE) + Object.values(actTotals).reduce((sum,v)=>sum+v*MINUTE_VALUE,0);
+    document.getElementById(`${kid}-reading-total`).textContent=readingTotal;
+    document.getElementById(`${kid}-practice-total`).textContent=practiceTotal;
+    document.getElementById(`${kid}-workout-total`).textContent=workoutTotal;
+    const money=(totalChores*CHORE_VALUE)+((readingTotal+practiceTotal+workoutTotal)*MINUTE_VALUE);
     const percent=Math.min(100,Math.round((money/20)*100));
     const bar=document.getElementById(`${kid}-progress`);
     bar.style.width=percent+"%";
     bar.textContent="$"+money.toFixed(2);
-
-    totals[kid]={...actTotals, money};
-    chores.forEach(c=>totals[kid][c.key] = parseInt(document.getElementById(`${kid}-${c.key}-total`).textContent.split("/")[0])||0);
+    totals[kid]={...totals[kid],totalChores,readingTotal,practiceTotal,workoutTotal};
   });
 
-  // Ranks per column
-  [...chores.map(c=>c.key), ...activities].forEach(type=>{
+  // Calculate ranks
+  ["showerTeeth","bedRoom","clothes","other","reading","practice","workout"].forEach(type=>{
     let vals=kids.map(k=>({kid:k,value:totals[k][type]}));
     vals.sort((a,b)=>b.value-a.value);
-    vals.forEach((v,i)=>{
-      const el=document.getElementById(`${v.kid}-${type}-rank`);
-      el.textContent=i+1;
-      const ratio = vals.length>1 ? i/(vals.length-1) : 0;
-      const r1=53, g1=94, b1=59; // hunter green
-      const r2=139, g2=94, b2=60; // brown
-      const r=Math.round(r1 + (r2-r1)*ratio);
-      const g=Math.round(g1 + (g2-g1)*ratio);
-      const b=Math.round(b1 + (b2-b1)*ratio);
-      el.style.background=`rgb(${r},${g},${b})`;
-    });
+    vals.forEach((v,i)=>document.getElementById(`${v.kid}-${type}-rank`).textContent=i+1);
   });
-
-  // Overall rank in tabs
-  let overall=kids.map(k=>({kid:k,value:totals[k].money}));
-  overall.sort((a,b)=>b.value-a.value);
-  overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
-document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
+// Event listeners
+document.body.addEventListener("input",e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid);});
+document.body.addEventListener("change",e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid);});
 
 function saveData(kid){
   const data={};
   days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), ...activities].forEach(type=>{
+    [...chores.map(c=>c.key),"reading","practice","workout"].forEach(type=>{
       const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
       if(input){
         if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;

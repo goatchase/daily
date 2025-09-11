@@ -27,6 +27,7 @@ h2 {
   justify-content: center;
   background: #3a5a40;
   border-bottom: 2px solid #cbbf9a;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 .tab {
   flex: 1;
@@ -37,6 +38,7 @@ h2 {
   font-weight: 500;
   border-right: 1px solid #7b5e3b;
   position: relative;
+  min-width: 80px; /* ensure tabs don't get too small */
 }
 .tab:last-child { border-right: none; }
 .tab.active { background: #6e5a3e; }
@@ -63,6 +65,7 @@ h2 {
   padding: 1rem;
   max-width: 1200px;
   margin: auto;
+  overflow-x: auto; /* horizontal scroll on small screens */
 }
 .table-container.active { display: block; }
 
@@ -125,9 +128,11 @@ input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; }
 .clear-btn { display: block; margin: 8px auto; padding: 6px 12px; font-size: 14px; background: #c77b39; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
 .clear-btn:hover { background: #b06527; }
 
+/* Mobile adjustments */
 @media (max-width: 600px){
-  table, th, td { font-size: 11px; }
+  table, th, td { font-size: 12px; }
   input[type="number"] { width: 45px; }
+  th.icon-header { font-size: 16px; }
 }
 </style>
 </head>
@@ -161,8 +166,8 @@ const activityIcons={reading:"📖", practice:"🏈", workout:"💪"};
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
 
 function getRankColor(ratio){
-  const r1=53, g1=94, b1=59;  // hunter green
-  const r2=139, g2=94, b2=60; // brown
+  const r1=53, g1=94, b1=59;
+  const r2=139, g2=94, b2=60;
   const r=Math.round(r1 + (r2-r1)*ratio);
   const g=Math.round(g1 + (g2-g1)*ratio);
   const b=Math.round(b1 + (b2-b1)*ratio);

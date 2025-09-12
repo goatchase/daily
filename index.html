@@ -31,7 +31,7 @@ th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-alig
 th.current-day { background:#d1e7dd; }
 tr.total-row td { background:#f5f2ea; font-weight:500; }
 input[type="checkbox"] { transform: scale(1.2); background:#f5f2ea; vertical-align: middle; }
-input[type="number"], input[type="text"] { width:30px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
+input[type="number"], input[type="text"] { width:40px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
 
 /* Progress bar */
 .progress { background:#eee2d5; border-radius:8px; overflow:hidden; height:28px; border:1px solid #cbbf9a; margin-top:8px; }
@@ -83,15 +83,19 @@ const db = firebase.firestore();
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const chores=[
-  { key:"showerTeeth", label:"Shower, Teeth", icon:"🚿🦷" },
-  { key:"bedRoom", label:"Bed, Room", icon:"🛏️🧹" },
-  { key:"clothes", label:"Clothes", icon:"👕🧺" },
-  { key:"other", label:"Other", icon:"⭐" },
-  { key:"deduction", label:"Deduction", icon:"➖" }
+  { key:"showerTeeth", icon:"🚿🦷" },
+  { key:"bedRoom", icon:"🛏️🧹" },
+  { key:"clothes", icon:"👕🧺" },
+  { key:"other", icon:"⭐" },
+  { key:"deduction", icon:"➖" }
 ];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
-const CHORE_VALUE = 1.5; // $ per completed chore
+
+// value rules
+const CHORE_VALUE = 0.25;
+const ACTIVITY_RATE = 0.05; // per minute
+const DEDUCTION_VALUE = -3;
 
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
@@ -118,9 +122,9 @@ kids.forEach(kid=>{
   });
 
   html+=`<tr class="total-row"><td>Total</td>`;
-  days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0/7</td>`; });
+  days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
   html+=`</tr></tbody></table>
-  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0</div></div>
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
@@ -167,40 +171,50 @@ async function clearKid(kid){
 
 // Update totals and ranks
 function updateTotals(){
+  let rankValues=[];
+
   kids.forEach(kid=>{
-    let totalChoresDone = 0;
-    let totalChoresPossible = 0;
+    let kidTotal=0;
 
     days.forEach((day,i)=>{
-      let choreCount=0;
+      let dayTotal=0;
+
+      // chores
       chores.forEach(c=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input && input.checked) choreCount++;
+        if(input){
+          if(c.key==="deduction"){
+            if(input.checked) dayTotal += DEDUCTION_VALUE;
+          } else if(input.checked){
+            dayTotal += CHORE_VALUE;
+          }
+        }
       });
-      document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
 
-      totalChoresDone += choreCount;
-      totalChoresPossible += 7;
+      // activities
+      activities.forEach(a=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
+        if(input && input.value){
+          const minutes=parseFloat(input.value)||0;
+          dayTotal += minutes * ACTIVITY_RATE;
+        }
+      });
+
+      kidTotal += dayTotal;
+      document.getElementById(`${kid}-total-${i}`).textContent = `$${dayTotal.toFixed(2)}`;
     });
 
     // Update progress bar in dollars
     const progressBar = document.getElementById(`${kid}-progress`);
-    const dollarAmount = (totalChoresDone * CHORE_VALUE).toFixed(2);
-    progressBar.style.width = totalChoresPossible ? Math.round((totalChoresDone / totalChoresPossible) * 100) + '%' : '0%';
-    progressBar.textContent = `$${dollarAmount}`;
+    progressBar.style.width = "100%"; // always fill bar
+    progressBar.textContent = `$${kidTotal.toFixed(2)}`;
+
+    rankValues.push({kid,value:kidTotal});
   });
 
   // Update ranks
-  let overall=kids.map(k=>{
-    let total=0;
-    days.forEach((day,i)=>{
-      const val=document.getElementById(`${k}-total-${i}`).textContent.split('/')[0]||0;
-      total+=parseInt(val);
-    });
-    return {kid:k,value:total};
-  });
-  overall.sort((a,b)=>b.value-a.value);
-  overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
+  rankValues.sort((a,b)=>b.value-a.value);
+  rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
 // ---------------- EVENT LISTENERS ----------------

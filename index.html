@@ -5,41 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
-
 <style>
 body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#f5f2ea; color:#3b3b3b; }
 h2 { text-align:center; margin:1rem 0; color:#2b2b2b; font-weight:500; }
-
-/* Tabs */
 .tab-container { display:flex; justify-content:center; background:#3a5a40; border-bottom:2px solid #cbbf9a; }
 .tab { flex:1; padding:14px; text-align:center; color:#fff; cursor:pointer; font-weight:500; border-right:1px solid #7b5e3b; position:relative; }
 .tab:last-child { border-right:none; }
 .tab.active { background:#6e5a3e; }
 .tab .rank-circle { position:absolute; top:4px; right:8px; width:20px; height:20px; border-radius:50%; background:#ffd700; color:#000; font-size:12px; font-weight:500; display:flex; justify-content:center; align-items:center; }
-
-/* Table */
 .table-container { display:none; padding:1rem; max-width:100%; margin:auto; overflow-x:auto; }
 .table-container.active { display:block; }
 table { width:100%; border-collapse:collapse; margin-bottom:8px; background:#f5f2ea; table-layout:fixed; }
 th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-align:center; white-space:nowrap; }
 th.current-day { background:#d1e7dd; }
 tr.total-row td { background:#f5f2ea; font-weight:500; }
-
-/* Inputs */
-input[type="checkbox"] { transform: scale(1.2); vertical-align: middle; }
-input[type="number"], input[type="text"] { width:30px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; vertical-align:middle; background:#f5f2ea; }
-
-/* Progress bar */
+input[type="checkbox"] { transform: scale(1.2); background:#f5f2ea; vertical-align: middle; }
+input[type="number"], input[type="text"] { width:30px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
 .progress { background:#eee2d5; border-radius:8px; overflow:hidden; height:28px; border:1px solid #cbbf9a; margin-top:8px; }
-.progress-bar { background:#3a5a40; height:100%; width:0; text-align:center; color:#fff; line-height:28px; font-weight:500; transition:width 0.3s; }
-
+.progress-bar { background:#3a5a40; height:100%; width:0; text-align:center; color:#fff; line-height:28px; font-weight:500; transition: width 0.3s; }
 .clear-btn { display:block; margin:8px auto; padding:6px 12px; font-size:14px; background:#c77b39; color:#fff; border:none; border-radius:4px; cursor:pointer; }
 .clear-btn:hover { background:#b06527; }
-
 @media (max-width:768px){ .table-container { overflow-x:auto; } table { min-width:600px; } }
 </style>
 </head>
@@ -59,6 +44,10 @@ input[type="number"], input[type="text"] { width:30px; border:none; text-align:c
 <div id="Henry" class="table-container"></div>
 <div id="Sonny" class="table-container"></div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
 <script>
 // ---------------- FIREBASE SETUP ----------------
 const firebaseConfig = {
@@ -73,7 +62,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ---------------- DATA ----------------
+// ---------------- APP LOGIC ----------------
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const chores=[
@@ -85,9 +74,10 @@ const chores=[
 ];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
+
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-// ---------------- BUILD TABLE ----------------
+// Build tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
   let html=`<table><thead><tr><th></th>`;
@@ -112,17 +102,52 @@ kids.forEach(kid=>{
   html+=`<tr class="total-row"><td>Total</td>`;
   days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0/7</td>`; });
   html+=`</tr></tbody></table>
-         <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
-         <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
+  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
 
-// ---------------- CLEAR ----------------
-function clearKid(kid){
-  db.collection("chores").doc(kid).set({}); // reset in Firestore
+// ---------------- FIRESTORE FUNCTIONS ----------------
+async function saveData(kid){
+  const data={};
+  days.forEach((day,i)=>{
+    [...chores.map(c=>c.key), ...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input){
+        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
+        else data[`${i}-${type}`]=input.value;
+      }
+    });
+  });
+  await db.collection('chores').doc(kid).set(data);
+  updateTotals();
 }
 
-// ---------------- UPDATE TOTALS ----------------
+async function loadData(){
+  for (const kid of kids){
+    const doc = await db.collection('chores').doc(kid).get();
+    const data = doc.exists ? doc.data() : {};
+    days.forEach((day,i)=>{
+      [...chores.map(c=>c.key), ...activities].forEach(type=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+        if(input){
+          if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
+          else input.value=data[`${i}-${type}`]||"";
+        }
+      });
+    });
+  }
+  updateTotals();
+}
+
+// Clear a kid
+async function clearKid(kid){
+  await db.collection('chores').doc(kid).set({});
+  document.querySelectorAll(`#${kid} input`).forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=""; });
+  updateTotals();
+}
+
+// Update totals and ranks
 function updateTotals(){
   kids.forEach(kid=>{
     days.forEach((day,i)=>{
@@ -134,8 +159,6 @@ function updateTotals(){
       document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
     });
   });
-
-  // Rank tabs
   let overall=kids.map(k=>{
     let total=0;
     days.forEach((day,i)=>{
@@ -148,55 +171,20 @@ function updateTotals(){
   overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
-// ---------------- SAVE TO FIRESTORE ----------------
-function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), ...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input){
-        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
-        else data[`${i}-${type}`]=input.value;
-      }
-    });
-  });
-  db.collection("chores").doc(kid).set(data);
-}
-
-// ---------------- LOAD FIRESTORE DATA ----------------
-kids.forEach(kid=>{
-  const docRef = db.collection("chores").doc(kid);
-  docRef.onSnapshot(doc=>{
-    if(doc.exists){
-      const data=doc.data();
-      days.forEach((day,i)=>{
-        [...chores.map(c=>c.key), ...activities].forEach(type=>{
-          const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-          if(input){
-            if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
-            else input.value=data[`${i}-${type}`]||"";
-          }
-        });
-      });
-      updateTotals();
-    }
-  });
-});
-
-// ---------------- INPUT LISTENERS ----------------
-document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-
-// ---------------- TABS ----------------
+// ---------------- EVENT LISTENERS ----------------
+document.body.addEventListener("input", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
+document.body.addEventListener("change", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click", ()=>{
+  tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(tab.dataset.kid).classList.add("active");
   });
 });
-</script>
 
+// Load data on start
+loadData();
+</script>
 </body>
 </html>

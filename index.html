@@ -150,6 +150,9 @@ async function clearKid(kid){
 // Update totals and ranks
 function updateTotals(){
   kids.forEach(kid=>{
+    let totalChoresDone = 0;
+    let totalChoresPossible = 0;
+
     days.forEach((day,i)=>{
       let choreCount=0;
       chores.forEach(c=>{
@@ -157,8 +160,19 @@ function updateTotals(){
         if(input && input.checked) choreCount++;
       });
       document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
+
+      totalChoresDone += choreCount;
+      totalChoresPossible += 7; // 7 chores per day
     });
+
+    // Update progress bar
+    const progressPercent = totalChoresPossible ? Math.round((totalChoresDone / totalChoresPossible) * 100) : 0;
+    const progressBar = document.getElementById(`${kid}-progress`);
+    progressBar.style.width = progressPercent + '%';
+    progressBar.textContent = progressPercent + '%';
   });
+
+  // Update ranks
   let overall=kids.map(k=>{
     let total=0;
     days.forEach((day,i)=>{

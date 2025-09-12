@@ -8,12 +8,23 @@
 <style>
 body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#f5f2ea; color:#3b3b3b; }
 h2 { text-align:center; margin:1rem 0; color:#2b2b2b; font-weight:500; }
+
+/* Site container to limit width */
+.site-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Tabs */
 .tab-container { display:flex; justify-content:center; background:#3a5a40; border-bottom:2px solid #cbbf9a; }
 .tab { flex:1; padding:14px; text-align:center; color:#fff; cursor:pointer; font-weight:500; border-right:1px solid #7b5e3b; position:relative; }
 .tab:last-child { border-right:none; }
 .tab.active { background:#6e5a3e; }
 .tab .rank-circle { position:absolute; top:4px; right:8px; width:20px; height:20px; border-radius:50%; background:#ffd700; color:#000; font-size:12px; font-weight:500; display:flex; justify-content:center; align-items:center; }
-.table-container { display:none; padding:1rem; max-width:100%; margin:auto; overflow-x:auto; }
+
+/* Table */
+.table-container { display:none; padding:1rem 0; overflow-x:auto; }
 .table-container.active { display:block; }
 table { width:100%; border-collapse:collapse; margin-bottom:8px; background:#f5f2ea; table-layout:fixed; }
 th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-align:center; white-space:nowrap; }
@@ -21,10 +32,14 @@ th.current-day { background:#d1e7dd; }
 tr.total-row td { background:#f5f2ea; font-weight:500; }
 input[type="checkbox"] { transform: scale(1.2); background:#f5f2ea; vertical-align: middle; }
 input[type="number"], input[type="text"] { width:30px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
+
+/* Progress bar */
 .progress { background:#eee2d5; border-radius:8px; overflow:hidden; height:28px; border:1px solid #cbbf9a; margin-top:8px; }
 .progress-bar { background:#3a5a40; height:100%; width:0; text-align:center; color:#fff; line-height:28px; font-weight:500; transition: width 0.3s; }
+
 .clear-btn { display:block; margin:8px auto; padding:6px 12px; font-size:14px; background:#c77b39; color:#fff; border:none; border-radius:4px; cursor:pointer; }
 .clear-btn:hover { background:#b06527; }
+
 @media (max-width:768px){ .table-container { overflow-x:auto; } table { min-width:600px; } }
 </style>
 </head>
@@ -32,17 +47,19 @@ input[type="number"], input[type="text"] { width:30px; border:none; text-align:c
 
 <h2>Chore Tracker</h2>
 
-<div class="tab-container">
-  <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
-  <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">-</div></div>
-  <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">-</div></div>
-  <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
-</div>
+<div class="site-container">
+  <div class="tab-container">
+    <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
+    <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">-</div></div>
+    <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">-</div></div>
+    <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
+  </div>
 
-<div id="Ryan" class="table-container active"></div>
-<div id="Jack" class="table-container"></div>
-<div id="Henry" class="table-container"></div>
-<div id="Sonny" class="table-container"></div>
+  <div id="Ryan" class="table-container active"></div>
+  <div id="Jack" class="table-container"></div>
+  <div id="Henry" class="table-container"></div>
+  <div id="Sonny" class="table-container"></div>
+</div>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -74,6 +91,7 @@ const chores=[
 ];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
+const CHORE_VALUE = 1.5; // $ per completed chore
 
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
@@ -102,7 +120,7 @@ kids.forEach(kid=>{
   html+=`<tr class="total-row"><td>Total</td>`;
   days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0/7</td>`; });
   html+=`</tr></tbody></table>
-  <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
@@ -162,14 +180,14 @@ function updateTotals(){
       document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
 
       totalChoresDone += choreCount;
-      totalChoresPossible += 7; // 7 chores per day
+      totalChoresPossible += 7;
     });
 
-    // Update progress bar
-    const progressPercent = totalChoresPossible ? Math.round((totalChoresDone / totalChoresPossible) * 100) : 0;
+    // Update progress bar in dollars
     const progressBar = document.getElementById(`${kid}-progress`);
-    progressBar.style.width = progressPercent + '%';
-    progressBar.textContent = progressPercent + '%';
+    const dollarAmount = (totalChoresDone * CHORE_VALUE).toFixed(2);
+    progressBar.style.width = totalChoresPossible ? Math.round((totalChoresDone / totalChoresPossible) * 100) + '%' : '0%';
+    progressBar.textContent = `$${dollarAmount}`;
   });
 
   // Update ranks

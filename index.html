@@ -30,7 +30,7 @@ h2 {
 }
 .tab {
   flex: 1;
-  padding: 10px 0;
+  padding: 14px;
   text-align: center;
   color: #fff;
   cursor: pointer;
@@ -60,7 +60,7 @@ h2 {
 /* Table */
 .table-container {
   display: none;
-  padding: 0 10px 20px;
+  padding: 1rem;
   max-width: 100%;
   margin: auto;
   overflow-x: auto;
@@ -75,21 +75,40 @@ table {
   table-layout: fixed;
 }
 th, td {
-  padding: 6px;
+  padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
-  text-align: center;
+  text-align: center; /* center justify all columns */
   white-space: nowrap;
 }
+
+/* Header highlight */
 th.current-day {
   background: #d1e7dd;
 }
+
+/* Total row */
 tr.total-row td { 
   background: #f5f2ea; 
   font-weight: 500; 
 }
-input[type="checkbox"] { transform: scale(1.2); vertical-align: middle; }
-input[type="number"] { width: 30px; border: none; text-align: center; font-size: 14px; font-weight: 500; border-radius: 4px; background: #f5f2ea; vertical-align: middle; }
+
+/* Inputs */
+input[type="checkbox"] { 
+  transform: scale(1.2); 
+  background: #f5f2ea; 
+  vertical-align: middle;
+}
+input[type="number"], input[type="text"] {
+  width: 30px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  background: #f5f2ea;
+  vertical-align: middle;
+}
 
 /* Progress bar */
 .progress { 
@@ -124,9 +143,6 @@ input[type="number"] { width: 30px; border: none; text-align: center; font-size:
 }
 .clear-btn:hover { background: #b06527; }
 
-/* Loader */
-#loader { text-align:center; padding:20px; font-size:1.2rem; color:#3a5a40; }
-
 /* Mobile */
 @media (max-width: 768px){
   .table-container { overflow-x: auto; }
@@ -145,113 +161,79 @@ input[type="number"] { width: 30px; border: none; text-align: center; font-size:
   <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
 </div>
 
-<div id="loader">Loading...</div>
+<div id="Ryan" class="table-container active"></div>
+<div id="Jack" class="table-container"></div>
+<div id="Henry" class="table-container"></div>
+<div id="Sonny" class="table-container"></div>
 
-<div id="tables">
-  <div id="Ryan" class="table-container active"></div>
-  <div id="Jack" class="table-container"></div>
-  <div id="Henry" class="table-container"></div>
-  <div id="Sonny" class="table-container"></div>
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.25.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.25.2/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
-const chores=[{ key:"showerTeeth", label:"Shower, Teeth", icon:"🚿🦷" },
-              { key:"bedRoom", label:"Bed, Room", icon:"🛏️🧹" },
-              { key:"clothes", label:"Clothes", icon:"👕🧺" },
-              { key:"other", label:"Other", icon:"⭐" },
-              { key:"deduction", label:"Deduction", icon:"➖" }];
+const chores=[
+  { key:"showerTeeth", label:"Shower, Teeth", icon:"🚿🦷" },
+  { key:"bedRoom", label:"Bed, Room", icon:"🛏️🧹" },
+  { key:"clothes", label:"Clothes", icon:"👕🧺" },
+  { key:"other", label:"Other", icon:"⭐" },
+  { key:"deduction", label:"Deduction", icon:"➖" }
+];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
 const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
 
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-async function loadTables(){
-  for(const kid of kids){
-    const container=document.getElementById(kid);
-    let html=`<table><thead><tr><th></th>`;
+kids.forEach(kid=>{
+  const container=document.getElementById(kid);
+  let html=`<table><thead><tr><th></th>`;
+  days.forEach((day,i)=>{
+    const highlight = i===todayIndex ? 'current-day' : '';
+    html+=`<th class="${highlight}">${day}</th>`;
+  });
+  html+=`</tr></thead><tbody>`;
+
+  [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
+    html+=`<tr><td>${c.icon}</td>`;
     days.forEach((day,i)=>{
-      const highlight = i===todayIndex ? 'current-day' : '';
-      html+=`<th class="${highlight}">${day}</th>`;
+      // deduction now a checkbox
+      if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
+        html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+      } else {
+        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+      }
     });
-    html+=`</tr></thead><tbody>`;
+    html+=`</tr>`;
+  });
 
-    [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
-      html+=`<tr><td>${c.icon}</td>`;
-      days.forEach((day,i)=>{
-        if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
-          html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-        } else {
-          html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-        }
-      });
-      html+=`</tr>`;
-    });
+  // Totals row: chores 0/7 style, activities sum
+  html+=`<tr class="total-row"><td>Total</td>`;
+  days.forEach((day,i)=>{
+    html+=`<td id="${kid}-total-${i}">0/7</td>`;
+  });
+  html+=`</tr></tbody></table>
+  <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
+  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
+  container.innerHTML=html;
+});
 
-    html+=`<tr class="total-row"><td>Total</td>`;
-    days.forEach((day,i)=> html+=`<td id="${kid}-total-${i}">0/7</td>`);
-    html+=`</tr></tbody></table>
-           <div class="progress"><div id="${kid}-progress" class="progress-bar">0%</div></div>
-           <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
-    container.innerHTML=html;
-  }
-
-  await loadDataFromFirebase();
-  document.getElementById("loader").style.display="none";
-  document.getElementById("tables").style.display="block";
+function clearKid(kid){
+  localStorage.removeItem(kid);
+  document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
+  updateTotals();
 }
 
-async function loadDataFromFirebase(){
-  for(const kid of kids){
-    const doc = await db.collection("chores").doc(kid).get({ source: 'server' });
-    const data = doc.exists ? doc.data() : {};
+function loadData(){
+  kids.forEach(kid=>{
+    const data=JSON.parse(localStorage.getItem(kid))||{};
     days.forEach((day,i)=>{
       [...chores.map(c=>c.key), ...activities].forEach(type=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
         if(input){
-          if(chores.some(c=>c.key===type)) input.checked = data[`${i}-${type}`]||false;
-          else input.value = data[`${i}-${type}`]||"";
+          if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
+          else input.value=data[`${i}-${type}`]||"";
         }
       });
     });
-  }
-  updateTotals();
-}
-
-function saveToFirebase(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), ...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input){
-        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
-        else data[`${i}-${type}`]=input.value;
-      }
-    });
   });
-  db.collection("chores").doc(kid).set(data);
-  updateTotals();
-}
-
-function clearKid(kid){
-  db.collection("chores").doc(kid).delete();
-  document.querySelectorAll(`#${kid} input`).forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=""; });
   updateTotals();
 }
 
@@ -265,26 +247,14 @@ function updateTotals(){
       });
       document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
     });
-    // update progress bar (percentage)
-    const totalChores = chores.length*days.length;
-    let done=0;
-    for(let d=0; d<days.length; d++){
-      chores.forEach(c=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${d}"][data-type="${c.key}"]`);
-        if(input && input.checked) done++;
-      });
-    }
-    const percent=Math.round(done/totalChores*100);
-    document.getElementById(`${kid}-progress`).style.width=percent+"%";
-    document.getElementById(`${kid}-progress`).textContent=percent+"%";
   });
 
-  // Update ranks
+  // Overall rank in tabs based on total chores
   let overall=kids.map(k=>{
     let total=0;
     days.forEach((day,i)=>{
-      const val=parseInt(document.getElementById(`${k}-total-${i}`).textContent.split('/')[0])||0;
-      total+=val;
+      const val=document.getElementById(`${k}-total-${i}`).textContent.split('/')[0]||0;
+      total+=parseInt(val);
     });
     return {kid:k,value:total};
   });
@@ -292,12 +262,27 @@ function updateTotals(){
   overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
-// Event listeners
-document.body.addEventListener("input", e=>{ if(e.target.dataset.kid) saveToFirebase(e.target.dataset.kid); });
-document.body.addEventListener("change", e=>{ if(e.target.dataset.kid) saveToFirebase(e.target.dataset.kid); });
+document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
+document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
 
+function saveData(kid){
+  const data={};
+  days.forEach((day,i)=>{
+    [...chores.map(c=>c.key), ...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input){
+        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
+        else data[`${i}-${type}`]=input.value;
+      }
+    });
+  });
+  localStorage.setItem(kid,JSON.stringify(data));
+  updateTotals();
+}
+
+// Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click", ()=>{
+  tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
     tab.classList.add("active");
@@ -305,8 +290,7 @@ document.querySelectorAll(".tab").forEach(tab=>{
   });
 });
 
-// Initialize
-loadTables();
+loadData();
 </script>
 </body>
 </html>

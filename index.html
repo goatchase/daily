@@ -1,236 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chore Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-<style>
-body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#f5f2ea; color:#3b3b3b; }
-h2 { text-align:center; margin:1rem 0; color:#2b2b2b; font-weight:500; }
-
-/* Site container to limit width */
-.site-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* Tabs */
-.tab-container { display:flex; justify-content:center; background:#3a5a40; border-bottom:2px solid #cbbf9a; }
-.tab { flex:1; padding:14px; text-align:center; color:#fff; cursor:pointer; font-weight:500; border-right:1px solid #7b5e3b; position:relative; }
-.tab:last-child { border-right:none; }
-.tab.active { background:#6e5a3e; }
-.tab .rank-circle { position:absolute; top:4px; right:8px; width:20px; height:20px; border-radius:50%; background:#ffd700; color:#000; font-size:12px; font-weight:500; display:flex; justify-content:center; align-items:center; }
-
-/* Table */
-.table-container { display:none; padding:1rem 0; overflow-x:auto; }
-.table-container.active { display:block; }
-table { width:100%; border-collapse:collapse; margin-bottom:8px; background:#f5f2ea; table-layout:fixed; }
-th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-align:center; white-space:nowrap; }
-th.current-day { background:#d1e7dd; }
-tr.total-row td { background:#f5f2ea; font-weight:500; }
-input[type="checkbox"] { transform: scale(1.2); background:#f5f2ea; vertical-align: middle; }
-input[type="number"], input[type="text"] { width:40px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
-
-/* Progress bar */
-.progress { background:#eee2d5; border-radius:8px; overflow:hidden; height:28px; border:1px solid #cbbf9a; margin-top:8px; }
-.progress-bar { background:#3a5a40; height:100%; width:0; text-align:center; color:#fff; line-height:28px; font-weight:500; transition: width 0.3s; }
-
-.clear-btn { display:block; margin:8px auto; padding:6px 12px; font-size:14px; background:#c77b39; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-.clear-btn:hover { background:#b06527; }
-
-@media (max-width:768px){ .table-container { overflow-x:auto; } table { min-width:600px; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chore Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    td, th {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    .progress-container {
+      background: #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 30px;
+      margin-top: 10px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #4caf50, #45a049);
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      transition: width 0.3s ease;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Chore Tracker</h1>
 
-<h2>Chore Tracker</h2>
+    <table>
+      <tr>
+        <th>Chore</th>
+        <td><input type="checkbox" class="chore" onchange="updateProgress()"> Make Bed</td>
+        <td><input type="checkbox" class="chore" onchange="updateProgress()"> Dishes</td>
+        <td><input type="checkbox" class="chore" onchange="updateProgress()"> Trash</td>
+      </tr>
+      <tr>
+        <th>Workout (mins)</th>
+        <td colspan="3"><input type="number" id="workout" min="0" value="0" onchange="updateProgress()"></td>
+      </tr>
+      <tr>
+        <th>Reading (mins)</th>
+        <td colspan="3"><input type="number" id="reading" min="0" value="0" onchange="updateProgress()"></td>
+      </tr>
+      <tr>
+        <th>Practice (mins)</th>
+        <td colspan="3"><input type="number" id="practice" min="0" value="0" onchange="updateProgress()"></td>
+      </tr>
+      <tr>
+        <th>Deduction</th>
+        <td><input type="checkbox" class="deduction" onchange="updateProgress()"> Late</td>
+        <td><input type="checkbox" class="deduction" onchange="updateProgress()"> Fighting</td>
+        <td><input type="checkbox" class="deduction" onchange="updateProgress()"> Other</td>
+      </tr>
+    </table>
 
-<div class="site-container">
-  <div class="tab-container">
-    <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">-</div></div>
-    <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">-</div></div>
-    <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">-</div></div>
-    <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">-</div></div>
+    <div class="progress-container">
+      <div id="progress-bar" class="progress-bar"> $0.00 / $20 </div>
+    </div>
   </div>
 
-  <div id="Ryan" class="table-container active"></div>
-  <div id="Jack" class="table-container"></div>
-  <div id="Henry" class="table-container"></div>
-  <div id="Sonny" class="table-container"></div>
-</div>
+  <script>
+    function updateProgress() {
+      let total = 0;
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script>
-// ---------------- FIREBASE SETUP ----------------
-const firebaseConfig = {
-  apiKey: "AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
-  authDomain: "goatchase-e9502.firebaseapp.com",
-  projectId: "goatchase-e9502",
-  storageBucket: "goatchase-e9502.firebasestorage.app",
-  messagingSenderId: "16998517478",
-  appId: "1:16998517478:web:71b79f6ffd9d8eefccc927",
-  measurementId: "G-H4KBYP0NXS"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// ---------------- APP LOGIC ----------------
-const kids=["Ryan","Jack","Henry","Sonny"];
-const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
-const chores=[
-  { key:"showerTeeth", icon:"🚿🦷" },
-  { key:"bedRoom", icon:"🛏️🧹" },
-  { key:"clothes", icon:"👕🧺" },
-  { key:"other", icon:"⭐" },
-  { key:"deduction", icon:"➖" }
-];
-const activities=["reading","practice","workout"];
-const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
-
-// value rules
-const CHORE_VALUE = 0.25;
-const ACTIVITY_RATE = 0.05; // per minute
-const DEDUCTION_VALUE = -3;
-
-const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
-
-// Build tables
-kids.forEach(kid=>{
-  const container=document.getElementById(kid);
-  let html=`<table><thead><tr><th></th>`;
-  days.forEach((day,i)=>{
-    const highlight = i===todayIndex ? 'current-day' : '';
-    html+=`<th class="${highlight}">${day}</th>`;
-  });
-  html+=`</tr></thead><tbody>`;
-
-  [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
-    html+=`<tr><td>${c.icon}</td>`;
-    days.forEach((day,i)=>{
-      if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
-        html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-      } else {
-        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-      }
-    });
-    html+=`</tr>`;
-  });
-
-  html+=`<tr class="total-row"><td>Total</td>`;
-  days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
-  html+=`</tr></tbody></table>
-  <div class="progress"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
-  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
-  container.innerHTML=html;
-});
-
-// ---------------- FIRESTORE FUNCTIONS ----------------
-async function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), ...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input){
-        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
-        else data[`${i}-${type}`]=input.value;
-      }
-    });
-  });
-  await db.collection('chores').doc(kid).set(data);
-  updateTotals();
-}
-
-async function loadData(){
-  for (const kid of kids){
-    const doc = await db.collection('chores').doc(kid).get();
-    const data = doc.exists ? doc.data() : {};
-    days.forEach((day,i)=>{
-      [...chores.map(c=>c.key), ...activities].forEach(type=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input){
-          if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
-          else input.value=data[`${i}-${type}`]||"";
-        }
-      });
-    });
-  }
-  updateTotals();
-}
-
-// Clear a kid
-async function clearKid(kid){
-  await db.collection('chores').doc(kid).set({});
-  document.querySelectorAll(`#${kid} input`).forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=""; });
-  updateTotals();
-}
-
-// Update totals and ranks
-function updateTotals(){
-  let rankValues=[];
-
-  kids.forEach(kid=>{
-    let kidTotal=0;
-
-    days.forEach((day,i)=>{
-      let dayTotal=0;
-
-      // chores
-      chores.forEach(c=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input){
-          if(c.key==="deduction"){
-            if(input.checked) dayTotal += DEDUCTION_VALUE;
-          } else if(input.checked){
-            dayTotal += CHORE_VALUE;
-          }
-        }
+      // ✅ Chores ($0.25 each)
+      document.querySelectorAll(".chore:checked").forEach(() => {
+        total += 0.25;
       });
 
-      // activities
-      activities.forEach(a=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value){
-          const minutes=parseFloat(input.value)||0;
-          dayTotal += minutes * ACTIVITY_RATE;
-        }
+      // ⏱ Workout ($0.05/min)
+      let workoutMins = parseInt(document.getElementById("workout").value) || 0;
+      total += workoutMins * 0.05;
+
+      // 📖 Reading ($0.05/min)
+      let readingMins = parseInt(document.getElementById("reading").value) || 0;
+      total += readingMins * 0.05;
+
+      // 🎸 Practice ($0.05/min)
+      let practiceMins = parseInt(document.getElementById("practice").value) || 0;
+      total += practiceMins * 0.05;
+
+      // ❌ Deduction (-$3 each)
+      document.querySelectorAll(".deduction:checked").forEach(() => {
+        total -= 3;
       });
 
-      kidTotal += dayTotal;
-      document.getElementById(`${kid}-total-${i}`).textContent = `$${dayTotal.toFixed(2)}`;
-    });
+      // 🎯 Goal
+      const goal = 20;
+      const percent = Math.min((total / goal) * 100, 100);
 
-    // Update progress bar in dollars
-    const progressBar = document.getElementById(`${kid}-progress`);
-    progressBar.style.width = "100%"; // always fill bar
-    progressBar.textContent = `$${kidTotal.toFixed(2)}`;
+      // Update bar + label
+      const bar = document.getElementById("progress-bar");
+      bar.style.width = percent + "%";
+      bar.textContent = `$${total.toFixed(2)} / $${goal}`;
+    }
 
-    rankValues.push({kid,value:kidTotal});
-  });
-
-  // Update ranks
-  rankValues.sort((a,b)=>b.value-a.value);
-  rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
-}
-
-// ---------------- EVENT LISTENERS ----------------
-document.body.addEventListener("input", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
-document.body.addEventListener("change", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.kid).classList.add("active");
-  });
-});
-
-// Load data on start
-loadData();
-</script>
+    // Init once at load
+    updateProgress();
+  </script>
 </body>
 </html>

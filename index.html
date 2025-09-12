@@ -13,15 +13,12 @@ body {
   background: #f5f2ea;
   color: #3b3b3b;
 }
-
 h2 {
   text-align: center;
   margin: 1rem 0;
   color: #2b2b2b;
   font-weight: 500;
 }
-
-/* Tabs */
 .tab-container {
   display: flex;
   justify-content: center;
@@ -40,7 +37,6 @@ h2 {
 }
 .tab:last-child { border-right: none; }
 .tab.active { background: #6e5a3e; }
-
 .tab .rank-circle {
   position: absolute;
   top: 4px;
@@ -56,8 +52,6 @@ h2 {
   justify-content: center;
   align-items: center;
 }
-
-/* Table */
 .table-container {
   display: none;
   padding: 1rem;
@@ -66,7 +60,6 @@ h2 {
   overflow-x: auto;
 }
 .table-container.active { display: block; }
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -78,27 +71,12 @@ th, td {
   padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #cbbf9a;
-  text-align: center; /* center justify all columns */
+  text-align: center;
   white-space: nowrap;
 }
-
-/* Header highlight */
-th.current-day {
-  background: #d1e7dd;
-}
-
-/* Total row */
-tr.total-row td { 
-  background: #f5f2ea; 
-  font-weight: 500; 
-}
-
-/* Inputs */
-input[type="checkbox"] { 
-  transform: scale(1.2); 
-  background: #f5f2ea; 
-  vertical-align: middle;
-}
+th.current-day { background: #d1e7dd; }
+tr.total-row td { background: #f5f2ea; font-weight: 500; }
+input[type="checkbox"] { transform: scale(1.2); background: #f5f2ea; vertical-align: middle; }
 input[type="number"], input[type="text"] {
   width: 30px;
   border: none;
@@ -109,8 +87,6 @@ input[type="number"], input[type="text"] {
   background: #f5f2ea;
   vertical-align: middle;
 }
-
-/* Progress bar */
 .progress { 
   background: #eee2d5; 
   border-radius: 8px; 
@@ -129,7 +105,6 @@ input[type="number"], input[type="text"] {
   font-weight: 500; 
   transition: width 0.3s; 
 }
-
 .clear-btn { 
   display: block; 
   margin: 8px auto; 
@@ -142,13 +117,16 @@ input[type="number"], input[type="text"] {
   cursor: pointer; 
 }
 .clear-btn:hover { background: #b06527; }
-
-/* Mobile */
 @media (max-width: 768px){
   .table-container { overflow-x: auto; }
   table { min-width: 600px; }
 }
 </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 </head>
 <body>
 
@@ -167,6 +145,17 @@ input[type="number"], input[type="text"] {
 <div id="Sonny" class="table-container"></div>
 
 <script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const chores=[
@@ -178,10 +167,9 @@ const chores=[
 ];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
-const CHORE_VALUE=0.25, MINUTE_VALUE=0.05;
-
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
+// Build tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
   let html=`<table><thead><tr><th></th>`;
@@ -194,7 +182,6 @@ kids.forEach(kid=>{
   [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
     html+=`<tr><td>${c.icon}</td>`;
     days.forEach((day,i)=>{
-      // deduction now a checkbox
       if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
         html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
       } else {
@@ -204,39 +191,51 @@ kids.forEach(kid=>{
     html+=`</tr>`;
   });
 
-  // Totals row: chores 0/7 style, activities sum
   html+=`<tr class="total-row"><td>Total</td>`;
-  days.forEach((day,i)=>{
-    html+=`<td id="${kid}-total-${i}">0/7</td>`;
-  });
+  days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0/7</td>`; });
   html+=`</tr></tbody></table>
-  <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
-  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
+    <div class="progress"><div id="${kid}-progress" class="progress-bar">0</div></div>
+    <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
 
-function clearKid(kid){
-  localStorage.removeItem(kid);
-  document.querySelectorAll(`#${kid} input`).forEach(i=>{if(i.type==='checkbox') i.checked=false; else i.value="";});
-  updateTotals();
+// Save to Firestore
+function saveData(kid){
+  const data = {};
+  days.forEach((day,i)=>{
+    [...chores.map(c=>c.key), ...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input){
+        data[`${i}-${type}`] = input.type==="checkbox"? input.checked : input.value;
+      }
+    });
+  });
+  db.collection("chores").doc(kid).set(data);
 }
 
-function loadData(){
-  kids.forEach(kid=>{
-    const data=JSON.parse(localStorage.getItem(kid))||{};
+// Load Firestore in real-time
+kids.forEach(kid=>{
+  db.collection("chores").doc(kid).onSnapshot(doc=>{
+    const data = doc.data() || {};
     days.forEach((day,i)=>{
       [...chores.map(c=>c.key), ...activities].forEach(type=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
         if(input){
-          if(chores.some(c=>c.key===type)) input.checked=data[`${i}-${type}`]||false;
+          if(input.type==="checkbox") input.checked=data[`${i}-${type}`]||false;
           else input.value=data[`${i}-${type}`]||"";
         }
       });
     });
+    updateTotals();
   });
-  updateTotals();
+});
+
+// Clear kid data
+function clearKid(kid){
+  db.collection("chores").doc(kid).delete();
 }
 
+// Update totals & ranks
 function updateTotals(){
   kids.forEach(kid=>{
     days.forEach((day,i)=>{
@@ -249,7 +248,6 @@ function updateTotals(){
     });
   });
 
-  // Overall rank in tabs based on total chores
   let overall=kids.map(k=>{
     let total=0;
     days.forEach((day,i)=>{
@@ -262,23 +260,9 @@ function updateTotals(){
   overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
-document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid)});
-
-function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key), ...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input){
-        if(chores.some(c=>c.key===type)) data[`${i}-${type}`]=input.checked;
-        else data[`${i}-${type}`]=input.value;
-      }
-    });
-  });
-  localStorage.setItem(kid,JSON.stringify(data));
-  updateTotals();
-}
+// Event listeners for inputs
+document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid);});
+document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid);});
 
 // Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
@@ -289,8 +273,6 @@ document.querySelectorAll(".tab").forEach(tab=>{
     document.getElementById(tab.dataset.kid).classList.add("active");
   });
 });
-
-loadData();
 </script>
 </body>
 </html>

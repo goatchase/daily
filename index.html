@@ -150,27 +150,48 @@ async function clearKid(kid){
 // Update totals and ranks
 function updateTotals(){
   kids.forEach(kid=>{
-    let totalChoresDone = 0;
-    let totalChoresPossible = 0;
+    let totalValue = 0;
 
     days.forEach((day,i)=>{
-      let choreCount=0;
+      // Chores
       chores.forEach(c=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input && input.checked) choreCount++;
+        const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
+        if(input && input.checked) totalValue += CHORE_VALUE;
       });
-      document.getElementById(`${kid}-total-${i}`).textContent=`${choreCount}/7`;
-
-      totalChoresDone += choreCount;
-      totalChoresPossible += 7; // 7 chores per day
+      // Activities
+      activities.forEach(a=>{
+        const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
+        if(input && input.value) totalValue += parseFloat(input.value) * MINUTE_VALUE;
+      });
     });
 
-    // Update progress bar
-    const progressPercent = totalChoresPossible ? Math.round((totalChoresDone / totalChoresPossible) * 100) : 0;
+    // Update progress bar width proportional to a max (optional, e.g., $20/week)
+    const maxValue = 20; // adjust as needed
+    const progressPercent = Math.min(100, Math.round((totalValue / maxValue) * 100));
+
     const progressBar = document.getElementById(`${kid}-progress`);
     progressBar.style.width = progressPercent + '%';
-    progressBar.textContent = progressPercent + '%';
+    progressBar.textContent = '$' + totalValue.toFixed(2);
   });
+
+  // Update ranks
+  let overall = kids.map(k=>{
+    let total = 0;
+    days.forEach((day,i)=>{
+      chores.forEach(c=>{
+        const input = document.querySelector(`[data-kid="${k}"][data-day="${i}"][data-type="${c.key}"]`);
+        if(input && input.checked) total += CHORE_VALUE;
+      });
+      activities.forEach(a=>{
+        const input = document.querySelector(`[data-kid="${k}"][data-day="${i}"][data-type="${a}"]`);
+        if(input && input.value) total += parseFloat(input.value) * MINUTE_VALUE;
+      });
+    });
+    return {kid:k,value:total};
+  });
+  overall.sort((a,b)=>b.value-a.value);
+  overall.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
+}
 
   // Update ranks
   let overall=kids.map(k=>{

@@ -11,7 +11,7 @@ body {
   font-family: 'Roboto', sans-serif;
   margin:0;
   padding:0;
-  background:#fdfdfd; /* soft white background */
+  background:#fdfdfd;
   color:#333;
 }
 h2 {
@@ -109,7 +109,7 @@ tr.total-row td {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
 }
 
-/* Inputs - Apple/iOS style */
+/* Inputs - clean Apple style */
 input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -141,25 +141,25 @@ input[type="checkbox"]:checked::before {
   transform: translateX(12px);
 }
 
-/* Number inputs as pills */
+/* Number & text inputs */
 input[type="number"], input[type="text"] {
-  width: 28px;
+  width: 32px;
   max-width:100%;
   box-sizing: border-box;
-  border:none;
+  border:1px solid #ccc;
   text-align:center;
   font-size:14px;
   font-weight:500;
-  border-radius: 12px;
-  background:#f2f2f2;
+  border-radius: 8px;
+  background:#fff; /* clean white background */
   vertical-align:middle;
   padding:2px 0;
-  transition: box-shadow 0.2s, background 0.2s;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 input[type="number"]:focus, input[type="text"]:focus {
   outline:none;
-  box-shadow: 0 0 0 2px rgba(0,122,255,0.3);
-  background:#fff;
+  border:1px solid #007aff;
+  box-shadow: 0 0 2px rgba(0,122,255,0.4);
 }
 
 /* Column widths */

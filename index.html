@@ -10,7 +10,7 @@ body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#f5f2e
 h2 { text-align:center; margin:1rem 0; color:#2b2b2b; font-weight:500; }
 
 /* Site container */
-.site-container { max-width: 1200px; margin:0 auto; padding:0 20px; }
+.site-container { max-width: 1200px; margin:0 auto; padding:0 20px; box-sizing:border-box; }
 
 /* Tabs */
 .tab-container { display:flex; justify-content:center; background:#3a5a40; border-bottom:2px solid #cbbf9a; }
@@ -20,14 +20,18 @@ h2 { text-align:center; margin:1rem 0; color:#2b2b2b; font-weight:500; }
 .tab .rank-circle { position:absolute; top:4px; right:8px; width:20px; height:20px; border-radius:50%; background:#ffd700; color:#000; font-size:12px; font-weight:500; display:flex; justify-content:center; align-items:center; }
 
 /* Table */
-.table-container { display:none; padding:1rem 0; }
+.table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
 .table-container.active { display:block; }
-table { width:100%; border-collapse:collapse; margin-bottom:8px; background:#f5f2ea; table-layout:auto; }
-th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-align:center; white-space:nowrap; }
+table { width:100%; border-collapse:collapse; background:#f5f2ea; table-layout:fixed; }
+th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 th.current-day { background:#d1e7dd; }
 tr.total-row td { background:#f5f2ea; font-weight:500; }
 input[type="checkbox"] { transform: scale(1.2); background:#f5f2ea; vertical-align: middle; }
 input[type="number"], input[type="text"] { width:40px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
+
+/* Column widths */
+th:first-child, td:first-child { width:40px; }
+th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 
 /* Progress bar */
 .progress-wrapper {
@@ -37,8 +41,8 @@ input[type="number"], input[type="text"] { width:40px; border:none; text-align:c
   border-radius: 8px;
   background: #eee2d5;
   overflow: hidden;
+  box-sizing: border-box;
 }
-
 .progress-bar {
   background: #3a5a40;
   height: 28px;
@@ -58,8 +62,7 @@ input[type="number"], input[type="text"] { width:40px; border:none; text-align:c
 
 /* Mobile adjustments */
 @media (max-width:768px){
-  table { width:100%; table-layout:fixed; }
-  th, td { padding:4px; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  th, td { padding:4px; font-size:12px; }
   th:first-child, td:first-child { width:40px; }
   th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 }
@@ -210,19 +213,18 @@ function updateTotals(){
     });
 
     const progressBar = document.getElementById(`${kid}-progress`);
-    const progressPercent = Math.min((kidTotal/20)*100,100);
+    const progressPercent = Math.min((kidTotal / 20) * 100, 100);
     progressBar.style.width = progressPercent + "%";
     progressBar.textContent = `$${kidTotal.toFixed(2)}`;
 
     rankValues.push({kid,value:kidTotal});
   });
 
-  // Update ranks
   rankValues.sort((a,b)=>b.value-a.value);
   rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
-// EVENT LISTENERS
+// Event listeners
 document.body.addEventListener("input", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
 document.body.addEventListener("change", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
 document.querySelectorAll(".tab").forEach(tab=>{

@@ -290,7 +290,7 @@ kids.forEach(kid=>{
       if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
         html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
       } else {
-        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+        html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}" inputmode="numeric" pattern="[0-9]*"></td>`;
       }
     });
     html+=`</tr>`;

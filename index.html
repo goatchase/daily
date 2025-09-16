@@ -3,41 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chore Tracker</title>
+<title>Chore Tracker with Notes</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#fdfdfd; color:#333; }
+body {
+  font-family: 'Roboto', sans-serif;
+  margin:0;
+  padding:0;
+  background:#fdfdfd;
+  color:#333;
+}
 h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; letter-spacing:0.5px; }
 .site-container { max-width: 1200px; margin:0 auto; padding: 0 20px; box-sizing:border-box; }
-.tab-container { display:flex; justify-content:center; background:#f8f8f8; border-bottom:1px solid #ddd; border-radius:12px 12px 0 0; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05);}
-.tab { flex:1; padding:14px 0; text-align:center; color:#555; cursor:pointer; font-weight:500; position:relative; transition: background 0.3s, color 0.3s; }
-.tab.active { background:#fff; color:#000; font-weight:600; box-shadow: inset 0 -2px 0 #007aff;}
-.tab .rank-circle { position:absolute; top:6px; right:10px; min-width:22px; height:22px; border-radius:50%; background:#007aff; color:#fff; font-size:12px; font-weight:500; display:flex; justify-content:center; align-items:center; box-shadow:0 1px 2px rgba(0,0,0,0.2);}
+
+/* Tabs */
+.tab-container {
+  display:flex;
+  justify-content:center;
+  background:#f8f8f8;
+  border-bottom:1px solid #ddd;
+  border-radius:12px 12px 0 0;
+  overflow:hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.tab {
+  flex:1;
+  padding:14px 0;
+  text-align:left;
+  color:#555;
+  cursor:pointer;
+  font-weight:500;
+  position:relative;
+  transition: background 0.3s, color 0.3s;
+}
+.tab.active { background:#fff; color:#000; font-weight:600; box-shadow: inset 0 -2px 0 #007aff; }
+.tab .rank-circle {
+  position:absolute;
+  top:6px;
+  right:10px;
+  width:auto;
+  min-width:30px;
+  padding:0 6px;
+  border-radius:12px;
+  background:#ffcc00;
+  color:#000;
+  font-size:12px;
+  font-weight:500;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Table */
 .table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
 .table-container.active { display:block; }
-table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); table-layout:fixed; }
-th, td { padding:8px; font-size:14px; border-bottom:1px solid #eee; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-th.current-day { background:#e6f4ff; cursor:pointer; }
+table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); table-layout:fixed; }
+th, td { padding:8px; font-size:14px; border-bottom:1px solid #eee; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:clip; cursor:pointer; }
+th.current-day { background:#e6f4ff; }
 tr.total-row td { font-weight:500; background:#f9f9f9; box-shadow: inset 0 1px 2px rgba(0,0,0,0.03); }
-input[type="checkbox"] { appearance: none; -webkit-appearance: none; width:30px; height:18px; background:#e6e6e6; border-radius:12px; position: relative; outline: none; cursor: pointer; transition: background 0.3s; vertical-align:middle; }
-input[type="checkbox"]:checked { background:#007aff; }
-input[type="checkbox"]::before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; top:2px; left:2px; background:#fff; transition:0.3s; }
-input[type="checkbox"]:checked::before { transform: translateX(12px);}
-input[type="number"], input[type="text"] { width:32px; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; transition:border 0.2s, box-shadow 0.2s; }
-input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; box-shadow:0 0 2px rgba(0,122,255,0.4); }
+
+/* Inputs */
+input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 30px; height: 18px; background: #e6e6e6; border-radius: 12px; position: relative; outline: none; cursor: pointer; transition: background 0.3s; vertical-align:middle; }
+input[type="checkbox"]:checked { background: #007aff; }
+input[type="checkbox"]::before { content: ""; position: absolute; width: 14px; height: 14px; border-radius: 50%; top: 2px; left: 2px; background: #fff; transition: 0.3s; }
+input[type="checkbox"]:checked::before { transform: translateX(12px); }
+
+input[type="number"], input[type="text"] {
+  width: 32px; max-width:100%; box-sizing: border-box; border:1px solid #ccc; text-align:center;
+  font-size:14px; font-weight:500; border-radius: 8px; background:#fff; vertical-align:middle; padding:2px 0;
+}
+input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; box-shadow: 0 0 2px rgba(0,122,255,0.4); }
+
+/* Column widths */
 th:first-child, td:first-child { width:40px; }
 th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
-.progress-wrapper { width: 100%; margin-top: 10px; border-radius:12px; background:#ccc; overflow:hidden; box-sizing:border-box; height:28px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);}
-.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; transition: width 0.3s ease; border-radius:12px 0 0 12px; white-space:nowrap; color:#fff;}
-.controls-container { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin:12px 0; }
-.controls-container select, .controls-container button { padding:6px 12px; font-size:14px; border-radius:8px; border:none; cursor:pointer; background:#007aff; color:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:background 0.3s;}
-.controls-container select:hover, .controls-container button:hover { background:#005bb5;}
-.modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.4);}
-.modal-content { background:#fff; margin:10% auto; padding:20px; border-radius:12px; max-width:400px; position:relative;}
-.modal-close { position:absolute; top:10px; right:10px; font-size:18px; font-weight:bold; cursor:pointer;}
-.modal input, .modal textarea { width:100%; margin:4px 0 8px; padding:4px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
-.modal button { margin-top:6px; }
-@media(max-width:768px){ .tab .rank-circle { top:2px; right:2px; font-size:10px; min-width:20px; height:20px; } th, td { padding:6px; font-size:12px; } }
+
+/* Progress bar */
+.progress-wrapper { width: 100%; margin-top: 10px; border-radius: 12px; background: #ccc; overflow: hidden; box-sizing: border-box; height:28px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
+.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; transition: width 0.3s ease; border-radius:12px 0 0 12px; white-space:nowrap; color:#fff; }
+
+/* Clear button */
+.clear-btn { display:block; margin:12px auto; padding:6px 12px; font-size:14px; background:#007aff; color:#fff; border:none; border-radius:8px; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.3s; }
+.clear-btn:hover { background:#005bb5; }
+
+/* Modal */
+#note-modal {
+  display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);
+  justify-content:center; align-items:center; z-index:1000;
+}
+#note-modal .modal-content {
+  background:#fff; padding:20px; border-radius:12px; width:90%; max-width:400px;
+  display:flex; flex-direction:column; gap:10px;
+}
+#note-modal input, #note-modal textarea { width:100%; border:1px solid #ccc; border-radius:8px; padding:6px; }
+#note-modal button { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; }
+#note-modal button:hover { background:#005bb5; }
+
+@media (max-width:768px){
+  th, td { padding:6px; font-size:12px; }
+  th:first-child, td:first-child { width:40px; }
+  th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
+}
 </style>
 </head>
 <body>
@@ -55,79 +122,182 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
   <div id="Jack" class="table-container"></div>
   <div id="Henry" class="table-container"></div>
   <div id="Sonny" class="table-container"></div>
-
-  <div class="controls-container">
-    <select id="week-selector" onchange="loadSelectedWeek()"><option value="">Current Week</option></select>
-    <button onclick="clearAll()">Clear Week</button>
-    <button onclick="archiveAll()">Archive Week</button>
-  </div>
 </div>
 
-<!-- Notes Modal -->
-<div id="note-modal" class="modal">
+<!-- Modal -->
+<div id="note-modal">
   <div class="modal-content">
-    <span class="modal-close" onclick="closeModal()">&times;</span>
-    <h3>Daily Notes</h3>
-    <label>Good</label><textarea id="note-good"></textarea>
-    <label>Bad</label><textarea id="note-bad"></textarea>
-    <label>Punishments</label><textarea id="note-punishments"></textarea>
-    <button onclick="saveNote()">Save Note</button>
-    <button onclick="clearNote()">Clear Note</button>
+    <label>Good:</label><textarea id="note-good"></textarea>
+    <label>Bad:</label><textarea id="note-bad"></textarea>
+    <label>Punishments:</label><textarea id="note-punishments"></textarea>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button id="note-clear-btn">Clear</button>
+      <button id="note-save-btn">Save</button>
+      <button onclick="document.getElementById('note-modal').style.display='none'">Close</button>
+    </div>
   </div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
 <script>
-// FIREBASE
-const firebaseConfig = { apiKey:"AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0", authDomain:"goatchase-e9502.firebaseapp.com", projectId:"goatchase-e9502", storageBucket:"goatchase-e9502.firebasestorage.app", messagingSenderId:"16998517478", appId:"1:16998517478:web:71b79f6ffd9d8eefccc927", measurementId:"G-H4KBYP0NXS" };
+const firebaseConfig = {
+  apiKey: "AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
+  authDomain: "goatchase-e9502.firebaseapp.com",
+  projectId: "goatchase-e9502",
+  storageBucket: "goatchase-e9502.firebasestorage.app",
+  messagingSenderId: "16998517478",
+  appId: "1:16998517478:web:71b79f6ffd9d8eefccc927",
+  measurementId: "G-H4KBYP0NXS"
+};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// DATA
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
-const chores=[{ key:"showerTeeth", icon:"🚿🦷" },{ key:"bedRoom", icon:"🛏️🧹" },{ key:"clothes", icon:"👕🧺" },{ key:"other", icon:"⭐⭐" },{ key:"deduction", icon:"➖➖" }];
+const chores=[{ key:"showerTeeth", icon:"🚿🦷"},{ key:"bedRoom", icon:"🛏️🧹"},{ key:"clothes", icon:"👕🧺"},{ key:"other", icon:"⭐⭐"},{ key:"deduction", icon:"➖➖"}];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
 const CHORE_VALUE=0.25, ACTIVITY_RATE=0.05, DEDUCTION_VALUE=-3;
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
-let currentKid=null, currentDay=null;
 
-// BUILD TABLES
+// Build tables
 kids.forEach(kid=>{
   const container=document.getElementById(kid);
   let html=`<table><thead><tr><th></th>`;
-  days.forEach((day,i)=>{ const highlight=i===todayIndex?'current-day':''; html+=`<th class="${highlight}" onclick="openModal('${kid}',${i})">${day}</th>`; });
+  days.forEach((day,i)=>{
+    const highlight = i===todayIndex ? 'current-day' : '';
+    html+=`<th class="${highlight}" onclick="openNoteModal('${kid}',${i})">${day}</th>`;
+  });
   html+=`</tr></thead><tbody>`;
   [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
     html+=`<tr><td>${c.icon}</td>`;
-    days.forEach((day,i)=>{ if(c.key==="deduction"||!["reading","practice","workout"].includes(c.key)){ html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`; } else { html+=`<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`; } });
+    days.forEach((day,i)=>{
+      if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
+        html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+      } else {
+        html+=`<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+      }
+    });
     html+=`</tr>`;
   });
   html+=`<tr class="total-row"><td>Total</td>`;
   days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
-  html+=`</tr></tbody></table><div id="${kid}-notes" data-notes="{}"></div><div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>`;
+  html+=`</tr></tbody></table>
+  <div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>
+  <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
 
-// FUNCTIONS FOR DATA, NOTES, TOTALS, ARCHIVE, CLEAR, WEEK SELECT
-// ... Similar to previous version but updated for all kids at once
+// FIRESTORE DATA
+async function saveData(kid){
+  const data={};
+  days.forEach((day,i)=>{
+    [...chores.map(c=>c.key), ...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input) chores.some(c=>c.key===type)? data[`${i}-${type}`]=input.checked : data[`${i}-${type}`]=input.value;
+    });
+  });
+  await db.collection('chores').doc(kid).set(data, {merge:true});
+  updateTotals();
+}
 
-// Event listeners for tabs and inputs
+async function loadData(){
+  for(const kid of kids){
+    const doc = await db.collection('chores').doc(kid).get();
+    const data = doc.exists? doc.data() : {};
+    days.forEach((day,i)=>{
+      [...chores.map(c=>c.key), ...activities].forEach(type=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+        if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
+      });
+    });
+  }
+  updateTotals();
+}
+
+async function clearKid(kid){
+  await db.collection('chores').doc(kid).set({});
+  document.querySelectorAll(`#${kid} input`).forEach(i=>i.type==='checkbox'? i.checked=false : i.value="");
+  updateTotals();
+}
+
+// Totals
+function updateTotals(){
+  let rankValues=[];
+  kids.forEach(kid=>{
+    let kidTotal=0;
+    days.forEach((day,i)=>{
+      let dayTotal=0;
+      chores.forEach(c=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
+        if(input){
+          if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
+          else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
+        }
+      });
+      activities.forEach(a=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
+        if(input && input.value) dayTotal+=parseFloat(input.value)*ACTIVITY_RATE||0;
+      });
+      kidTotal+=dayTotal;
+      document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
+    });
+    const progressBar=document.getElementById(`${kid}-progress`);
+    const progressPercent=Math.min((kidTotal/20)*100,100);
+    progressBar.style.width=progressPercent+"%";
+    progressBar.textContent=`$${Math.round(kidTotal)}`;
+    document.getElementById(`rank-${kid}`).textContent=`$${Math.round(kidTotal)}`;
+    rankValues.push({kid,value:kidTotal});
+  });
+}
+
+// EVENT LISTENERS
+document.body.addEventListener("input", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
+document.body.addEventListener("change", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
 document.querySelectorAll(".tab").forEach(tab=>{
   tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(tab.dataset.kid).classList.add("active");
-    populateWeekDropdown();
   });
 });
 
-// Initialize
+// NOTES MODAL
+async function saveNote(kid, dayIndex){
+  const good=document.getElementById('note-good').value;
+  const bad=document.getElementById('note-bad').value;
+  const punishments=document.getElementById('note-punishments').value;
+  const docRef=db.collection('chores').doc(kid);
+  const doc=await docRef.get();
+  const data=doc.exists? doc.data() : {};
+  const notes=data.notes || {};
+  notes[dayIndex]={good,bad,punishments};
+  await docRef.set({...data, notes},{merge:true});
+  document.getElementById('note-modal').style.display='none';
+}
+
+async function openNoteModal(kid, dayIndex){
+  const doc=await db.collection('chores').doc(kid).get();
+  const notes=doc.exists? doc.data().notes || {} : {};
+  const note=notes[dayIndex] || {good:'',bad:'',punishments:''};
+  document.getElementById('note-good').value=note.good;
+  document.getElementById('note-bad').value=note.bad;
+  document.getElementById('note-punishments').value=note.punishments;
+  document.getElementById('note-save-btn').onclick=()=>saveNote(kid, dayIndex);
+  document.getElementById('note-clear-btn').onclick=()=>{
+    document.getElementById('note-good').value='';
+    document.getElementById('note-bad').value='';
+    document.getElementById('note-punishments').value='';
+  };
+  document.getElementById('note-modal').style.display='flex';
+}
+
+// Load data initially
 loadData();
-populateWeekDropdown();
 </script>
 </body>
 </html>

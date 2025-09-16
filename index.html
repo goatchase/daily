@@ -6,28 +6,118 @@
 <title>Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#f5f2ea; color:#3b3b3b; }
-h2 { text-align:center; margin:1rem 0; color:#2b2b2b; font-weight:500; }
+body {
+  font-family: 'Roboto', sans-serif;
+  margin:0;
+  padding:0;
+  background:#fdfdfd; /* soft white background */
+  color:#333;
+}
+h2 {
+  text-align:center;
+  margin:1.5rem 0;
+  color:#111;
+  font-weight:500;
+  letter-spacing:0.5px;
+}
 
 /* Site container */
-.site-container { max-width: 1200px; margin:0 auto; padding:0 20px; box-sizing:border-box; }
+.site-container {
+  max-width: 1200px;
+  margin:0 auto;
+  padding: 0 20px;
+  box-sizing:border-box;
+}
 
-/* Tabs */
-.tab-container { display:flex; justify-content:center; background:#3a5a40; border-bottom:2px solid #cbbf9a; }
-.tab { flex:1; padding:12px; text-align:center; color:#fff; cursor:pointer; font-weight:500; border-right:1px solid #7b5e3b; position:relative; }
-.tab:last-child { border-right:none; }
-.tab.active { background:#6e5a3e; }
-.tab .rank-circle { position:absolute; top:4px; right:8px; width:20px; height:20px; border-radius:50%; background:#ffd700; color:#000; font-size:12px; font-weight:500; display:flex; justify-content:center; align-items:center; }
+/* Tabs - Apple style */
+.tab-container {
+  display:flex;
+  justify-content:center;
+  background:#f8f8f8;
+  border-bottom:1px solid #ddd;
+  border-radius:12px 12px 0 0;
+  overflow:hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.tab {
+  flex:1;
+  padding:14px 0;
+  text-align:center;
+  color:#555;
+  cursor:pointer;
+  font-weight:500;
+  position:relative;
+  transition: background 0.3s, color 0.3s;
+}
+.tab.active {
+  background:#fff;
+  color:#000;
+  font-weight:600;
+  box-shadow: inset 0 -2px 0 #007aff;
+}
+.tab .rank-circle {
+  position:absolute;
+  top:6px;
+  right:10px;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#ffcc00;
+  color:#000;
+  font-size:12px;
+  font-weight:500;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
 
 /* Table */
-.table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
+.table-container {
+  display:none;
+  padding:1rem 0;
+  max-width:100%;
+  box-sizing:border-box;
+}
 .table-container.active { display:block; }
-table { width:100%; border-collapse:collapse; background:#f5f2ea; table-layout:fixed; }
-th, td { padding:8px; font-size:14px; border-bottom:1px solid #cbbf9a; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-th.current-day { background:#d1e7dd; }
-tr.total-row td { background:#f5f2ea; font-weight:500; }
-input[type="checkbox"] { transform: scale(1.2); background:#f5f2ea; vertical-align: middle; }
-input[type="number"], input[type="text"] { width:40px; border:none; text-align:center; font-size:14px; font-weight:500; border-radius:4px; background:#f5f2ea; vertical-align:middle; }
+table {
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  table-layout:fixed;
+}
+th, td {
+  padding:10px;
+  font-size:14px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+th.current-day {
+  background:#e6f4ff;
+}
+tr.total-row td {
+  font-weight:500;
+  background:#f9f9f9;
+}
+input[type="checkbox"] { transform: scale(1.2); vertical-align: middle; }
+input[type="number"], input[type="text"] {
+  width:40px;
+  border:none;
+  text-align:center;
+  font-size:14px;
+  font-weight:500;
+  border-radius:6px;
+  background:#f2f2f2;
+  vertical-align:middle;
+  padding:2px;
+}
 
 /* Column widths */
 th:first-child, td:first-child { width:40px; }
@@ -36,33 +126,46 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 /* Progress bar */
 .progress-wrapper {
   width: 100%;
-  margin-top: 8px;
-  border: 1px solid #cbbf9a;
-  border-radius: 8px;
-  background: #eee2d5;
+  margin-top: 10px;
+  border-radius: 12px;
+  background: #f2f2f2;
   overflow: hidden;
   box-sizing: border-box;
+  height:28px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 .progress-bar {
-  background: #3a5a40;
-  height: 28px;
-  width: 0%;
-  text-align: center;
-  color: #fff;
-  line-height: 28px;
-  font-weight: 500;
-  transition: width 0.3s;
-  white-space: nowrap;
-  border-radius: 8px 0 0 8px;
+  background:#007aff;
+  height:100%;
+  width:0%;
+  text-align:center;
+  color:#fff;
+  line-height:28px;
+  font-weight:500;
+  transition: width 0.3s ease;
+  border-radius:12px 0 0 12px;
+  white-space:nowrap;
 }
 
 /* Clear button */
-.clear-btn { display:block; margin:8px auto; padding:6px 12px; font-size:14px; background:#c77b39; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-.clear-btn:hover { background:#b06527; }
+.clear-btn {
+  display:block;
+  margin:12px auto;
+  padding:8px 16px;
+  font-size:14px;
+  background:#007aff;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background 0.3s;
+}
+.clear-btn:hover { background:#005bb5; }
 
 /* Mobile adjustments */
 @media (max-width:768px){
-  th, td { padding:4px; font-size:12px; }
+  th, td { padding:6px; font-size:12px; }
   th:first-child, td:first-child { width:40px; }
   th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 }
@@ -130,7 +233,6 @@ kids.forEach(kid=>{
     html+=`<th class="${highlight}">${day}</th>`;
   });
   html+=`</tr></thead><tbody>`;
-
   [...chores, ...activities.map(a=>({key:a, icon:activityIcons[a]}))].forEach(c=>{
     html+=`<tr><td>${c.icon}</td>`;
     days.forEach((day,i)=>{
@@ -142,7 +244,6 @@ kids.forEach(kid=>{
     });
     html+=`</tr>`;
   });
-
   html+=`<tr class="total-row"><td>Total</td>`;
   days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
   html+=`</tr></tbody></table>
@@ -173,20 +274,16 @@ async function loadData(){
     days.forEach((day,i)=>{
       [...chores.map(c=>c.key), ...activities].forEach(type=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input) {
-          if(chores.some(c=>c.key===type)) input.checked = data[`${i}-${type}`]||false;
-          else input.value = data[`${i}-${type}`]||"";
-        }
+        if(input) chores.some(c=>c.key===type) ? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
       });
     });
   }
   updateTotals();
 }
 
-// Clear a kid
 async function clearKid(kid){
   await db.collection('chores').doc(kid).set({});
-  document.querySelectorAll(`#${kid} input`).forEach(i=> i.type==='checkbox'? i.checked=false : i.value="");
+  document.querySelectorAll(`#${kid} input`).forEach(i=>i.type==='checkbox'? i.checked=false : i.value="");
   updateTotals();
 }
 
@@ -200,26 +297,24 @@ function updateTotals(){
       chores.forEach(c=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
         if(input){
-          if(c.key==="deduction"){ if(input.checked) dayTotal += DEDUCTION_VALUE; }
-          else if(input.checked) dayTotal += CHORE_VALUE;
+          if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
+          else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
         }
       });
       activities.forEach(a=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal += (parseFloat(input.value)||0) * ACTIVITY_RATE;
+        if(input && input.value) dayTotal+=parseFloat(input.value)||0 * ACTIVITY_RATE;
       });
-      kidTotal += dayTotal;
-      document.getElementById(`${kid}-total-${i}`).textContent = `$${dayTotal.toFixed(2)}`;
+      kidTotal+=dayTotal;
+      document.getElementById(`${kid}-total-${i}`).textContent=`$${dayTotal.toFixed(2)}`;
     });
 
     const progressBar = document.getElementById(`${kid}-progress`);
-    const progressPercent = Math.min((kidTotal / 20) * 100, 100);
-    progressBar.style.width = progressPercent + "%";
-    progressBar.textContent = `$${kidTotal.toFixed(2)}`;
-
+    const progressPercent = Math.min((kidTotal/20)*100,100);
+    progressBar.style.width=progressPercent+"%";
+    progressBar.textContent=`$${kidTotal.toFixed(2)}`;
     rankValues.push({kid,value:kidTotal});
   });
-
   rankValues.sort((a,b)=>b.value-a.value);
   rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }

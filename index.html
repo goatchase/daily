@@ -182,12 +182,13 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
   height:100%;
   width:0%;
   text-align:center;
-  color:#fff;
   line-height:28px;
   font-weight:500;
   transition: width 0.3s ease;
   border-radius:12px 0 0 12px;
   white-space:nowrap;
+  color:#111; /* <-- Dark text instead of white */
+  text-shadow: 0 1px 1px rgba(255,255,255,0.6); /* subtle Apple-like shadow */
 }
 
 /* Clear button */

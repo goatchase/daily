@@ -40,7 +40,28 @@ input[type="number"], input[type="text"] { width:40px; border:none; text-align:c
 .clear-btn { display:block; margin:8px auto; padding:6px 12px; font-size:14px; background:#c77b39; color:#fff; border:none; border-radius:4px; cursor:pointer; }
 .clear-btn:hover { background:#b06527; }
 
-@media (max-width:768px){ .table-container { overflow-x:auto; } table { min-width:600px; } }
+/* Mobile adjustments */
+@media (max-width:768px){
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  th, td {
+    padding: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Make sure first column (icons) stays narrower */
+  th:first-child, td:first-child {
+    width: 40px;
+  }
+  /* Evenly distribute day columns */
+  th:not(:first-child), td:not(:first-child) {
+    width: calc((100% - 40px) / 7);
+  }
+}
 </style>
 </head>
 <body>

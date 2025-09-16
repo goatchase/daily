@@ -171,7 +171,7 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
   width: 100%;
   margin-top: 10px;
   border-radius: 12px;
-  background: #666; /* darker gray so white text is readable */
+  background: #666; /* darker gray so white text is visible */
   overflow: hidden;
   box-sizing: border-box;
   height:28px;
@@ -211,6 +211,16 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
   th, td { padding:6px; font-size:12px; }
   th:first-child, td:first-child { width:40px; }
   th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
+}
+
+/* Mobile rank circle fix */
+@media (max-width:600px){
+  .tab .rank-circle {
+    position: static;
+    display: inline-flex;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
 }
 </style>
 </head>

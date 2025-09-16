@@ -225,10 +225,11 @@ function updateTotals(){
       document.getElementById(`${kid}-total-${i}`).textContent = `$${dayTotal.toFixed(2)}`;
     });
 
-    // Update progress bar in dollars
-    const progressBar = document.getElementById(`${kid}-progress`);
-    progressBar.style.width = "100%"; // always fill bar
-    progressBar.textContent = `$${kidTotal.toFixed(2)}`;
+// Update progress bar in dollars (max = $20)
+const progressBar = document.getElementById(`${kid}-progress`);
+const progressPercent = Math.min((kidTotal / 20) * 100, 100); 
+progressBar.style.width = progressPercent + "%";
+progressBar.textContent = `$${kidTotal.toFixed(2)}`;
 
     rankValues.push({kid,value:kidTotal});
   });

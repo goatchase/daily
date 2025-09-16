@@ -337,8 +337,8 @@ async function clearKid(kid){
 }
 
 // Update totals and ranks
+// Update totals and display dollar amount in tab circles
 function updateTotals(){
-  let rankValues=[];
   kids.forEach(kid=>{
     let kidTotal=0;
     days.forEach((day,i)=>{
@@ -357,12 +357,18 @@ function updateTotals(){
       kidTotal+=dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
     });
+
+    // Update the tab circle with total dollars
+    document.getElementById(`rank-${kid}`).textContent = `$${Math.round(kidTotal)}`;
+
+    // Update progress bar
     const progressBar=document.getElementById(`${kid}-progress`);
     const progressPercent=Math.min((kidTotal/20)*100,100);
     progressBar.style.width=progressPercent+"%";
     progressBar.textContent=`$${Math.round(kidTotal)}`;
-    rankValues.push({kid,value:kidTotal});
   });
+}
+
   rankValues.sort((a,b)=>b.value-a.value);
   rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }

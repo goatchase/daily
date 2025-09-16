@@ -364,7 +364,7 @@ function updateTotals(){
     rankValues.push({kid,value:kidTotal});
   });
   rankValues.sort((a,b)=>b.value-a.value);
-  rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
+  rankValues.forEach((v,i)=>document.getElementById(`rank-${kid}`).textContent = `$${Math.round(kidTotal)}`;
 }
 
 // Event listeners

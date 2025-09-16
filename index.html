@@ -6,157 +6,209 @@
 <title>Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* Body & headings */
 body {
   font-family: 'Roboto', sans-serif;
-  margin:0; padding:0;
+  margin:0;
+  padding:0;
   background:#fdfdfd; /* soft white background */
-  color:#3b3b3b;
+  color:#333;
 }
-
 h2 {
   text-align:center;
-  margin:1rem 0;
-  color:#2b2b2b;
+  margin:1.5rem 0;
+  color:#111;
   font-weight:500;
+  letter-spacing:0.5px;
 }
 
 /* Site container */
 .site-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin:0 auto;
   padding: 0 20px;
+  box-sizing:border-box;
 }
 
 /* Tabs */
 .tab-container {
   display:flex;
   justify-content:center;
-  background:#f7f7f7;
-  border-radius:12px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.05);
-  margin-bottom:12px;
+  background:#f8f8f8;
+  border-bottom:1px solid #ddd;
+  border-radius:12px 12px 0 0;
   overflow:hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 .tab {
   flex:1;
-  padding:12px;
+  padding:14px 0;
   text-align:center;
-  color:#1c1c1c;
+  color:#555;
   cursor:pointer;
   font-weight:500;
-  border-right:1px solid #e0e0e0;
-  transition:background 0.3s;
   position:relative;
+  transition: background 0.3s, color 0.3s;
 }
-.tab:last-child { border-right:none; }
-.tab.active { background:#e5e5e5; }
+.tab.active {
+  background:#fff;
+  color:#000;
+  font-weight:600;
+  box-shadow: inset 0 -2px 0 #007aff;
+}
 .tab .rank-circle {
   position:absolute;
-  top:4px; right:8px;
-  width:20px; height:20px;
+  top:6px;
+  right:10px;
+  width:22px;
+  height:22px;
   border-radius:50%;
-  background:#ffd700;
+  background:#ffcc00;
   color:#000;
   font-size:12px;
   font-weight:500;
-  display:flex; justify-content:center; align-items:center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 /* Table */
 .table-container {
   display:none;
   padding:1rem 0;
+  max-width:100%;
+  box-sizing:border-box;
 }
 .table-container.active { display:block; }
 table {
   width:100%;
-  border-collapse: separate;
+  border-collapse:separate;
   border-spacing:0;
   background:#fff;
   border-radius:12px;
   overflow:hidden;
-  box-shadow:0 2px 5px rgba(0,0,0,0.05);
-  table-layout:auto; /* allow cells to expand for inputs */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  table-layout:fixed;
 }
 th, td {
   padding:10px;
   font-size:14px;
   border-bottom:1px solid #eee;
   text-align:center;
-  white-space:normal; /* allow wrapping */
-  overflow:visible;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-th.current-day { background:#d1e7dd; }
-tr.total-row td { background:#f9f9f9; font-weight:500; }
+th.current-day {
+  background:#e6f4ff;
+}
+tr.total-row td {
+  font-weight:500;
+  background:#f9f9f9;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+}
 
-/* Inputs */
+/* Inputs - Apple/iOS style */
+/* Toggle checkboxes */
 input[type="checkbox"] {
-  transform: scale(1.2);
-  background:#fdfdfd;
-  vertical-align: middle;
-  cursor:pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 40px;
+  height: 20px;
+  background: #e6e6e6;
+  border-radius: 12px;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s;
 }
+input[type="checkbox"]:checked {
+  background: #007aff;
+}
+input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  top: 1px;
+  left: 1px;
+  background: #fff;
+  transition: 0.3s;
+}
+input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+/* Number inputs as pills */
 input[type="number"], input[type="text"] {
-  min-width:50px;
-  padding:4px 6px;
+  width: 50px;
   border:none;
   text-align:center;
   font-size:14px;
   font-weight:500;
-  border-radius:12px;
-  background:#f5f5f5;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-  transition:box-shadow 0.2s;
+  border-radius: 12px;
+  background:#f2f2f2;
+  vertical-align:middle;
+  padding:4px 0;
+  transition: box-shadow 0.2s, background 0.2s;
 }
 input[type="number"]:focus, input[type="text"]:focus {
   outline:none;
-  box-shadow: 0 0 5px rgba(100,150,250,0.5);
+  box-shadow: 0 0 0 2px rgba(0,122,255,0.3);
+  background:#fff;
 }
+
+/* Column widths */
+th:first-child, td:first-child { width:40px; }
+th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 
 /* Progress bar */
 .progress-wrapper {
-  background:#eee;
-  border-radius:12px;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 12px;
+  background: #f2f2f2;
+  overflow: hidden;
+  box-sizing: border-box;
   height:28px;
-  overflow:hidden;
-  margin-top:8px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 .progress-bar {
-  background:#007aff; /* Apple blue */
+  background:#007aff;
   height:100%;
-  width:0;
+  width:0%;
   text-align:center;
   color:#fff;
   line-height:28px;
   font-weight:500;
-  transition:width 0.3s;
-  white-space:nowrap;
+  transition: width 0.3s ease;
   border-radius:12px 0 0 12px;
+  white-space:nowrap;
 }
 
 /* Clear button */
 .clear-btn {
   display:block;
-  margin:8px auto;
-  padding:6px 12px;
+  margin:12px auto;
+  padding:8px 16px;
   font-size:14px;
-  background:#ff3b30;
+  background:#007aff;
   color:#fff;
   border:none;
-  border-radius:12px;
+  border-radius:8px;
   cursor:pointer;
-  transition:background 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background 0.3s;
 }
-.clear-btn:hover { background:#d32f2f; }
+.clear-btn:hover { background:#005bb5; }
 
 /* Mobile adjustments */
 @media (max-width:768px){
-  table { width:100%; table-layout:auto; }
   th, td { padding:6px; font-size:12px; }
   th:first-child, td:first-child { width:40px; }
-  th:not(:first-child), td:not(:first-child) {
-    width:auto;
-  }
+  th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 }
 </style>
 </head>
@@ -183,7 +235,7 @@ input[type="number"]:focus, input[type="text"]:focus {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ---------------- FIREBASE SETUP ----------------
+// FIREBASE SETUP
 const firebaseConfig = {
   apiKey: "AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
   authDomain: "goatchase-e9502.firebaseapp.com",
@@ -196,7 +248,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ---------------- APP LOGIC ----------------
+// APP LOGIC
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const chores=[
@@ -208,11 +260,9 @@ const chores=[
 ];
 const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️", practice:"🏈⚾", workout:"🏋️‍♂️💪"};
-
 const CHORE_VALUE = 0.25;
 const ACTIVITY_RATE = 0.05;
 const DEDUCTION_VALUE = -3;
-
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
 // Build tables
@@ -243,7 +293,7 @@ kids.forEach(kid=>{
   container.innerHTML=html;
 });
 
-// ---------------- FIRESTORE FUNCTIONS ----------------
+// FIRESTORE FUNCTIONS
 async function saveData(kid){
   const data={};
   days.forEach((day,i)=>{
@@ -292,7 +342,7 @@ function updateTotals(){
       });
       activities.forEach(a=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=parseFloat(input.value)*ACTIVITY_RATE;
+        if(input && input.value) dayTotal+=parseFloat(input.value)||0 * ACTIVITY_RATE;
       });
       kidTotal+=dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent=`$${dayTotal.toFixed(2)}`;
@@ -307,7 +357,7 @@ function updateTotals(){
   rankValues.forEach((v,i)=>document.getElementById(`rank-${v.kid}`).textContent=i+1);
 }
 
-// ---------------- EVENT LISTENERS ----------------
+// Event listeners
 document.body.addEventListener("input", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
 document.body.addEventListener("change", e=>{ if(e.target.dataset.kid) saveData(e.target.dataset.kid); });
 document.querySelectorAll(".tab").forEach(tab=>{

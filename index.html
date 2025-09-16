@@ -97,8 +97,7 @@ th, td {
   border-bottom:1px solid #eee;
   text-align:center;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  /* removed overflow:hidden and text-overflow */
 }
 th.current-day {
   background:#e6f4ff;
@@ -110,11 +109,10 @@ tr.total-row td {
 }
 
 /* Inputs - Apple/iOS style */
-/* Toggle checkboxes */
 input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 40px;
+  width: 36px;
   height: 20px;
   background: #e6e6e6;
   border-radius: 12px;
@@ -122,6 +120,8 @@ input[type="checkbox"] {
   outline: none;
   cursor: pointer;
   transition: background 0.3s;
+  box-sizing: border-box;
+  margin: auto; /* center inside cell */
 }
 input[type="checkbox"]:checked {
   background: #007aff;
@@ -138,21 +138,18 @@ input[type="checkbox"]::before {
   transition: 0.3s;
 }
 input[type="checkbox"]:checked::before {
-  transform: translateX(20px);
+  transform: translateX(16px);
 }
 
-/* Number inputs as pills */
 input[type="number"], input[type="text"] {
-  width: 50px;
-  border:none;
+  width: 48px;
+  padding: 4px 0;
+  border-radius: 12px;
+  background:#f2f2f2;
   text-align:center;
   font-size:14px;
   font-weight:500;
-  border-radius: 12px;
-  background:#f2f2f2;
-  vertical-align:middle;
-  padding:4px 0;
-  transition: box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
 }
 input[type="number"]:focus, input[type="text"]:focus {
   outline:none;
@@ -342,10 +339,11 @@ function updateTotals(){
       });
       activities.forEach(a=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=parseFloat(input.value)||0 * ACTIVITY_RATE;
+        if(input && input.value) dayTotal += parseFloat(input.value) * ACTIVITY_RATE;
       });
       kidTotal+=dayTotal;
-      document.getElementById(`${kid}-total-${i}`).textContent=`$${dayTotal.toFixed(2)}`;
+      // remove decimals for last row
+      document.getElementById(`${kid}-total-${i}`).textContent = `$${Math.floor(dayTotal)}`;
     });
     const progressBar = document.getElementById(`${kid}-progress`);
     const progressPercent = Math.min((kidTotal/20)*100,100);

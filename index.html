@@ -6,6 +6,7 @@
 <title>Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* Body & headings */
 body {
   font-family: 'Roboto', sans-serif;
   margin:0;
@@ -29,7 +30,7 @@ h2 {
   box-sizing:border-box;
 }
 
-/* Tabs - Apple style */
+/* Tabs */
 .tab-container {
   display:flex;
   justify-content:center;
@@ -105,18 +106,58 @@ th.current-day {
 tr.total-row td {
   font-weight:500;
   background:#f9f9f9;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
 }
-input[type="checkbox"] { transform: scale(1.2); vertical-align: middle; }
+
+/* Inputs - Apple/iOS style */
+/* Toggle checkboxes */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 40px;
+  height: 20px;
+  background: #e6e6e6;
+  border-radius: 12px;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+input[type="checkbox"]:checked {
+  background: #007aff;
+}
+input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  top: 1px;
+  left: 1px;
+  background: #fff;
+  transition: 0.3s;
+}
+input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+/* Number inputs as pills */
 input[type="number"], input[type="text"] {
-  width:40px;
+  width: 50px;
   border:none;
   text-align:center;
   font-size:14px;
   font-weight:500;
-  border-radius:6px;
+  border-radius: 12px;
   background:#f2f2f2;
   vertical-align:middle;
-  padding:2px;
+  padding:4px 0;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+input[type="number"]:focus, input[type="text"]:focus {
+  outline:none;
+  box-shadow: 0 0 0 2px rgba(0,122,255,0.3);
+  background:#fff;
 }
 
 /* Column widths */
@@ -194,7 +235,7 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ---------------- FIREBASE SETUP ----------------
+// FIREBASE SETUP
 const firebaseConfig = {
   apiKey: "AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
   authDomain: "goatchase-e9502.firebaseapp.com",
@@ -207,7 +248,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ---------------- APP LOGIC ----------------
+// APP LOGIC
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const chores=[
@@ -247,9 +288,7 @@ kids.forEach(kid=>{
   html+=`<tr class="total-row"><td>Total</td>`;
   days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
   html+=`</tr></tbody></table>
-  <div class="progress-wrapper">
-    <div id="${kid}-progress" class="progress-bar">$0.00</div>
-  </div>
+  <div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>
   <button class="clear-btn" onclick="clearKid('${kid}')">Clear Week</button>`;
   container.innerHTML=html;
 });
@@ -260,7 +299,7 @@ async function saveData(kid){
   days.forEach((day,i)=>{
     [...chores.map(c=>c.key), ...activities].forEach(type=>{
       const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input) data[`${i}-${type}`] = chores.some(c=>c.key===type) ? input.checked : input.value;
+      if(input) chores.some(c=>c.key===type)? data[`${i}-${type}`]=input.checked : data[`${i}-${type}`]=input.value;
     });
   });
   await db.collection('chores').doc(kid).set(data);
@@ -270,11 +309,11 @@ async function saveData(kid){
 async function loadData(){
   for(const kid of kids){
     const doc = await db.collection('chores').doc(kid).get();
-    const data = doc.exists ? doc.data() : {};
+    const data = doc.exists? doc.data() : {};
     days.forEach((day,i)=>{
       [...chores.map(c=>c.key), ...activities].forEach(type=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input) chores.some(c=>c.key===type) ? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
+        if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
       });
     });
   }
@@ -308,7 +347,6 @@ function updateTotals(){
       kidTotal+=dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent=`$${dayTotal.toFixed(2)}`;
     });
-
     const progressBar = document.getElementById(`${kid}-progress`);
     const progressPercent = Math.min((kidTotal/20)*100,100);
     progressBar.style.width=progressPercent+"%";

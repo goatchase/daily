@@ -6,14 +6,11 @@
 <title>Chore Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Body & headings */
 body { font-family:'Roboto',sans-serif; margin:0; padding:0; background:#fdfdfd; color:#333; }
 h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; letter-spacing:0.5px; }
 
-/* Site container */
 .site-container { max-width:1200px; margin:0 auto; padding:0 20px; box-sizing:border-box; }
 
-/* Tabs */
 .tab-container { display:flex; justify-content:center; background:#f8f8f8; border-bottom:1px solid #ddd; border-radius:12px 12px 0 0; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
 .tab {
   flex:1;
@@ -28,30 +25,9 @@ h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; letter-spa
   flex-direction: column;
   align-items: center;
 }
+.tab.active { background:#fff; color:#000; font-weight:600; box-shadow: inset 0 -2px 0 #007aff; }
+.tab .rank-circle { margin-top:4px; width:50px; height:24px; border-radius:12px; background:#007aff; color:#fff; font-size:14px; font-weight:500; display:flex; justify-content:center; align-items:center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
 
-.tab.active {
-  background:#fff;
-  color:#000;
-  font-weight:600;
-  box-shadow: inset 0 -2px 0 #007aff;
-}
-
-.tab .rank-circle {
-  margin-top:4px;
-  width:50px;
-  height:24px;
-  border-radius:12px;
-  background:#007aff;
-  color:#fff;
-  font-size:14px;
-  font-weight:500;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-/* Table */
 .table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
 .table-container.active { display:block; }
 table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); table-layout:fixed; }
@@ -59,37 +35,30 @@ th, td { padding:8px; font-size:14px; border-bottom:1px solid #eee; text-align:c
 th.current-day { background:#e6f4ff; }
 tr.total-row td { font-weight:500; background:#f9f9f9; box-shadow: inset 0 1px 2px rgba(0,0,0,0.03); }
 
-/* Inputs */
 input[type="checkbox"] { appearance:none; -webkit-appearance:none; width:30px; height:18px; background:#e6e6e6; border-radius:12px; position: relative; outline:none; cursor:pointer; transition:background 0.3s; vertical-align:middle; }
 input[type="checkbox"]:checked { background:#007aff; }
-input[type="checkbox"]::before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; top:2px; left:2px; background:#fff; transition:0.3s; }
+input[type="checkbox"]::before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; top:2px; left:2px; background:#fff; transition: transform 0.3s ease; }
 input[type="checkbox"]:checked::before { transform:translateX(12px); }
 
-input[type="number"], input[type="text"] { width:32px; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; transition:border 0.2s, box-shadow 0.2s; }
+input[type="number"], input[type="text"] { width:90%; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; transition:border 0.2s, box-shadow 0.2s; }
 input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; box-shadow:0 0 2px rgba(0,122,255,0.4); }
 
-/* Column widths */
 th:first-child, td:first-child { width:40px; }
 th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 
-/* Progress bar */
 .progress-wrapper { width:100%; margin-top:10px; border-radius:12px; background:#ccc; overflow:hidden; box-sizing:border-box; height:28px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
 .progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; transition:width 0.3s ease; border-radius:12px 0 0 12px; white-space:nowrap; color:#fff; }
 
-/* Modal */
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999; }
 .modal-content { background:#fff; padding:20px; border-radius:12px; max-width:400px; width:90%; display:flex; flex-direction:column; gap:10px; font-family:'Roboto',sans-serif; }
 .modal-content label { font-weight:500; font-size:14px; }
 .modal-content textarea { width:100%; height:50px; font-size:14px; padding:6px; border-radius:8px; border:1px solid #ccc; resize:none; font-family:'Roboto',sans-serif; }
 
-/* Buttons */
 .btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; transition:background 0.3s; }
 .btn:hover { background:#005bb5; }
 
-/* Bottom controls */
 .bottom-controls { display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
 
-/* Mobile adjustments */
 @media(max-width:768px){ th,td{padding:6px;font-size:12px;} th:first-child, td:first-child{width:40px;} th:not(:first-child), td:not(:first-child){width:calc((100%-40px)/7);} }
 </style>
 </head>
@@ -162,8 +131,21 @@ const activityIcons={reading:"📖✏️",practice:"🏈⚾",workout:"🏋️‍
 const CHORE_VALUE=0.25, ACTIVITY_RATE=0.05, DEDUCTION_VALUE=-3;
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-// Current week key
-let currentWeek = new Date().toISOString().slice(0,10);
+// Password for clearing
+const CLEAR_PASSWORD = "clear";
+
+// ISO Week Key
+function getYearWeek(date = new Date()) {
+  const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = tmpDate.getUTCDay() || 7;
+  tmpDate.setUTCDate(tmpDate.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(tmpDate.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((tmpDate - yearStart) / 86400000) + 1) / 7);
+  return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
+}
+
+// Current week
+let currentWeek = getYearWeek();
 
 // Notes
 let activeNote = {kid:null,day:null};
@@ -225,9 +207,8 @@ async function loadData(weekKey=null){
   updateTotals();
 }
 
-// Update totals and progress
+// Update totals
 function updateTotals(){
-  let rankValues=[];
   kids.forEach(kid=>{
     let kidTotal=0;
     days.forEach((day,i)=>{
@@ -241,7 +222,7 @@ function updateTotals(){
       });
       activities.forEach(a=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=parseFloat(input.value)*ACTIVITY_RATE||0;
+        if(input && input.value) dayTotal+=parseFloat(input.value || 0)*ACTIVITY_RATE;
       });
       kidTotal+=dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
@@ -251,28 +232,8 @@ function updateTotals(){
     progressBar.style.width=progressPercent+"%";
     progressBar.textContent=`$${Math.round(kidTotal)}`;
     document.getElementById(`rank-${kid}`).textContent=`$${Math.round(kidTotal)}`;
-    rankValues.push({kid,value:kidTotal});
   });
 }
-
-// Bottom controls
-document.getElementById('archive-week').addEventListener('click',async ()=>{
-  const weeksRef=db.collection('weeks');
-  await weeksRef.doc(currentWeek).set({archived:true, timestamp:new Date()});
-  await populateWeekDropdown();
-});
-
-document.getElementById('clear-week').addEventListener('click',async ()=>{
-  for(const kid of kids){
-    await db.collection('weeks').doc(currentWeek).collection('chores').doc(kid).set({});
-  }
-  loadData();
-});
-
-document.getElementById('week-select').addEventListener('change',e=>{
-  if(e.target.value) currentWeek=e.target.value;
-  loadData(currentWeek);
-});
 
 // Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
@@ -327,18 +288,62 @@ async function populateWeekDropdown(){
   const select=document.getElementById('week-select');
   select.innerHTML='';
   weeksSnap.forEach(doc=>{
-    select.innerHTML+=`<option value="${doc.id}">${doc.id}</option>`;
+    const option=document.createElement('option');
+    option.value=doc.id;
+    option.textContent=doc.id;
+    if(doc.id===currentWeek) option.selected=true;
+    select.appendChild(option);
   });
 }
 
-// Event listeners for inputs
+// Bottom controls
+document.getElementById('archive-week').addEventListener('click',async ()=>{
+  await db.collection('weeks').doc(currentWeek).set({archived:true, timestamp:new Date()});
+  await populateWeekDropdown();
+});
+
+document.getElementById('clear-week').addEventListener('click', async () => {
+  const pwd = prompt("Enter password to clear this week:");
+  if (pwd !== CLEAR_PASSWORD) {
+    alert("Incorrect password!");
+    return;
+  }
+
+  if(!confirm(`Are you sure you want to clear all data for ${currentWeek}?`)) return;
+
+  for(const kid of kids){
+    await db.collection('weeks').doc(currentWeek).collection('chores').doc(kid).set({});
+  }
+  loadData(currentWeek);
+});
+
+// Week select
+document.getElementById('week-select').addEventListener('change',e=>{
+  if(e.target.value) currentWeek=e.target.value;
+  loadData(currentWeek);
+});
+
+// Auto archive when week changes
+async function checkWeekChange() {
+  const newWeek = getYearWeek();
+  if(currentWeek && currentWeek !== newWeek){
+    await db.collection('weeks').doc(currentWeek).set({
+      archived: true,
+      timestamp: new Date()
+    });
+  }
+  currentWeek = newWeek;
+  loadData(currentWeek);
+  await populateWeekDropdown();
+}
+
+// Input listeners
 document.body.addEventListener("input", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid);});
 document.body.addEventListener("change", e=>{if(e.target.dataset.kid) saveData(e.target.dataset.kid);});
 
-// Init
+// INIT
 buildTables();
-loadData();
-populateWeekDropdown();
+checkWeekChange();
 </script>
 </body>
 </html>

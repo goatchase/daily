@@ -7,59 +7,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body { font-family:'Roboto',sans-serif; margin:0; padding:0; background:#fdfdfd; color:#333; }
-h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; letter-spacing:0.5px; }
+h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; }
 
-.site-container { max-width:1200px; margin:0 auto; padding:0 20px; box-sizing:border-box; }
+.site-container { max-width:1200px; margin:0 auto; padding:0 20px; }
 
-.tab-container { display:flex; justify-content:center; background:#f8f8f8; border-bottom:1px solid #ddd; border-radius:12px 12px 0 0; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-.tab {
-  flex:1;
-  padding:8px 0;
-  text-align:center;
-  color:#555;
-  cursor:pointer;
-  font-weight:500;
-  position:relative;
-  transition: background 0.3s, color 0.3s;
-  display:flex;
-  flex-direction: column;
-  align-items: center;
-}
-.tab.active { background:#fff; color:#000; font-weight:600; box-shadow: inset 0 -2px 0 #007aff; }
-.tab .rank-circle { margin-top:4px; width:50px; height:24px; border-radius:12px; background:#007aff; color:#fff; font-size:14px; font-weight:500; display:flex; justify-content:center; align-items:center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.tab-container { display:flex; justify-content:center; background:#f8f8f8; border-bottom:1px solid #ddd; border-radius:12px 12px 0 0; overflow:hidden; }
+.tab { flex:1; padding:8px 0; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; }
+.tab.active { background:#fff; font-weight:600; box-shadow: inset 0 -2px 0 #007aff; }
+.rank-circle { margin-top:4px; width:55px; height:24px; border-radius:12px; background:#007aff; color:#fff; font-size:13px; display:flex; justify-content:center; align-items:center; }
 
-.table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
+.table-container { display:none; padding:1rem 0; }
 .table-container.active { display:block; }
-table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); table-layout:fixed; }
-th, td { padding:8px; font-size:14px; border-bottom:1px solid #eee; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:clip; cursor:default; }
-th.current-day { background:#e6f4ff; }
-tr.total-row td { font-weight:500; background:#f9f9f9; box-shadow: inset 0 1px 2px rgba(0,0,0,0.03); }
 
-input[type="checkbox"] { appearance:none; -webkit-appearance:none; width:30px; height:18px; background:#e6e6e6; border-radius:12px; position: relative; outline:none; cursor:pointer; transition:background 0.3s; vertical-align:middle; }
+table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; table-layout:fixed; }
+th, td { padding:6px; font-size:13px; border-bottom:1px solid #eee; text-align:center; }
+tr.total-row td { font-weight:500; background:#f9f9f9; }
+
+input[type="checkbox"] { appearance:none; width:28px; height:16px; background:#e6e6e6; border-radius:12px; position:relative; cursor:pointer; }
 input[type="checkbox"]:checked { background:#007aff; }
-input[type="checkbox"]::before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; top:2px; left:2px; background:#fff; transition: transform 0.3s ease; }
+input[type="checkbox"]::before { content:""; position:absolute; width:12px; height:12px; border-radius:50%; top:2px; left:2px; background:#fff; transition: transform 0.3s ease; }
 input[type="checkbox"]:checked::before { transform:translateX(12px); }
 
-input[type="number"], input[type="text"] { width:90%; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; transition:border 0.2s, box-shadow 0.2s; }
-input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; box-shadow:0 0 2px rgba(0,122,255,0.4); }
+input[type="number"], input[type="text"] { border:1px solid #ccc; border-radius:8px; padding:4px; text-align:center; }
 
-th:first-child, td:first-child { width:40px; }
-th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
+.progress-wrapper { width:100%; margin-top:10px; border-radius:12px; background:#ccc; overflow:hidden; height:26px; }
+.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:26px; font-weight:500; color:#fff; transition:width 0.3s ease; }
 
-.progress-wrapper { width:100%; margin-top:10px; border-radius:12px; background:#ccc; overflow:hidden; box-sizing:border-box; height:28px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
-.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; transition:width 0.3s ease; border-radius:12px 0 0 12px; white-space:nowrap; color:#fff; }
-
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999; }
-.modal-content { background:#fff; padding:20px; border-radius:12px; max-width:400px; width:90%; display:flex; flex-direction:column; gap:10px; font-family:'Roboto',sans-serif; }
-.modal-content label { font-weight:500; font-size:14px; }
-.modal-content textarea { width:100%; height:50px; font-size:14px; padding:6px; border-radius:8px; border:1px solid #ccc; resize:none; font-family:'Roboto',sans-serif; }
-
-.btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; transition:background 0.3s; }
+.bottom-controls { display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:10px; flex-wrap:wrap; }
+.btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; }
 .btn:hover { background:#005bb5; }
 
-.bottom-controls { display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
+#trait-display span {
+  background:#f2f2f2;
+  padding:6px 10px;
+  border-radius:12px;
+  margin:4px;
+  display:inline-block;
+}
 
-@media(max-width:768px){ th,td{padding:6px;font-size:12px;} th:first-child, td:first-child{width:40px;} th:not(:first-child), td:not(:first-child){width:calc((100%-40px)/7);} }
 </style>
 </head>
 <body>
@@ -67,273 +52,176 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 <h2>Chores</h2>
 
 <div class="site-container">
-  <div class="tab-container">
-    <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">$0</div></div>
-    <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">$0</div></div>
-    <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">$0</div></div>
-    <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">$0</div></div>
-  </div>
 
-  <div id="Ryan" class="table-container active"></div>
-  <div id="Jack" class="table-container"></div>
-  <div id="Henry" class="table-container"></div>
-  <div id="Sonny" class="table-container"></div>
-
-  <div class="bottom-controls">
-    <select id="week-select"></select>
-    <button class="btn" id="archive-week">Archive Week</button>
-    <button class="btn" id="clear-week">Clear Week</button>
-  </div>
+<div class="tab-container">
+<div class="tab active" data-kid="Ryan">Ryan<div class="rank-circle" id="rank-Ryan">$0.00</div></div>
+<div class="tab" data-kid="Jack">Jack<div class="rank-circle" id="rank-Jack">$0.00</div></div>
+<div class="tab" data-kid="Henry">Henry<div class="rank-circle" id="rank-Henry">$0.00</div></div>
+<div class="tab" data-kid="Sonny">Sonny<div class="rank-circle" id="rank-Sonny">$0.00</div></div>
 </div>
 
-<!-- Modal -->
-<div class="modal" id="note-modal">
-  <div class="modal-content">
-    <h3>Daily Notes</h3>
-    <label>Other Tasks</label>
-    <textarea id="note-other"></textarea>
-    <label>Good</label>
-    <textarea id="note-good"></textarea>
-    <label>Bad</label>
-    <textarea id="note-bad"></textarea>
-    <label>Punishments</label>
-    <textarea id="note-punishments"></textarea>
-    <div style="display:flex; justify-content:flex-end; gap:10px;">
-      <button class="btn" id="save-note">Save</button>
-      <button class="btn" id="clear-note">Clear</button>
-      <button class="btn" id="close-note">Close</button>
-    </div>
-  </div>
+<div id="Ryan" class="table-container active"></div>
+<div id="Jack" class="table-container"></div>
+<div id="Henry" class="table-container"></div>
+<div id="Sonny" class="table-container"></div>
+
+<!-- Controls Row -->
+<div class="bottom-controls">
+
+<!-- LEFT: Trait Input -->
+<div style="display:flex; gap:8px;">
+<input type="text" id="trait-input" placeholder="Enter trait (e.g. Kind)" style="width:180px;">
+<button class="btn" id="add-trait">Add</button>
 </div>
 
-<!-- Firebase -->
+<!-- RIGHT: Week Controls -->
+<div style="display:flex; gap:8px;">
+<select id="week-select"></select>
+<button class="btn" id="archive-week">Archive Week</button>
+<button class="btn" id="clear-week">Clear Week</button>
+</div>
+
+</div>
+
+<!-- Trait Log -->
+<div id="trait-display" style="margin-top:12px; text-align:center; font-weight:500;"></div>
+
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// FIREBASE
+
 const firebaseConfig = {
-  apiKey:"AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
-  authDomain:"goatchase-e9502.firebaseapp.com",
-  projectId:"goatchase-e9502",
-  storageBucket:"goatchase-e9502.firebasestorage.app",
-  messagingSenderId:"16998517478",
-  appId:"1:16998517478:web:71b79f6ffd9d8eefccc927",
-  measurementId:"G-H4KBYP0NXS"
+apiKey:"YOUR_KEY",
+authDomain:"YOUR_AUTH",
+projectId:"YOUR_PROJECT"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Constants
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
-const chores=[{key:"showerTeeth",icon:"🚿🦷"},{key:"bedRoom",icon:"🛏️🧹"},{key:"clothes",icon:"👕🧺"},{key:"other",icon:"⭐⭐"},{key:"deduction",icon:"➖➖"}];
+const chores=[{key:"showerTeeth"},{key:"bedRoom"},{key:"clothes"},{key:"other"},{key:"deduction"}];
 const activities=["reading","practice","workout"];
-const activityIcons={reading:"📖✏️",practice:"🏈⚾",workout:"🏋️‍♂️💪"};
-const CHORE_VALUE=0.25, ACTIVITY_RATE=0.05, DEDUCTION_VALUE=-3;
-const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
 
-// Password for clearing
-const CLEAR_PASSWORD = "clear";
+const CHORE_VALUE=0.25;
+const ACTIVITY_RATE=0.05;
+const DEDUCTION_VALUE=-3;
+const WEEKLY_GOAL=20;
 
-// ISO Week Key
-function getYearWeek(date = new Date()) {
-  const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = tmpDate.getUTCDay() || 7;
-  tmpDate.setUTCDate(tmpDate.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(tmpDate.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((tmpDate - yearStart) / 86400000) + 1) / 7);
-  return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
-}
+let currentWeek="default";
+let activeKid="Ryan";
 
-// Current week
-let currentWeek = getYearWeek();
-
-// Notes
-let activeNote = {kid:null,day:null};
-
-// Build tables
 function buildTables(){
-  kids.forEach(kid=>{
-    const container=document.getElementById(kid);
-    let html=`<table><thead><tr><th></th>`;
-    days.forEach((day,i)=>{
-      const highlight=i===todayIndex?'current-day':'';
-      html+=`<th class="${highlight}" data-kid="${kid}" data-day="${i}">${day}</th>`;
-    });
-    html+=`</tr></thead><tbody>`;
-    [...chores,...activities.map(a=>({key:a,icon:activityIcons[a]}))].forEach(c=>{
-      html+=`<tr><td>${c.icon}</td>`;
-      days.forEach((day,i)=>{
-        if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
-          html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-        } else {
-          html+=`<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-        }
-      });
-      html+=`</tr>`;
-    });
-    html+=`<tr class="total-row"><td>Total</td>`;
-    days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
-    html+=`</tr></tbody></table>
-    <div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>`;
-    container.innerHTML=html;
-  });
+kids.forEach(kid=>{
+const container=document.getElementById(kid);
+let html=`<table><thead><tr><th></th>`;
+days.forEach(day=> html+=`<th>${day}</th>`);
+html+=`</tr></thead><tbody>`;
+
+[...chores,...activities.map(a=>({key:a}))].forEach(c=>{
+html+=`<tr><td>${c.key}</td>`;
+days.forEach((d,i)=>{
+if(c.key==="deduction"||!activities.includes(c.key)){
+html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+}else{
+html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+}
+});
+html+=`</tr>`;
+});
+html+=`<tr class="total-row"><td>Total</td>`;
+days.forEach((d,i)=> html+=`<td id="${kid}-total-${i}">$0.00</td>`);
+html+=`</tr></tbody></table>
+<div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0.00</div></div>`;
+container.innerHTML=html;
+});
 }
 
-// Save and load functions
-async function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key),...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input) chores.some(c=>c.key===type)? data[`${i}-${type}`]=input.checked : data[`${i}-${type}`]=input.value;
-    });
-  });
-  await db.collection('weeks').doc(currentWeek).collection('chores').doc(kid).set(data);
-  updateTotals();
-}
-
-async function loadData(weekKey=null){
-  if(!weekKey) weekKey=currentWeek;
-  for(const kid of kids){
-    const doc=await db.collection('weeks').doc(weekKey).collection('chores').doc(kid).get();
-    const data=doc.exists?doc.data():{};
-    days.forEach((day,i)=>{
-      [...chores.map(c=>c.key),...activities].forEach(type=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
-      });
-    });
-  }
-  updateTotals();
-}
-
-// Update totals
 function updateTotals(){
-  kids.forEach(kid=>{
-    let kidTotal=0;
-    days.forEach((day,i)=>{
-      let dayTotal=0;
-      chores.forEach(c=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input){
-          if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
-          else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
-        }
-      });
-      activities.forEach(a=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=parseFloat(input.value || 0)*ACTIVITY_RATE;
-      });
-      kidTotal+=dayTotal;
-      document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
-    });
-    const progressBar=document.getElementById(`${kid}-progress`);
-    const progressPercent=Math.min((kidTotal/20)*100,100);
-    progressBar.style.width=progressPercent+"%";
-    progressBar.textContent=`$${Math.round(kidTotal)}`;
-    document.getElementById(`rank-${kid}`).textContent=`$${Math.round(kidTotal)}`;
-  });
+kids.forEach(kid=>{
+let kidTotal=0;
+days.forEach((d,i)=>{
+let dayTotal=0;
+
+chores.forEach(c=>{
+const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
+if(input){
+if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
+else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
+}
+});
+
+activities.forEach(a=>{
+const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
+if(input && input.value) dayTotal+=parseFloat(input.value||0)*ACTIVITY_RATE;
+});
+
+kidTotal+=dayTotal;
+document.getElementById(`${kid}-total-${i}`).textContent=`$${dayTotal.toFixed(2)}`;
+});
+
+document.getElementById(`${kid}-progress`).style.width=Math.min((kidTotal/WEEKLY_GOAL)*100,100)+"%";
+document.getElementById(`${kid}-progress`).textContent=`$${kidTotal.toFixed(2)}`;
+document.getElementById(`rank-${kid}`).textContent=`$${kidTotal.toFixed(2)}`;
+});
 }
 
-// Tabs
+async function addTrait(word){
+if(!word) return;
+const ref=db.collection('weeks').doc(currentWeek).collection('traits').doc(activeKid);
+const doc=await ref.get();
+let data=doc.exists?doc.data():{};
+word=word.trim().toLowerCase();
+data[word]=(data[word]||0)+1;
+await ref.set(data);
+loadTraits();
+}
+
+async function loadTraits(){
+const ref=db.collection('weeks').doc(currentWeek).collection('traits').doc(activeKid);
+const doc=await ref.get();
+const display=document.getElementById('trait-display');
+display.innerHTML="";
+if(doc.exists){
+const data=doc.data();
+Object.keys(data).sort((a,b)=>data[b]-data[a]).forEach(word=>{
+display.innerHTML+=`<span>${word.charAt(0).toUpperCase()+word.slice(1)} (${data[word]})</span>`;
+});
+}
+}
+
+document.getElementById('add-trait').addEventListener('click',()=>{
+const input=document.getElementById('trait-input');
+addTrait(input.value);
+input.value="";
+});
+
+document.getElementById('trait-input').addEventListener('keypress',e=>{
+if(e.key==="Enter") document.getElementById('add-trait').click();
+});
+
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.kid).classList.add("active");
-  });
+tab.addEventListener("click",()=>{
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
+tab.classList.add("active");
+document.getElementById(tab.dataset.kid).classList.add("active");
+activeKid=tab.dataset.kid;
+loadTraits();
+});
 });
 
-// Day headers for notes
-document.body.addEventListener("click", e=>{
-  if(e.target.tagName==='TH' && e.target.dataset.day!==undefined){
-    activeNote.kid=e.target.dataset.kid;
-    activeNote.day=e.target.dataset.day;
-    loadNote();
-    document.getElementById('note-modal').style.display='flex';
-  }
+window.onload=()=>{
+buildTables();
+loadTraits();
+document.body.addEventListener('change',e=>{
+if(e.target.matches("input")) updateTotals();
 });
-
-// Modal buttons
-document.getElementById('close-note').addEventListener('click',()=>{document.getElementById('note-modal').style.display='none';});
-document.getElementById('clear-note').addEventListener('click',()=>{
-  document.getElementById('note-other').value='';
-  document.getElementById('note-good').value='';
-  document.getElementById('note-bad').value='';
-  document.getElementById('note-punishments').value='';
-});
-document.getElementById('save-note').addEventListener('click',async ()=>{
-  if(activeNote.kid!==null){
-    await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).set({
-      other:document.getElementById('note-other').value,
-      good:document.getElementById('note-good').value,
-      bad:document.getElementById('note-bad').value,
-      punishments:document.getElementById('note-punishments').value
-    });
-    document.getElementById('note-modal').style.display='none';
-  }
-});
-
-// Load note
-async function loadNote(){
-  const doc=await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).get();
-  const data=doc.exists?doc.data():{other:'',good:'',bad:'',punishments:''};
-  document.getElementById('note-other').value=data.other;
-  document.getElementById('note-good').value=data.good;
-  document.getElementById('note-bad').value=data.bad;
-  document.getElementById('note-punishments').value=data.punishments;
-}
-
-// Populate week dropdown
-async function populateWeekDropdown(){
-  const weeksSnap=await db.collection('weeks').orderBy('timestamp','desc').get();
-  const select=document.getElementById('week-select');
-  select.innerHTML='';
-  weeksSnap.forEach(doc=>{
-    const option=document.createElement('option');
-    option.value=doc.id;
-    option.textContent=doc.id;
-    if(doc.id===currentWeek) option.selected=true;
-    select.appendChild(option);
-  });
-}
-
-// Bottom controls
-document.getElementById('archive-week').addEventListener('click',async ()=>{
-  await db.collection('weeks').doc(currentWeek).set({archived:true, timestamp:new Date()});
-  await populateWeekDropdown();
-});
-
-document.getElementById('clear-week').addEventListener('click',async ()=>{
-  const pass=prompt("Enter password to clear week:");
-  if(pass===CLEAR_PASSWORD){
-    for(const kid of kids){
-      const docRef=db.collection('weeks').doc(currentWeek).collection('chores').doc(kid);
-      await docRef.delete();
-    }
-    await loadData();
-  } else { alert("Incorrect password."); }
-});
-
-document.getElementById('week-select').addEventListener('change',async e=>{
-  currentWeek=e.target.value;
-  await loadData(currentWeek);
-});
-
-// Init
-window.onload=async ()=>{
-  buildTables();
-  await loadData();
-  await populateWeekDropdown();
-  document.querySelectorAll('input').forEach(input=>{
-    input.addEventListener('change',()=>{
-      saveData(input.dataset.kid);
-    });
-  });
 };
+
 </script>
 </body>
 </html>

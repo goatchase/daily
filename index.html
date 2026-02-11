@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chores</title>
+<title></title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body { font-family:'Roboto',sans-serif; margin:0; padding:0; background:#fdfdfd; color:#333; }
@@ -59,8 +59,6 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 
 .bottom-controls { display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
 
-#word-counts { margin-top:15px; font-size:14px; display:flex; flex-direction:column; gap:4px; }
-
 @media(max-width:768px){ th,td{padding:6px;font-size:12px;} th:first-child, td:first-child{width:40px;} th:not(:first-child), td:not(:first-child){width:calc((100%-40px)/7);} }
 </style>
 </head>
@@ -85,12 +83,6 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
     <select id="week-select"></select>
     <button class="btn" id="archive-week">Archive Week</button>
     <button class="btn" id="clear-week">Clear Week</button>
-  </div>
-
-  <!-- Word counts section -->
-  <div id="word-counts">
-    <div id="good-words"><strong>Good:</strong></div>
-    <div id="bad-words"><strong>Bad:</strong></div>
   </div>
 </div>
 
@@ -140,6 +132,8 @@ const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️",practice:"🏈⚾",workout:"🏋️‍♂️💪"};
 const CHORE_VALUE=0.25, ACTIVITY_RATE=0.05, DEDUCTION_VALUE=-3;
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
+
+// Password for clearing
 const CLEAR_PASSWORD = "clear";
 
 // ISO Week Key
@@ -152,54 +146,126 @@ function getYearWeek(date = new Date()) {
   return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
 }
 
+// Current week
 let currentWeek = getYearWeek();
+
+// Notes
 let activeNote = {kid:null,day:null};
 
-// Functions for building tables, save/load data, updating totals remain unchanged (as in your original code)
-
-// --- Word counts for selected kid ---
-async function updateWordCounts(weekKey = currentWeek){
-  const activeKid = document.querySelector('.tab.active').dataset.kid;
-  const goodCounts = {};
-  const badCounts = {};
-
-  const notesSnap = await db.collection('weeks').doc(weekKey).collection('notes').get();
-  notesSnap.forEach(doc => {
-    if(!doc.id.startsWith(activeKid)) return; // only for selected kid
-    const data = doc.data();
-    ['good','bad'].forEach(type=>{
-      if(data[type]){
-        const words = data[type].toLowerCase().match(/\b\w+\b/g);
-        if(words){
-          words.forEach(word=>{
-            if(type==='good') goodCounts[word] = (goodCounts[word]||0)+1;
-            else badCounts[word] = (badCounts[word]||0)+1;
-          });
-        }
-      }
+// Build tables
+function buildTables(){
+  kids.forEach(kid=>{
+    const container=document.getElementById(kid);
+    let html=`<table><thead><tr><th></th>`;
+    days.forEach((day,i)=>{
+      const highlight=i===todayIndex?'current-day':'';
+      html+=`<th class="${highlight}" data-kid="${kid}" data-day="${i}">${day}</th>`;
     });
+    html+=`</tr></thead><tbody>`;
+    [...chores,...activities.map(a=>({key:a,icon:activityIcons[a]}))].forEach(c=>{
+      html+=`<tr><td>${c.icon}</td>`;
+      days.forEach((day,i)=>{
+        if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
+          html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+        } else {
+          html+=`<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+        }
+      });
+      html+=`</tr>`;
+    });
+    html+=`<tr class="total-row"><td>Total</td>`;
+    days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
+    html+=`</tr></tbody></table>
+    <div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>`;
+    container.innerHTML=html;
   });
-
-  const goodList = Object.entries(goodCounts).map(([w,c])=>`${w}(${c})`).join(', ');
-  const badList = Object.entries(badCounts).map(([w,c])=>`${w}(${c})`).join(', ');
-
-  document.getElementById('good-words').innerHTML = `<strong>Good:</strong> <span style="color:green">${goodList}</span>`;
-  document.getElementById('bad-words').innerHTML = `<strong>Bad:</strong> <span style="color:red">${badList}</span>`;
 }
 
-// Call updateWordCounts on tab switch
+// Save and load functions
+async function saveData(kid){
+  const data={};
+  days.forEach((day,i)=>{
+    [...chores.map(c=>c.key),...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input) chores.some(c=>c.key===type)? data[`${i}-${type}`]=input.checked : data[`${i}-${type}`]=input.value;
+    });
+  });
+  await db.collection('weeks').doc(currentWeek).collection('chores').doc(kid).set(data);
+  updateTotals();
+}
+
+async function loadData(weekKey=null){
+  if(!weekKey) weekKey=currentWeek;
+  for(const kid of kids){
+    const doc=await db.collection('weeks').doc(weekKey).collection('chores').doc(kid).get();
+    const data=doc.exists?doc.data():{};
+    days.forEach((day,i)=>{
+      [...chores.map(c=>c.key),...activities].forEach(type=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+        if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
+      });
+    });
+  }
+  updateTotals();
+}
+
+// Update totals
+function updateTotals(){
+  kids.forEach(kid=>{
+    let kidTotal=0;
+    days.forEach((day,i)=>{
+      let dayTotal=0;
+      chores.forEach(c=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
+        if(input){
+          if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
+          else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
+        }
+      });
+      activities.forEach(a=>{
+        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
+        if(input && input.value) dayTotal+=parseFloat(input.value || 0)*ACTIVITY_RATE;
+      });
+      kidTotal+=dayTotal;
+      document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
+    });
+    const progressBar=document.getElementById(`${kid}-progress`);
+    const progressPercent=Math.min((kidTotal/20)*100,100);
+    progressBar.style.width=progressPercent+"%";
+    progressBar.textContent=`$${Math.round(kidTotal)}`;
+    document.getElementById(`rank-${kid}`).textContent=`$${Math.round(kidTotal)}`;
+  });
+}
+
+// Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click", async ()=>{
+  tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(tab.dataset.kid).classList.add("active");
-    await updateWordCounts();
   });
 });
 
-// Call updateWordCounts after saving a note
-document.getElementById('save-note').addEventListener('click', async ()=>{
+// Day headers for notes
+document.body.addEventListener("click", e=>{
+  if(e.target.tagName==='TH' && e.target.dataset.day!==undefined){
+    activeNote.kid=e.target.dataset.kid;
+    activeNote.day=e.target.dataset.day;
+    loadNote();
+    document.getElementById('note-modal').style.display='flex';
+  }
+});
+
+// Modal buttons
+document.getElementById('close-note').addEventListener('click',()=>{document.getElementById('note-modal').style.display='none';});
+document.getElementById('clear-note').addEventListener('click',()=>{
+  document.getElementById('note-other').value='';
+  document.getElementById('note-good').value='';
+  document.getElementById('note-bad').value='';
+  document.getElementById('note-punishments').value='';
+});
+document.getElementById('save-note').addEventListener('click',async ()=>{
   if(activeNote.kid!==null){
     await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).set({
       other:document.getElementById('note-other').value,
@@ -208,8 +274,53 @@ document.getElementById('save-note').addEventListener('click', async ()=>{
       punishments:document.getElementById('note-punishments').value
     });
     document.getElementById('note-modal').style.display='none';
-    await updateWordCounts();
   }
+});
+
+// Load note
+async function loadNote(){
+  const doc=await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).get();
+  const data=doc.exists?doc.data():{other:'',good:'',bad:'',punishments:''};
+  document.getElementById('note-other').value=data.other;
+  document.getElementById('note-good').value=data.good;
+  document.getElementById('note-bad').value=data.bad;
+  document.getElementById('note-punishments').value=data.punishments;
+}
+
+// Populate week dropdown
+async function populateWeekDropdown(){
+  const weeksSnap=await db.collection('weeks').orderBy('timestamp','desc').get();
+  const select=document.getElementById('week-select');
+  select.innerHTML='';
+  weeksSnap.forEach(doc=>{
+    const option=document.createElement('option');
+    option.value=doc.id;
+    option.textContent=doc.id;
+    if(doc.id===currentWeek) option.selected=true;
+    select.appendChild(option);
+  });
+}
+
+// Bottom controls
+document.getElementById('archive-week').addEventListener('click',async ()=>{
+  await db.collection('weeks').doc(currentWeek).set({archived:true, timestamp:new Date()});
+  await populateWeekDropdown();
+});
+
+document.getElementById('clear-week').addEventListener('click',async ()=>{
+  const pass=prompt("Enter password to clear week:");
+  if(pass===CLEAR_PASSWORD){
+    for(const kid of kids){
+      const docRef=db.collection('weeks').doc(currentWeek).collection('chores').doc(kid);
+      await docRef.delete();
+    }
+    await loadData();
+  } else { alert("Incorrect password."); }
+});
+
+document.getElementById('week-select').addEventListener('change',async e=>{
+  currentWeek=e.target.value;
+  await loadData(currentWeek);
 });
 
 // Init
@@ -222,7 +333,6 @@ window.onload=async ()=>{
       saveData(input.dataset.kid);
     });
   });
-  await updateWordCounts();
 };
 </script>
 </body>

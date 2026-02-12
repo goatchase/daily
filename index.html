@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title></title>
+<title>Chores Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body { font-family:'Roboto',sans-serif; margin:0; padding:0; background:#fdfdfd; color:#333; }
@@ -20,51 +20,48 @@ h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; letter-spa
   cursor:pointer;
   font-weight:500;
   position:relative;
-  transition: background 0.3s, color 0.3s;
   display:flex;
   flex-direction: column;
   align-items: center;
 }
 .tab.active { background:#fff; color:#000; font-weight:600; box-shadow: inset 0 -2px 0 #007aff; }
-.tab .rank-circle { margin-top:4px; width:50px; height:24px; border-radius:12px; background:#007aff; color:#fff; font-size:14px; font-weight:500; display:flex; justify-content:center; align-items:center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.tab .rank-circle { margin-top:4px; width:50px; height:24px; border-radius:12px; background:#007aff; color:#fff; font-size:14px; font-weight:500; display:flex; justify-content:center; align-items:center; }
 
 .table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
 .table-container.active { display:block; }
-table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); table-layout:fixed; }
+table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; table-layout:fixed; }
 th, td { padding:8px; font-size:14px; border-bottom:1px solid #eee; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:clip; cursor:default; }
-th.current-day { background:#e6f4ff; }
-tr.total-row td { font-weight:500; background:#f9f9f9; box-shadow: inset 0 1px 2px rgba(0,0,0,0.03); }
+th.current-day { background:#e6f4ff; font-weight:600; }
+tr.total-row td { font-weight:500; background:#f9f9f9; }
 
 input[type="checkbox"] { appearance:none; -webkit-appearance:none; width:30px; height:18px; background:#e6e6e6; border-radius:12px; position: relative; outline:none; cursor:pointer; transition:background 0.3s; vertical-align:middle; }
 input[type="checkbox"]:checked { background:#007aff; }
 input[type="checkbox"]::before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; top:2px; left:2px; background:#fff; transition: transform 0.3s ease; }
 input[type="checkbox"]:checked::before { transform:translateX(12px); }
 
-input[type="number"], input[type="text"] { width:90%; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; transition:border 0.2s, box-shadow 0.2s; }
-input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; box-shadow:0 0 2px rgba(0,122,255,0.4); }
+input[type="number"], input[type="text"] { width:90%; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; }
+input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; }
 
 th:first-child, td:first-child { width:40px; }
 th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 
-.progress-wrapper { width:100%; margin-top:10px; border-radius:12px; background:#ccc; overflow:hidden; box-sizing:border-box; height:28px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
-.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; transition:width 0.3s ease; border-radius:12px 0 0 12px; white-space:nowrap; color:#fff; }
+.progress-wrapper { width:100%; margin-top:10px; border-radius:12px; background:#ccc; overflow:hidden; height:28px; }
+.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; border-radius:12px 0 0 12px; color:#fff; }
 
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999; }
-.modal-content { background:#fff; padding:20px; border-radius:12px; max-width:400px; width:90%; display:flex; flex-direction:column; gap:10px; font-family:'Roboto',sans-serif; }
+.modal-content { background:#fff; padding:20px; border-radius:12px; max-width:400px; width:90%; display:flex; flex-direction:column; gap:10px; }
 .modal-content label { font-weight:500; font-size:14px; }
-.modal-content textarea { width:100%; height:50px; font-size:14px; padding:6px; border-radius:8px; border:1px solid #ccc; resize:none; font-family:'Roboto',sans-serif; }
+.modal-content textarea { width:100%; height:50px; font-size:14px; padding:6px; border-radius:8px; border:1px solid #ccc; resize:none; }
 
-.btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; transition:background 0.3s; }
+.btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; }
 .btn:hover { background:#005bb5; }
 
 .bottom-controls { display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
-
-@media(max-width:768px){ th,td{padding:6px;font-size:12px;} th:first-child, td:first-child{width:40px;} th:not(:first-child), td:not(:first-child){width:calc((100%-40px)/7);} }
 </style>
 </head>
 <body>
 
-<h2>Chores</h2>
+<h2>Chores Tracker</h2>
 
 <div class="site-container">
   <div class="tab-container">
@@ -90,14 +87,10 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
 <div class="modal" id="note-modal">
   <div class="modal-content">
     <h3>Daily Notes</h3>
-    <label>Other Tasks</label>
-    <textarea id="note-other"></textarea>
-    <label>Good</label>
-    <textarea id="note-good"></textarea>
-    <label>Bad</label>
-    <textarea id="note-bad"></textarea>
-    <label>Punishments</label>
-    <textarea id="note-punishments"></textarea>
+    <label>Other Tasks</label><textarea id="note-other"></textarea>
+    <label>Good</label><textarea id="note-good"></textarea>
+    <label>Bad</label><textarea id="note-bad"></textarea>
+    <label>Punishments</label><textarea id="note-punishments"></textarea>
     <div style="display:flex; justify-content:flex-end; gap:10px;">
       <button class="btn" id="save-note">Save</button>
       <button class="btn" id="clear-note">Clear</button>
@@ -106,12 +99,9 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
 <script>
-// FIREBASE
 const firebaseConfig = {
   apiKey:"AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
   authDomain:"goatchase-e9502.firebaseapp.com",
@@ -124,7 +114,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Constants
 const kids=["Ryan","Jack","Henry","Sonny"];
 const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const chores=[{key:"showerTeeth",icon:"🚿🦷"},{key:"bedRoom",icon:"🛏️🧹"},{key:"clothes",icon:"👕🧺"},{key:"other",icon:"⭐⭐"},{key:"deduction",icon:"➖➖"}];
@@ -132,56 +121,31 @@ const activities=["reading","practice","workout"];
 const activityIcons={reading:"📖✏️",practice:"🏈⚾",workout:"🏋️‍♂️💪"};
 const CHORE_VALUE=0.25, ACTIVITY_RATE=0.05, DEDUCTION_VALUE=-3;
 const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
+const CLEAR_PASSWORD="clear";
+let currentWeek = (() => {const d=new Date(); const day=d.getDay()||7; d.setDate(d.getDate() + 4 - day); const y=new Date(d.getFullYear(),0,1); const w=Math.ceil((((d-y)/86400000)+1)/7); return `${d.getFullYear()}-W${w}`;})();
+let activeNote={kid:null,day:null};
 
-// Password for clearing
-const CLEAR_PASSWORD = "clear";
-
-// ISO Week Key
-function getYearWeek(date = new Date()) {
-  const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = tmpDate.getUTCDay() || 7;
-  tmpDate.setUTCDate(tmpDate.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(tmpDate.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((tmpDate - yearStart) / 86400000) + 1) / 7);
-  return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
-}
-
-// Current week
-let currentWeek = getYearWeek();
-
-// Notes
-let activeNote = {kid:null,day:null};
-
-// Build tables
 function buildTables(){
   kids.forEach(kid=>{
     const container=document.getElementById(kid);
     let html=`<table><thead><tr><th></th>`;
-    days.forEach((day,i)=>{
-      const highlight=i===todayIndex?'current-day':'';
-      html+=`<th class="${highlight}" data-kid="${kid}" data-day="${i}">${day}</th>`;
-    });
+    days.forEach((day,i)=>html+=`<th class="${i===todayIndex?'current-day':''}" data-kid="${kid}" data-day="${i}">${day}</th>`);
     html+=`</tr></thead><tbody>`;
     [...chores,...activities.map(a=>({key:a,icon:activityIcons[a]}))].forEach(c=>{
       html+=`<tr><td>${c.icon}</td>`;
       days.forEach((day,i)=>{
         if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
           html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-        } else {
-          html+=`<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
-        }
+        } else { html+=`<td><input type="number" min="0" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`; }
       });
       html+=`</tr>`;
     });
-    html+=`<tr class="total-row"><td>Total</td>`;
-    days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
-    html+=`</tr></tbody></table>
-    <div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>`;
+    html+=`<tr class="total-row"><td>Total</td>${days.map((_,i)=>`<td id="${kid}-total-${i}">0</td>`).join('')}</tr></tbody></table>`;
+    html+=`<div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>`;
     container.innerHTML=html;
   });
 }
 
-// Save and load functions
 async function saveData(kid){
   const data={};
   days.forEach((day,i)=>{
@@ -199,17 +163,14 @@ async function loadData(weekKey=null){
   for(const kid of kids){
     const doc=await db.collection('weeks').doc(weekKey).collection('chores').doc(kid).get();
     const data=doc.exists?doc.data():{};
-    days.forEach((day,i)=>{
-      [...chores.map(c=>c.key),...activities].forEach(type=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
-      });
-    });
+    days.forEach((day,i)=>{ [...chores.map(c=>c.key),...activities].forEach(type=>{
+      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
+      if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
+    })});
   }
   updateTotals();
 }
 
-// Update totals
 function updateTotals(){
   kids.forEach(kid=>{
     let kidTotal=0;
@@ -217,21 +178,15 @@ function updateTotals(){
       let dayTotal=0;
       chores.forEach(c=>{
         const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input){
-          if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
-          else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
-        }
+        if(input) dayTotal += (c.key==="deduction" && input.checked)?DEDUCTION_VALUE:(c.key!=="deduction" && input.checked?CHORE_VALUE:0);
       });
-      activities.forEach(a=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=parseFloat(input.value || 0)*ACTIVITY_RATE;
-      });
+      activities.forEach(a=>{ const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`); if(input && input.value) dayTotal+=parseFloat(input.value)*ACTIVITY_RATE; });
       kidTotal+=dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
     });
     const progressBar=document.getElementById(`${kid}-progress`);
-    const progressPercent=Math.min((kidTotal/20)*100,100);
-    progressBar.style.width=progressPercent+"%";
+    const percent=Math.min((kidTotal/20)*100,100);
+    progressBar.style.width=percent+"%";
     progressBar.textContent=`$${Math.round(kidTotal)}`;
     document.getElementById(`rank-${kid}`).textContent=`$${Math.round(kidTotal)}`;
   });
@@ -247,24 +202,10 @@ document.querySelectorAll(".tab").forEach(tab=>{
   });
 });
 
-// Day headers for notes
-document.body.addEventListener("click", e=>{
-  if(e.target.tagName==='TH' && e.target.dataset.day!==undefined){
-    activeNote.kid=e.target.dataset.kid;
-    activeNote.day=e.target.dataset.day;
-    loadNote();
-    document.getElementById('note-modal').style.display='flex';
-  }
-});
-
-// Modal buttons
+// Modal & notes
+document.body.addEventListener("click", e=>{ if(e.target.tagName==='TH' && e.target.dataset.day!==undefined){ activeNote={kid:e.target.dataset.kid,day:e.target.dataset.day}; loadNote(); document.getElementById('note-modal').style.display='flex'; }});
 document.getElementById('close-note').addEventListener('click',()=>{document.getElementById('note-modal').style.display='none';});
-document.getElementById('clear-note').addEventListener('click',()=>{
-  document.getElementById('note-other').value='';
-  document.getElementById('note-good').value='';
-  document.getElementById('note-bad').value='';
-  document.getElementById('note-punishments').value='';
-});
+document.getElementById('clear-note').addEventListener('click',()=>{ ['other','good','bad','punishments'].forEach(id=>document.getElementById('note-'+id).value=''); });
 document.getElementById('save-note').addEventListener('click',async ()=>{
   if(activeNote.kid!==null){
     await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).set({
@@ -276,64 +217,19 @@ document.getElementById('save-note').addEventListener('click',async ()=>{
     document.getElementById('note-modal').style.display='none';
   }
 });
-
-// Load note
 async function loadNote(){
   const doc=await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).get();
   const data=doc.exists?doc.data():{other:'',good:'',bad:'',punishments:''};
-  document.getElementById('note-other').value=data.other;
-  document.getElementById('note-good').value=data.good;
-  document.getElementById('note-bad').value=data.bad;
-  document.getElementById('note-punishments').value=data.punishments;
+  ['other','good','bad','punishments'].forEach(id=>document.getElementById('note-'+id).value=data[id]||'');
 }
 
-// Populate week dropdown
-async function populateWeekDropdown(){
-  const weeksSnap=await db.collection('weeks').orderBy('timestamp','desc').get();
-  const select=document.getElementById('week-select');
-  select.innerHTML='';
-  weeksSnap.forEach(doc=>{
-    const option=document.createElement('option');
-    option.value=doc.id;
-    option.textContent=doc.id;
-    if(doc.id===currentWeek) option.selected=true;
-    select.appendChild(option);
-  });
-}
-
-// Bottom controls
-document.getElementById('archive-week').addEventListener('click',async ()=>{
-  await db.collection('weeks').doc(currentWeek).set({archived:true, timestamp:new Date()});
-  await populateWeekDropdown();
-});
-
-document.getElementById('clear-week').addEventListener('click',async ()=>{
-  const pass=prompt("Enter password to clear week:");
-  if(pass===CLEAR_PASSWORD){
-    for(const kid of kids){
-      const docRef=db.collection('weeks').doc(currentWeek).collection('chores').doc(kid);
-      await docRef.delete();
-    }
-    await loadData();
-  } else { alert("Incorrect password."); }
-});
-
-document.getElementById('week-select').addEventListener('change',async e=>{
-  currentWeek=e.target.value;
-  await loadData(currentWeek);
-});
-
-// Init
+// Initialize
 window.onload=async ()=>{
   buildTables();
   await loadData();
-  await populateWeekDropdown();
-  document.querySelectorAll('input').forEach(input=>{
-    input.addEventListener('change',()=>{
-      saveData(input.dataset.kid);
-    });
-  });
+  document.querySelectorAll('input').forEach(input=>input.addEventListener('change',()=>saveData(input.dataset.kid)));
 };
 </script>
+
 </body>
 </html>

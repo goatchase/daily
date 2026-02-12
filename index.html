@@ -98,6 +98,8 @@ th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
     <textarea id="note-bad"></textarea>
     <label>Punishments</label>
     <textarea id="note-punishments"></textarea>
+    <label>Rewards</label>
+    <textarea id="note-rewards"></textarea>
     <div style="display:flex; justify-content:flex-end; gap:10px;">
       <button class="btn" id="save-note">Save</button>
       <button class="btn" id="clear-note">Clear</button>
@@ -264,6 +266,7 @@ document.getElementById('clear-note').addEventListener('click',()=>{
   document.getElementById('note-good').value='';
   document.getElementById('note-bad').value='';
   document.getElementById('note-punishments').value='';
+  document.getElementById('note-rewards').value='';
 });
 document.getElementById('save-note').addEventListener('click',async ()=>{
   if(activeNote.kid!==null){
@@ -271,7 +274,8 @@ document.getElementById('save-note').addEventListener('click',async ()=>{
       other:document.getElementById('note-other').value,
       good:document.getElementById('note-good').value,
       bad:document.getElementById('note-bad').value,
-      punishments:document.getElementById('note-punishments').value
+      punishments:document.getElementById('note-punishments').value,
+      rewards:document.getElementById('note-rewards').value
     });
     document.getElementById('note-modal').style.display='none';
   }
@@ -280,11 +284,12 @@ document.getElementById('save-note').addEventListener('click',async ()=>{
 // Load note
 async function loadNote(){
   const doc=await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).get();
-  const data=doc.exists?doc.data():{other:'',good:'',bad:'',punishments:''};
+  const data=doc.exists?doc.data():{other:'',good:'',bad:'',punishments:'',rewards:''};
   document.getElementById('note-other').value=data.other;
   document.getElementById('note-good').value=data.good;
   document.getElementById('note-bad').value=data.bad;
   document.getElementById('note-punishments').value=data.punishments;
+  document.getElementById('note-rewards').value=data.rewards;
 }
 
 // Populate week dropdown
@@ -329,9 +334,7 @@ window.onload=async ()=>{
   await loadData();
   await populateWeekDropdown();
   document.querySelectorAll('input').forEach(input=>{
-    input.addEventListener('change',()=>{
-      saveData(input.dataset.kid);
-    });
+    input.addEventListener('change',()=>{ saveData(input.dataset.kid); });
   });
 };
 </script>

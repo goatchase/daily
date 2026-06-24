@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   color-scheme: light;
@@ -25,7 +28,7 @@ body {
   min-height:100vh;
   background:var(--bg);
   color:var(--ink);
-  font-family:"SF Pro Text","SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",sans-serif;
+  font-family:"Source Sans 3","Source Sans Pro","Helvetica Neue",Arial,sans-serif;
 }
 button, input, select, textarea { font:inherit; }
 .site-container { width:min(1180px,100%); margin:0 auto; }
@@ -130,8 +133,8 @@ th.current-day { color:var(--blue); background:#eef6ff; }
 input[type="checkbox"] {
   appearance:none;
   -webkit-appearance:none;
-  width:31px;
-  height:19px;
+  width:50px;
+  height:30px;
   border-radius:999px;
   border:0;
   background:#d1d1d6;
@@ -142,10 +145,10 @@ input[type="checkbox"] {
 input[type="checkbox"]::before {
   content:"";
   position:absolute;
-  width:15px;
-  height:15px;
+  width:24px;
+  height:24px;
   left:2px;
-  top:2px;
+  top:3px;
   border-radius:50%;
   background:#fff;
   box-shadow:0 1px 2px rgba(0,0,0,.18);
@@ -153,7 +156,7 @@ input[type="checkbox"]::before {
 }
 input[type="checkbox"]:checked { background:var(--green); }
 input[type="checkbox"][data-negative="true"]:checked { background:var(--red); }
-input[type="checkbox"]:checked::before { transform:translateX(12px); }
+input[type="checkbox"]:checked::before { transform:translateX(22px); }
 input[type="number"], input[type="text"], select, textarea {
   width:100%;
   border:1px solid var(--line);
@@ -162,7 +165,7 @@ input[type="number"], input[type="text"], select, textarea {
   color:var(--ink);
   outline:0;
 }
-input[type="number"] { max-width:64px; text-align:center; padding:5px 3px; }
+input[type="number"] { width:50px; height:30px; text-align:center; padding:4px 3px; }
 input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,122,255,.12); }
 .total-row td { background:#fafafa; font-weight:750; }
 .progress-wrapper { height:28px; margin:10px; border-radius:999px; background:#e9e9ed; overflow:hidden; }
@@ -220,7 +223,7 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
 .task-list { display:grid; gap:7px; }
 .task-item {
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:auto 1fr auto auto auto;
   gap:8px;
   align-items:center;
   min-height:38px;
@@ -241,6 +244,15 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   font-weight:750;
   cursor:pointer;
 }
+.mini-action {
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-weight:750;
+  cursor:pointer;
+  padding:5px 3px;
+}
+.mini-action.delete { color:var(--red); }
 .task-item.done .status-pill { background:rgba(52,199,89,.12); color:var(--green); }
 .empty-state { color:var(--muted); padding:8px; font-size:14px; }
 .log-list { display:grid; gap:7px; }
@@ -251,11 +263,11 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   border:1px solid var(--line);
   border-radius:12px;
   background:#fbfbfd;
+  border-left:4px solid var(--green);
 }
-.log-meta { display:flex; gap:6px; align-items:center; color:var(--muted); font-size:12px; font-weight:750; }
-.log-type { border-radius:999px; padding:3px 8px; color:#fff; }
-.log-type.good { background:var(--green); }
-.log-type.bad { background:var(--red); }
+.log-item.bad { border-left-color:var(--red); }
+.log-top { display:grid; grid-template-columns:auto 1fr auto auto; gap:7px; align-items:center; }
+.log-meta { color:var(--muted); font-size:12px; font-weight:750; }
 .log-copy { font-size:14px; line-height:1.3; overflow-wrap:anywhere; }
 .log-outcome { color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
 .bottom-controls { display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
@@ -303,6 +315,9 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   .rank-circle { height:20px; min-width:34px; font-size:11px; }
   .work-grid { grid-template-columns:1fr; }
   .entry-row, .log-row, .log-note-row { grid-template-columns:1fr; }
+  .task-item { grid-template-columns:auto 1fr auto; }
+  .task-item .mini-action { grid-column:auto; }
+  .log-top { grid-template-columns:auto 1fr auto auto; }
   th,td { padding:6px 4px; font-size:12px; }
   th:first-child, td:first-child { width:66px; padding-left:6px; }
   .category-row { grid-template-columns:1fr 1fr; }
@@ -419,6 +434,13 @@ function makeId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function promptDay(currentDay) {
+  const entered = prompt("Day number, 1-7:", String(Number(currentDay) + 1));
+  if (entered === null) return null;
+  const day = Number(entered) - 1;
+  return Number.isInteger(day) && day >= 0 && day < days.length ? day : Number(currentDay);
+}
+
 function normalizeCategory(category, index) {
   const defaults = DEFAULT_CATEGORY_MAP[category.key] || {};
   const rawLabel = (category.label || defaults.label || category.key || `Row ${index + 1}`).trim();
@@ -492,8 +514,8 @@ function buildTables() {
     html += `<tr class="total-row"><td>Total</td>`;
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}">$0</td>`; });
     html += `</tr></tbody></table></div><div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div></div>`;
-    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><span>${kid}</span></div><div class="entry-row"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
-    html += `<div class="panel"><div class="panel-head"><span>Good / Bad Log</span><span>${kid}</span></div><div class="log-row"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"></div><div class="log-note-row"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
+    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span></div><div class="entry-row"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
+    html += `<div class="panel"><div class="panel-head"><span>Log</span></div><div class="log-row"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"></div><div class="log-note-row"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
     container.innerHTML = html;
   });
 }
@@ -621,7 +643,7 @@ function renderTaskList(kid) {
   list.innerHTML = items.map(item => {
     const done = item.done ? "done" : "";
     const label = item.done ? "Done" : "To do";
-    return `<div class="task-item ${done}"><div class="task-day">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><button class="status-pill" data-toggle-task="${kid}" data-task-id="${item.id}">${label}</button></div>`;
+    return `<div class="task-item ${done}"><div class="task-day">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><button class="status-pill" data-toggle-task="${kid}" data-task-id="${item.id}">${label}</button><button class="mini-action" data-edit-task="${kid}" data-task-id="${item.id}">Edit</button><button class="mini-action delete" data-delete-task="${kid}" data-task-id="${item.id}">Delete</button></div>`;
   }).join("");
 }
 
@@ -639,6 +661,29 @@ async function addTask(kid) {
 
 async function toggleTask(kid, id) {
   tasksCache[kid] = (tasksCache[kid] || []).map(task => task.id === id ? {...task, done:!task.done} : task);
+  await saveTasks(kid);
+  renderTaskList(kid);
+  renderNoteIndicators();
+}
+
+async function editTask(kid, id) {
+  const task = (tasksCache[kid] || []).find(item => item.id === id);
+  if (!task) return;
+  const day = promptDay(task.day);
+  if (day === null) return;
+  const text = prompt("Edit task:", task.text || "");
+  if (text === null) return;
+  const trimmed = text.trim();
+  if (!trimmed) return;
+  tasksCache[kid] = (tasksCache[kid] || []).map(item => item.id === id ? {...item, day, text:trimmed} : item);
+  await saveTasks(kid);
+  renderTaskList(kid);
+  renderNoteIndicators();
+}
+
+async function deleteTask(kid, id) {
+  if (!confirm("Delete this task?")) return;
+  tasksCache[kid] = (tasksCache[kid] || []).filter(item => item.id !== id);
   await saveTasks(kid);
   renderTaskList(kid);
   renderNoteIndicators();
@@ -674,7 +719,7 @@ function renderLogList(kid) {
   list.innerHTML = entries.slice().reverse().map(entry => {
     const type = entry.type === "bad" ? "bad" : "good";
     const outcomeLabel = type === "bad" ? "Punishment" : "Reward";
-    return `<div class="log-item"><div class="log-meta"><span>${days[Number(entry.day)] || "Any"}</span><span class="log-type ${type}">${type === "bad" ? "Bad" : "Good"}</span></div><div class="log-copy">${escapeHtml(entry.note || "")}</div><div class="log-outcome">${outcomeLabel}: ${escapeHtml(entry.outcome || "")}</div></div>`;
+    return `<div class="log-item ${type}"><div class="log-top"><div class="log-meta">${days[Number(entry.day)] || "Any"}</div><div></div><button class="mini-action" data-edit-log="${kid}" data-log-id="${entry.id}">Edit</button><button class="mini-action delete" data-delete-log="${kid}" data-log-id="${entry.id}">Delete</button></div><div class="log-copy">${escapeHtml(entry.note || "")}</div><div class="log-outcome">${outcomeLabel}: ${escapeHtml(entry.outcome || "")}</div></div>`;
   }).join("");
 }
 
@@ -689,6 +734,32 @@ async function addLog(kid) {
   logsCache[kid] = [...(logsCache[kid] || []), {id:makeId("log"), day:Number(dayInput.value), type:typeInput.value, note, outcome}];
   noteInput.value = "";
   outcomeInput.value = "";
+  await saveLogs(kid);
+  renderLogList(kid);
+  renderNoteIndicators();
+}
+
+async function editLog(kid, id) {
+  const entry = (logsCache[kid] || []).find(item => item.id === id);
+  if (!entry) return;
+  const day = promptDay(entry.day);
+  if (day === null) return;
+  const typeInput = prompt("Type good or bad:", entry.type || "good");
+  if (typeInput === null) return;
+  const type = typeInput.trim().toLowerCase() === "bad" ? "bad" : "good";
+  const note = prompt("Edit note:", entry.note || "");
+  if (note === null) return;
+  const outcome = prompt(type === "bad" ? "Edit punishment:" : "Edit reward:", entry.outcome || "");
+  if (outcome === null) return;
+  logsCache[kid] = (logsCache[kid] || []).map(item => item.id === id ? {...item, day, type, note:note.trim(), outcome:outcome.trim()} : item);
+  await saveLogs(kid);
+  renderLogList(kid);
+  renderNoteIndicators();
+}
+
+async function deleteLog(kid, id) {
+  if (!confirm("Delete this log entry?")) return;
+  logsCache[kid] = (logsCache[kid] || []).filter(item => item.id !== id);
   await saveLogs(kid);
   renderLogList(kid);
   renderNoteIndicators();
@@ -790,8 +861,20 @@ document.body.addEventListener("click", async event => {
   const toggle = event.target.closest("[data-toggle-task]");
   if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.taskId);
 
+  const editTaskButton = event.target.closest("[data-edit-task]");
+  if (editTaskButton) await editTask(editTaskButton.dataset.editTask, editTaskButton.dataset.taskId);
+
+  const deleteTaskButton = event.target.closest("[data-delete-task]");
+  if (deleteTaskButton) await deleteTask(deleteTaskButton.dataset.deleteTask, deleteTaskButton.dataset.taskId);
+
   const addLogButton = event.target.closest("[data-add-log]");
   if (addLogButton) await addLog(addLogButton.dataset.addLog);
+
+  const editLogButton = event.target.closest("[data-edit-log]");
+  if (editLogButton) await editLog(editLogButton.dataset.editLog, editLogButton.dataset.logId);
+
+  const deleteLogButton = event.target.closest("[data-delete-log]");
+  if (deleteLogButton) await deleteLog(deleteLogButton.dataset.deleteLog, deleteLogButton.dataset.logId);
 
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
 });

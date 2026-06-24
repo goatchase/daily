@@ -3,117 +3,337 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title></title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<title>Daily Tracker</title>
 <style>
-body { font-family:'Roboto',sans-serif; margin:0; padding:0; background:#fdfdfd; color:#333; }
-h2 { text-align:center; margin:1.5rem 0; color:#111; font-weight:500; letter-spacing:0.5px; }
-
-.site-container { max-width:1200px; margin:0 auto; padding:0 20px; box-sizing:border-box; }
-
-.tab-container { display:flex; justify-content:center; background:#f8f8f8; border-bottom:1px solid #ddd; border-radius:12px 12px 0 0; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-.tab {
-  flex:1;
-  padding:8px 0;
-  text-align:center;
-  color:#555;
-  cursor:pointer;
-  font-weight:500;
-  position:relative;
-  transition: background 0.3s, color 0.3s;
-  display:flex;
-  flex-direction: column;
-  align-items: center;
+:root {
+  color-scheme: light;
+  --bg:#f5f5f7;
+  --card:#ffffff;
+  --ink:#1d1d1f;
+  --muted:#6e6e73;
+  --line:#e5e5ea;
+  --blue:#007aff;
+  --green:#34c759;
+  --red:#ff3b30;
+  --amber:#ffcc00;
+  --shadow:0 8px 24px rgba(0,0,0,.07);
 }
-.tab.active { background:#fff; color:#000; font-weight:600; box-shadow: inset 0 -2px 0 #007aff; }
-.tab .rank-circle { margin-top:4px; width:50px; height:24px; border-radius:12px; background:#007aff; color:#fff; font-size:14px; font-weight:500; display:flex; justify-content:center; align-items:center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-
-.table-container { display:none; padding:1rem 0; max-width:100%; box-sizing:border-box; }
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  padding:10px;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+}
+button, input, select, textarea { font:inherit; }
+.site-container { width:min(1180px,100%); margin:0 auto; }
+.top-bar { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.tab-container {
+  flex:1;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  padding:4px;
+  background:rgba(118,118,128,.12);
+  border-radius:12px;
+}
+.tab {
+  min-width:0;
+  border:0;
+  border-radius:9px;
+  padding:7px 6px;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-weight:650;
+}
+.tab.active { background:var(--card); color:var(--ink); box-shadow:0 1px 5px rgba(0,0,0,.12); }
+.rank-circle {
+  min-width:38px;
+  height:22px;
+  border-radius:999px;
+  background:var(--blue);
+  color:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  padding:0 8px;
+}
+.icon-btn, .btn {
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  border-radius:10px;
+  min-height:34px;
+  padding:7px 10px;
+  cursor:pointer;
+  font-weight:650;
+}
+.icon-btn { width:38px; padding:0; font-size:18px; }
+.btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+.btn.danger { color:var(--red); }
+.btn:active, .icon-btn:active, .tab:active { transform:scale(.98); }
+.table-container { display:none; }
 .table-container.active { display:block; }
-table { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05); table-layout:fixed; }
-th, td { padding:8px; font-size:14px; border-bottom:1px solid #eee; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:clip; cursor:default; }
-th.current-day { background:#e6f4ff; }
-tr.total-row td { font-weight:500; background:#f9f9f9; box-shadow: inset 0 1px 2px rgba(0,0,0,0.03); }
-
-input[type="checkbox"] { appearance:none; -webkit-appearance:none; width:30px; height:18px; background:#e6e6e6; border-radius:12px; position: relative; outline:none; cursor:pointer; transition:background 0.3s; vertical-align:middle; }
-input[type="checkbox"]:checked { background:#007aff; }
-input[type="checkbox"]::before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; top:2px; left:2px; background:#fff; transition: transform 0.3s ease; }
+.tracker-card {
+  background:var(--card);
+  border:1px solid rgba(0,0,0,.04);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.table-scroll { width:100%; overflow-x:auto; }
+table { width:100%; border-collapse:collapse; table-layout:fixed; min-width:680px; }
+th, td {
+  border-bottom:1px solid var(--line);
+  text-align:center;
+  padding:7px 5px;
+  font-size:13px;
+}
+th:first-child, td:first-child { width:88px; text-align:left; padding-left:10px; }
+th { color:var(--muted); font-size:12px; font-weight:700; background:rgba(250,250,252,.9); }
+th.current-day { color:var(--blue); background:#eef6ff; }
+.day-head {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  cursor:pointer;
+  min-height:22px;
+}
+.note-dots { display:inline-flex; gap:2px; min-width:20px; justify-content:center; }
+.note-dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
+.note-dot.other { background:var(--blue); }
+.note-dot.good { background:var(--green); }
+.note-dot.bad { background:var(--red); }
+.category-label {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  color:var(--ink);
+  font-weight:650;
+}
+.category-icon { width:24px; text-align:center; color:var(--muted); font-size:15px; }
+.category-name { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+input[type="checkbox"] {
+  appearance:none;
+  -webkit-appearance:none;
+  width:31px;
+  height:19px;
+  border-radius:999px;
+  border:0;
+  background:#d1d1d6;
+  position:relative;
+  vertical-align:middle;
+  cursor:pointer;
+}
+input[type="checkbox"]::before {
+  content:"";
+  position:absolute;
+  width:15px;
+  height:15px;
+  left:2px;
+  top:2px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.18);
+  transition:transform .18s ease;
+}
+input[type="checkbox"]:checked { background:var(--green); }
+input[type="checkbox"][data-negative="true"]:checked { background:var(--red); }
 input[type="checkbox"]:checked::before { transform:translateX(12px); }
-
-input[type="number"], input[type="text"] { width:90%; max-width:100%; box-sizing:border-box; border:1px solid #ccc; text-align:center; font-size:14px; font-weight:500; border-radius:8px; background:#fff; vertical-align:middle; padding:2px 0; transition:border 0.2s, box-shadow 0.2s; }
-input[type="number"]:focus, input[type="text"]:focus { outline:none; border:1px solid #007aff; box-shadow:0 0 2px rgba(0,122,255,0.4); }
-
-th:first-child, td:first-child { width:40px; }
-th:not(:first-child), td:not(:first-child) { width:calc((100% - 40px)/7); }
-
-.progress-wrapper { width:100%; margin-top:10px; border-radius:12px; background:#ccc; overflow:hidden; box-sizing:border-box; height:28px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
-.progress-bar { background:#007aff; height:100%; width:0%; text-align:center; line-height:28px; font-weight:500; transition:width 0.3s ease; border-radius:12px 0 0 12px; white-space:nowrap; color:#fff; }
-
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999; }
-.modal-content { background:#fff; padding:20px; border-radius:12px; max-width:400px; width:90%; display:flex; flex-direction:column; gap:10px; font-family:'Roboto',sans-serif; }
-.modal-content label { font-weight:500; font-size:14px; }
-.modal-content textarea { width:100%; height:50px; font-size:14px; padding:6px; border-radius:8px; border:1px solid #ccc; resize:none; font-family:'Roboto',sans-serif; }
-
-.btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; background:#007aff; color:#fff; font-weight:500; transition:background 0.3s; }
-.btn:hover { background:#005bb5; }
-
-.bottom-controls { display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
-
-@media(max-width:768px){ th,td{padding:6px;font-size:12px;} th:first-child, td:first-child{width:40px;} th:not(:first-child), td:not(:first-child){width:calc((100%-40px)/7);} }
+input[type="number"], input[type="text"], select, textarea {
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink);
+  outline:0;
+}
+input[type="number"] { max-width:64px; text-align:center; padding:5px 3px; }
+input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,122,255,.12); }
+.total-row td { background:#fafafa; font-weight:750; }
+.progress-wrapper { height:28px; margin:10px; border-radius:999px; background:#e9e9ed; overflow:hidden; }
+.progress-bar {
+  height:100%;
+  min-width:42px;
+  width:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--blue),#5ac8fa);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:750;
+  transition:width .2s ease;
+}
+.below-grid {
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:10px;
+  margin-top:10px;
+}
+.panel {
+  background:var(--card);
+  border:1px solid rgba(0,0,0,.04);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:10px;
+}
+.panel-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:750; text-transform:uppercase; }
+.task-list { display:grid; gap:7px; }
+.task-item {
+  display:grid;
+  grid-template-columns:auto auto 1fr auto;
+  gap:8px;
+  align-items:center;
+  min-height:38px;
+  padding:8px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fbfbfd;
+}
+.task-item.done { opacity:.6; }
+.task-day { color:var(--blue); font-weight:800; font-size:12px; }
+.task-icon {
+  width:28px;
+  height:24px;
+  border-radius:999px;
+  background:rgba(0,122,255,.1);
+  color:var(--blue);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.2px;
+}
+.task-text { min-width:0; font-size:14px; overflow-wrap:anywhere; }
+.status-pill {
+  border:0;
+  border-radius:999px;
+  padding:5px 9px;
+  background:rgba(0,122,255,.1);
+  color:var(--blue);
+  font-weight:750;
+  cursor:pointer;
+}
+.task-item.done .status-pill { background:rgba(52,199,89,.12); color:var(--green); }
+.empty-state { color:var(--muted); padding:8px; font-size:14px; }
+.week-notepad textarea { min-height:116px; resize:vertical; padding:9px; line-height:1.35; }
+.notepad-actions { display:flex; justify-content:flex-end; margin-top:7px; }
+.bottom-controls { display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.bottom-controls select { width:auto; min-width:132px; padding:7px 30px 7px 10px; }
+.modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.28);
+  backdrop-filter:blur(12px);
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  z-index:20;
+}
+.modal-content {
+  width:min(520px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:var(--card);
+  border-radius:18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.2);
+  padding:14px;
+}
+.modal-title { margin:0 0 12px; font-size:18px; }
+.field { display:grid; gap:5px; margin-bottom:10px; }
+.field label { color:var(--muted); font-size:12px; font-weight:750; }
+.field textarea { min-height:72px; resize:vertical; padding:9px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.category-editor { display:grid; gap:8px; }
+.category-row {
+  display:grid;
+  grid-template-columns:42px 1fr 90px 74px 34px;
+  gap:6px;
+  align-items:center;
+}
+.category-row input, .category-row select { min-height:34px; padding:6px 8px; }
+.category-row .remove-category { color:var(--red); padding:0; }
+@media(max-width:760px) {
+  body { padding:8px; }
+  .top-bar { align-items:stretch; }
+  .tab-container { grid-template-columns:repeat(2,1fr); }
+  .tab { flex-direction:column; gap:2px; padding:6px 3px; font-size:13px; }
+  .rank-circle { height:20px; min-width:34px; font-size:11px; }
+  .below-grid { grid-template-columns:1fr; }
+  th,td { padding:6px 4px; font-size:12px; }
+  th:first-child, td:first-child { width:76px; padding-left:8px; }
+  .category-row { grid-template-columns:38px 1fr 78px 64px 32px; }
+  .modal-content { border-radius:16px; }
+}
 </style>
 </head>
 <body>
-
-<h2>Good, Better, Best</h2>
-
 <div class="site-container">
-  <div class="tab-container">
-    <div class="tab active" data-kid="Ryan">Ryan <div class="rank-circle" id="rank-Ryan">$0</div></div>
-    <div class="tab" data-kid="Jack">Jack <div class="rank-circle" id="rank-Jack">$0</div></div>
-    <div class="tab" data-kid="Henry">Henry <div class="rank-circle" id="rank-Henry">$0</div></div>
-    <div class="tab" data-kid="Sonny">Sonny <div class="rank-circle" id="rank-Sonny">$0</div></div>
+  <div class="top-bar">
+    <div class="tab-container" id="kid-tabs"></div>
+    <button class="icon-btn" id="edit-categories" title="Edit categories" aria-label="Edit categories">+</button>
   </div>
-
-  <div id="Ryan" class="table-container active"></div>
-  <div id="Jack" class="table-container"></div>
-  <div id="Henry" class="table-container"></div>
-  <div id="Sonny" class="table-container"></div>
-
+  <div id="kid-views"></div>
   <div class="bottom-controls">
-    <select id="week-select"></select>
-    <button class="btn" id="archive-week">Archive Week</button>
-    <button class="btn" id="clear-week">Clear Week</button>
+    <select id="week-select" aria-label="Week"></select>
+    <button class="btn" id="archive-week">Archive</button>
+    <button class="btn danger" id="clear-week">Clear</button>
   </div>
 </div>
 
-<!-- Modal -->
 <div class="modal" id="note-modal">
   <div class="modal-content">
-    <h3>Daily Notes</h3>
-    <label>Other Tasks</label>
-    <textarea id="note-other"></textarea>
-    <label>Good</label>
-    <textarea id="note-good"></textarea>
-    <label>Bad</label>
-    <textarea id="note-bad"></textarea>
-    <label>Punishments</label>
-    <textarea id="note-punishments"></textarea>
-    <label>Rewards</label>
-    <textarea id="note-rewards"></textarea>
-    <div style="display:flex; justify-content:flex-end; gap:10px;">
-      <button class="btn" id="save-note">Save</button>
-      <button class="btn" id="clear-note">Clear</button>
+    <h3 class="modal-title" id="note-title">Daily Notes</h3>
+    <div class="field">
+      <label for="note-other">Other task</label>
+      <textarea id="note-other" placeholder="Add a task or reminder"></textarea>
+    </div>
+    <div class="field">
+      <label for="note-good">Good + reward</label>
+      <textarea id="note-good" placeholder="What went well and the reward"></textarea>
+    </div>
+    <div class="field">
+      <label for="note-bad">Bad + punishment</label>
+      <textarea id="note-bad" placeholder="What happened and the consequence"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="clear-note">Clear</button>
       <button class="btn" id="close-note">Close</button>
+      <button class="btn primary" id="save-note">Save</button>
     </div>
   </div>
 </div>
 
-<!-- Firebase -->
+<div class="modal" id="category-modal">
+  <div class="modal-content">
+    <h3 class="modal-title">Categories</h3>
+    <div class="category-editor" id="category-editor"></div>
+    <div class="modal-actions">
+      <button class="btn" id="add-category">Add Row</button>
+      <button class="btn" id="close-categories">Close</button>
+      <button class="btn primary" id="save-categories">Save</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// FIREBASE
 const firebaseConfig = {
   apiKey:"AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
   authDomain:"goatchase-e9502.firebaseapp.com",
@@ -126,19 +346,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Constants
-const kids=["Ryan","Jack","Henry","Sonny"];
-const days=["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
-const chores=[{key:"showerTeeth",icon:"🚿🦷"},{key:"bedRoom",icon:"🛏️🧹"},{key:"clothes",icon:"👕🧺"},{key:"other",icon:"⭐⭐"},{key:"deduction",icon:"➖➖"}];
-const activities=["reading","practice","workout"];
-const activityIcons={reading:"📖✏️",practice:"🏈⚾",workout:"🏋️‍♂️💪"};
-const CHORE_VALUE=0.25, ACTIVITY_RATE=0.05, DEDUCTION_VALUE=-2;
-const todayIndex = new Date().getDay()===0?6:new Date().getDay()-1;
-
-// Password for clearing
+const kids = ["Ryan","Jack","Henry","Sonny"];
+const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
+const DEFAULT_CATEGORIES = [
+  {key:"showerTeeth", label:"Shower + teeth", icon:"ST", kind:"check", amount:0.25},
+  {key:"bedRoom", label:"Bedroom", icon:"BR", kind:"check", amount:0.25},
+  {key:"clothes", label:"Clothes", icon:"CL", kind:"check", amount:0.25},
+  {key:"other", label:"Other", icon:"OT", kind:"check", amount:0.25},
+  {key:"deduction", label:"Deduction", icon:"-2", kind:"check", amount:-2},
+  {key:"reading", label:"Reading", icon:"RD", kind:"number", amount:0.05},
+  {key:"practice", label:"Practice", icon:"PR", kind:"number", amount:0.05},
+  {key:"workout", label:"Workout", icon:"WO", kind:"number", amount:0.05}
+];
 const CLEAR_PASSWORD = "clear";
+const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+let currentWeek = getYearWeek();
+let categories = [...DEFAULT_CATEGORIES];
+let notesCache = {};
+let activeKid = kids[0];
+let activeNote = {kid:null, day:null};
 
-// ISO Week Key
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = tmpDate.getUTCDay() || 7;
@@ -148,194 +375,388 @@ function getYearWeek(date = new Date()) {
   return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
 }
 
-// Current week
-let currentWeek = getYearWeek();
+function dollars(value) {
+  return `$${Math.round(value)}`;
+}
 
-// Notes
-let activeNote = {kid:null,day:null};
+function noteKey(kid, day) {
+  return `${kid}-${day}`;
+}
 
-// Build tables
-function buildTables(){
-  kids.forEach(kid=>{
-    const container=document.getElementById(kid);
-    let html=`<table><thead><tr><th></th>`;
-    days.forEach((day,i)=>{
-      const highlight=i===todayIndex?'current-day':'';
-      html+=`<th class="${highlight}" data-kid="${kid}" data-day="${i}">${day}</th>`;
+function combinedGood(data = {}) {
+  return data.goodReward ?? [data.good, data.rewards].filter(Boolean).join("\n");
+}
+
+function combinedBad(data = {}) {
+  return data.badPunishment ?? [data.bad, data.punishments].filter(Boolean).join("\n");
+}
+
+function normalizeCategory(category, index) {
+  const label = (category.label || category.key || `Row ${index + 1}`).trim();
+  const key = (category.key || label).trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || `row-${index + 1}`;
+  return {
+    key,
+    label,
+    icon:(category.icon || label.slice(0,2).toUpperCase()).trim().slice(0,4),
+    kind:category.kind === "number" ? "number" : "check",
+    amount:Number(category.amount || 0)
+  };
+}
+
+async function loadCategories() {
+  const doc = await db.collection("settings").doc("tracker").get();
+  if (doc.exists && Array.isArray(doc.data().categories) && doc.data().categories.length) {
+    categories = doc.data().categories.map(normalizeCategory);
+  }
+}
+
+async function saveCategories() {
+  categories = readCategoryEditor().map(normalizeCategory);
+  await db.collection("settings").doc("tracker").set({categories}, {merge:true});
+  buildShell();
+  await loadData(currentWeek);
+  closeModal("category-modal");
+}
+
+function buildShell() {
+  const tabs = document.getElementById("kid-tabs");
+  const views = document.getElementById("kid-views");
+  tabs.innerHTML = "";
+  views.innerHTML = "";
+  kids.forEach((kid, index) => {
+    const tab = document.createElement("button");
+    tab.className = `tab ${kid === activeKid ? "active" : ""}`;
+    tab.dataset.kid = kid;
+    tab.innerHTML = `<span>${kid}</span><span class="rank-circle" id="rank-${kid}">$0</span>`;
+    tabs.appendChild(tab);
+
+    const view = document.createElement("section");
+    view.id = kid;
+    view.className = `table-container ${kid === activeKid ? "active" : ""}`;
+    views.appendChild(view);
+  });
+  buildTables();
+}
+
+function buildTables() {
+  kids.forEach(kid => {
+    const container = document.getElementById(kid);
+    let html = `<div class="tracker-card"><div class="table-scroll"><table><thead><tr><th></th>`;
+    days.forEach((day, i) => {
+      const highlight = i === todayIndex ? "current-day" : "";
+      html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
-    html+=`</tr></thead><tbody>`;
-    [...chores,...activities.map(a=>({key:a,icon:activityIcons[a]}))].forEach(c=>{
-      html+=`<tr><td>${c.icon}</td>`;
-      days.forEach((day,i)=>{
-        if(c.key==="deduction" || !["reading","practice","workout"].includes(c.key)){
-          html+=`<td><input type="checkbox" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+    html += `</tr></thead><tbody>`;
+    categories.forEach(category => {
+      html += `<tr><td><span class="category-label"><span class="category-icon">${category.icon}</span><span class="category-name">${category.label}</span></span></td>`;
+      days.forEach((day, i) => {
+        if (category.kind === "number") {
+          html += `<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         } else {
-          html+=`<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${c.key}"></td>`;
+          const negative = category.amount < 0 ? "true" : "false";
+          html += `<td><input type="checkbox" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
-      html+=`</tr>`;
+      html += `</tr>`;
     });
-    html+=`<tr class="total-row"><td>Total</td>`;
-    days.forEach((day,i)=>{ html+=`<td id="${kid}-total-${i}">0</td>`; });
-    html+=`</tr></tbody></table>
-    <div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div>`;
-    container.innerHTML=html;
+    html += `<tr class="total-row"><td>Total</td>`;
+    days.forEach((day, i) => { html += `<td id="${kid}-total-${i}">$0</td>`; });
+    html += `</tr></tbody></table></div><div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div></div>`;
+    html += `<div class="below-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="btn" data-add-note="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
+    html += `<div class="panel week-notepad"><div class="panel-head"><span>Week Notes</span><span>${kid}</span></div><textarea id="${kid}-week-note" placeholder="Add notes for this week"></textarea><div class="notepad-actions"><button class="btn primary" data-save-week-note="${kid}">Save</button></div></div></div>`;
+    container.innerHTML = html;
   });
 }
 
-// Save and load functions
-async function saveData(kid){
-  const data={};
-  days.forEach((day,i)=>{
-    [...chores.map(c=>c.key),...activities].forEach(type=>{
-      const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-      if(input) chores.some(c=>c.key===type)? data[`${i}-${type}`]=input.checked : data[`${i}-${type}`]=input.value;
+async function saveData(kid) {
+  const data = {};
+  days.forEach((day, i) => {
+    categories.forEach(category => {
+      const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
+      if (!input) return;
+      data[`${i}-${category.key}`] = category.kind === "number" ? input.value : input.checked;
     });
   });
-  await db.collection('weeks').doc(currentWeek).collection('chores').doc(kid).set(data);
+  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await db.collection("weeks").doc(currentWeek).collection("chores").doc(kid).set(data);
   updateTotals();
 }
 
-async function loadData(weekKey=null){
-  if(!weekKey) weekKey=currentWeek;
-  for(const kid of kids){
-    const doc=await db.collection('weeks').doc(weekKey).collection('chores').doc(kid).get();
-    const data=doc.exists?doc.data():{};
-    days.forEach((day,i)=>{
-      [...chores.map(c=>c.key),...activities].forEach(type=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${type}"]`);
-        if(input) chores.some(c=>c.key===type)? input.checked=data[`${i}-${type}`]||false : input.value=data[`${i}-${type}`]||"";
+async function loadData(weekKey = currentWeek) {
+  currentWeek = weekKey;
+  await ensureWeekOption(weekKey);
+  notesCache = {};
+  for (const kid of kids) {
+    const doc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
+    const data = doc.exists ? doc.data() : {};
+    days.forEach((day, i) => {
+      categories.forEach(category => {
+        const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
+        if (!input) return;
+        if (category.kind === "number") input.value = data[`${i}-${category.key}`] || "";
+        else input.checked = data[`${i}-${category.key}`] || false;
       });
     });
+    await loadWeekNote(kid);
   }
+  await loadAllNotes();
   updateTotals();
 }
 
-// Update totals
-function updateTotals(){
-  kids.forEach(kid=>{
-    let kidTotal=0;
-    days.forEach((day,i)=>{
-      let dayTotal=0;
-      chores.forEach(c=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${c.key}"]`);
-        if(input){
-          if(c.key==="deduction" && input.checked) dayTotal+=DEDUCTION_VALUE;
-          else if(c.key!=="deduction" && input.checked) dayTotal+=CHORE_VALUE;
-        }
-      });
-      activities.forEach(a=>{
-        const input=document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${a}"]`);
-        if(input && input.value) dayTotal+=parseFloat(input.value || 0)*ACTIVITY_RATE;
-      });
-      kidTotal+=dayTotal;
-      document.getElementById(`${kid}-total-${i}`).textContent=`$${Math.round(dayTotal)}`;
-    });
-    const progressBar=document.getElementById(`${kid}-progress`);
-    const progressPercent=Math.min((kidTotal/20)*100,100);
-    progressBar.style.width=progressPercent+"%";
-    progressBar.textContent=`$${Math.round(kidTotal)}`;
-    document.getElementById(`rank-${kid}`).textContent=`$${Math.round(kidTotal)}`;
-  });
-}
-
-// Tabs
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".table-container").forEach(c=>c.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.kid).classList.add("active");
-  });
-});
-
-// Day headers for notes
-document.body.addEventListener("click", e=>{
-  if(e.target.tagName==='TH' && e.target.dataset.day!==undefined){
-    activeNote.kid=e.target.dataset.kid;
-    activeNote.day=e.target.dataset.day;
-    loadNote();
-    document.getElementById('note-modal').style.display='flex';
+async function loadAllNotes() {
+  for (const kid of kids) {
+    for (let i = 0; i < days.length; i++) {
+      const doc = await db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, i)).get();
+      notesCache[noteKey(kid, i)] = doc.exists ? doc.data() : {};
+    }
+    renderTaskList(kid);
   }
-});
-
-// Modal buttons
-document.getElementById('close-note').addEventListener('click',()=>{document.getElementById('note-modal').style.display='none';});
-document.getElementById('clear-note').addEventListener('click',()=>{
-  document.getElementById('note-other').value='';
-  document.getElementById('note-good').value='';
-  document.getElementById('note-bad').value='';
-  document.getElementById('note-punishments').value='';
-  document.getElementById('note-rewards').value='';
-});
-document.getElementById('save-note').addEventListener('click',async ()=>{
-  if(activeNote.kid!==null){
-    await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).set({
-      other:document.getElementById('note-other').value,
-      good:document.getElementById('note-good').value,
-      bad:document.getElementById('note-bad').value,
-      punishments:document.getElementById('note-punishments').value,
-      rewards:document.getElementById('note-rewards').value
-    });
-    document.getElementById('note-modal').style.display='none';
-  }
-});
-
-// Load note
-async function loadNote(){
-  const doc=await db.collection('weeks').doc(currentWeek).collection('notes').doc(`${activeNote.kid}-${activeNote.day}`).get();
-  const data=doc.exists?doc.data():{other:'',good:'',bad:'',punishments:'',rewards:''};
-  document.getElementById('note-other').value=data.other;
-  document.getElementById('note-good').value=data.good;
-  document.getElementById('note-bad').value=data.bad;
-  document.getElementById('note-punishments').value=data.punishments;
-  document.getElementById('note-rewards').value=data.rewards;
+  renderNoteIndicators();
 }
 
-// Populate week dropdown
-async function populateWeekDropdown(){
-  const weeksSnap=await db.collection('weeks').orderBy('timestamp','desc').get();
-  const select=document.getElementById('week-select');
-  select.innerHTML='';
-  weeksSnap.forEach(doc=>{
-    const option=document.createElement('option');
-    option.value=doc.id;
-    option.textContent=doc.id;
-    if(doc.id===currentWeek) option.selected=true;
-    select.appendChild(option);
+function updateTotals() {
+  kids.forEach(kid => {
+    let kidTotal = 0;
+    days.forEach((day, i) => {
+      let dayTotal = 0;
+      categories.forEach(category => {
+        const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
+        if (!input) return;
+        if (category.kind === "number") dayTotal += Number(input.value || 0) * category.amount;
+        else if (input.checked) dayTotal += category.amount;
+      });
+      kidTotal += dayTotal;
+      document.getElementById(`${kid}-total-${i}`).textContent = dollars(dayTotal);
+    });
+    const progressBar = document.getElementById(`${kid}-progress`);
+    const progressPercent = Math.max(0, Math.min((kidTotal / 20) * 100, 100));
+    progressBar.style.width = `${progressPercent}%`;
+    progressBar.textContent = dollars(kidTotal);
+    document.getElementById(`rank-${kid}`).textContent = dollars(kidTotal);
   });
 }
 
-// Bottom controls
-document.getElementById('archive-week').addEventListener('click',async ()=>{
-  await db.collection('weeks').doc(currentWeek).set({archived:true, timestamp:new Date()});
+function switchKid(kid) {
+  activeKid = kid;
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.kid === kid));
+  document.querySelectorAll(".table-container").forEach(view => view.classList.toggle("active", view.id === kid));
+}
+
+function renderNoteIndicators() {
+  kids.forEach(kid => {
+    days.forEach((day, i) => {
+      const data = notesCache[noteKey(kid, i)] || {};
+      const dots = document.getElementById(`${kid}-dots-${i}`);
+      if (!dots) return;
+      dots.innerHTML = "";
+      if ((data.other || "").trim()) dots.insertAdjacentHTML("beforeend", `<span class="note-dot other" title="Other task"></span>`);
+      if (combinedGood(data).trim()) dots.insertAdjacentHTML("beforeend", `<span class="note-dot good" title="Good + reward"></span>`);
+      if (combinedBad(data).trim()) dots.insertAdjacentHTML("beforeend", `<span class="note-dot bad" title="Bad + punishment"></span>`);
+    });
+  });
+}
+
+function renderTaskList(kid) {
+  const list = document.getElementById(`${kid}-tasks`);
+  if (!list) return;
+  const items = days.map((day, i) => ({day, dayIndex:i, data:notesCache[noteKey(kid, i)] || {}})).filter(item => (item.data.other || "").trim());
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state">No other tasks added yet.</div>`;
+    return;
+  }
+  list.innerHTML = items.map(item => {
+    const done = item.data.otherDone ? "done" : "";
+    const label = item.data.otherDone ? "Done" : "To do";
+    return `<div class="task-item ${done}"><div class="task-day">${item.day}</div><div class="task-icon">MSG</div><div class="task-text">${escapeHtml(item.data.other)}</div><button class="status-pill" data-toggle-task="${kid}" data-day="${item.dayIndex}">${label}</button></div>`;
+  }).join("");
+}
+
+async function toggleTask(kid, day) {
+  const key = noteKey(kid, day);
+  const data = notesCache[key] || {};
+  data.otherDone = !data.otherDone;
+  notesCache[key] = data;
+  await saveNoteData(kid, day, data);
+  renderTaskList(kid);
+}
+
+function openNote(kid, day) {
+  activeNote = {kid, day:String(day)};
+  const data = notesCache[noteKey(kid, day)] || {};
+  document.getElementById("note-title").textContent = `${kid} - ${days[day]}`;
+  document.getElementById("note-other").value = data.other || "";
+  document.getElementById("note-good").value = combinedGood(data);
+  document.getElementById("note-bad").value = combinedBad(data);
+  openModal("note-modal");
+}
+
+async function saveActiveNote() {
+  if (activeNote.kid === null) return;
+  const data = {
+    ...(notesCache[noteKey(activeNote.kid, activeNote.day)] || {}),
+    other:document.getElementById("note-other").value,
+    goodReward:document.getElementById("note-good").value,
+    badPunishment:document.getElementById("note-bad").value
+  };
+  await saveNoteData(activeNote.kid, activeNote.day, data);
+  notesCache[noteKey(activeNote.kid, activeNote.day)] = data;
+  renderNoteIndicators();
+  renderTaskList(activeNote.kid);
+  closeModal("note-modal");
+}
+
+async function saveNoteData(kid, day, data) {
+  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, day)).set(data);
+}
+
+function clearNoteFields() {
+  document.getElementById("note-other").value = "";
+  document.getElementById("note-good").value = "";
+  document.getElementById("note-bad").value = "";
+}
+
+async function loadWeekNote(kid) {
+  const doc = await db.collection("weeks").doc(currentWeek).collection("notepads").doc(kid).get();
+  const textarea = document.getElementById(`${kid}-week-note`);
+  if (textarea) textarea.value = doc.exists ? doc.data().text || "" : "";
+}
+
+async function saveWeekNote(kid) {
+  const textarea = document.getElementById(`${kid}-week-note`);
+  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await db.collection("weeks").doc(currentWeek).collection("notepads").doc(kid).set({text:textarea.value, updatedAt:new Date()});
+}
+
+async function populateWeekDropdown() {
+  const select = document.getElementById("week-select");
+  select.innerHTML = "";
+  const weeksSnap = await db.collection("weeks").orderBy("timestamp", "desc").get();
+  const seen = new Set();
+  weeksSnap.forEach(doc => {
+    seen.add(doc.id);
+    select.appendChild(new Option(doc.id, doc.id, doc.id === currentWeek, doc.id === currentWeek));
+  });
+  if (!seen.has(currentWeek)) select.prepend(new Option(currentWeek, currentWeek, true, true));
+}
+
+async function ensureWeekOption(weekKey) {
+  const select = document.getElementById("week-select");
+  if (![...select.options].some(option => option.value === weekKey)) {
+    select.prepend(new Option(weekKey, weekKey, true, true));
+  }
+  select.value = weekKey;
+}
+
+function openCategoryEditor() {
+  const editor = document.getElementById("category-editor");
+  editor.innerHTML = "";
+  categories.forEach(addCategoryRow);
+  openModal("category-modal");
+}
+
+function addCategoryRow(category = {label:"New row", icon:"NW", kind:"check", amount:0.25}) {
+  const editor = document.getElementById("category-editor");
+  const row = document.createElement("div");
+  row.className = "category-row";
+  row.dataset.key = category.key || "";
+  row.innerHTML = `
+    <input aria-label="Icon" data-field="icon" value="${escapeAttr(category.icon || "")}">
+    <input aria-label="Label" data-field="label" value="${escapeAttr(category.label || "")}">
+    <select aria-label="Type" data-field="kind">
+      <option value="check" ${category.kind !== "number" ? "selected" : ""}>Check</option>
+      <option value="number" ${category.kind === "number" ? "selected" : ""}>Number</option>
+    </select>
+    <input aria-label="Value" data-field="amount" type="number" step="0.01" value="${Number(category.amount || 0)}">
+    <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
+  `;
+  editor.appendChild(row);
+}
+
+function readCategoryEditor() {
+  return [...document.querySelectorAll(".category-row")].map((row, index) => {
+    const label = row.querySelector('[data-field="label"]').value.trim() || `Row ${index + 1}`;
+    return {
+      key:row.dataset.key || label,
+      label,
+      icon:row.querySelector('[data-field="icon"]').value.trim(),
+      kind:row.querySelector('[data-field="kind"]').value,
+      amount:Number(row.querySelector('[data-field="amount"]').value || 0)
+    };
+  });
+}
+
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function escapeHtml(text = "") {
+  return text.replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
+}
+
+function escapeAttr(text = "") {
+  return escapeHtml(String(text));
+}
+
+document.body.addEventListener("click", async event => {
+  const tab = event.target.closest(".tab");
+  if (tab) switchKid(tab.dataset.kid);
+
+  const th = event.target.closest("th[data-day]");
+  if (th) openNote(th.dataset.kid, Number(th.dataset.day));
+
+  const addNote = event.target.closest("[data-add-note]");
+  if (addNote) openNote(addNote.dataset.addNote, todayIndex);
+
+  const toggle = event.target.closest("[data-toggle-task]");
+  if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.day);
+
+  const saveWeek = event.target.closest("[data-save-week-note]");
+  if (saveWeek) await saveWeekNote(saveWeek.dataset.saveWeekNote);
+
+  if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
+});
+
+document.getElementById("edit-categories").addEventListener("click", openCategoryEditor);
+document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
+document.getElementById("close-categories").addEventListener("click", () => closeModal("category-modal"));
+document.getElementById("save-categories").addEventListener("click", saveCategories);
+document.getElementById("close-note").addEventListener("click", () => closeModal("note-modal"));
+document.getElementById("clear-note").addEventListener("click", clearNoteFields);
+document.getElementById("save-note").addEventListener("click", saveActiveNote);
+document.getElementById("archive-week").addEventListener("click", async () => {
+  await db.collection("weeks").doc(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});
   await populateWeekDropdown();
 });
-
-document.getElementById('clear-week').addEventListener('click',async ()=>{
-  const pass=prompt("Enter password to clear week:");
-  if(pass===CLEAR_PASSWORD){
-    for(const kid of kids){
-      const docRef=db.collection('weeks').doc(currentWeek).collection('chores').doc(kid);
-      await docRef.delete();
-    }
-    await loadData();
-  } else { alert("Incorrect password."); }
-});
-
-document.getElementById('week-select').addEventListener('change',async e=>{
-  currentWeek=e.target.value;
+document.getElementById("clear-week").addEventListener("click", async () => {
+  const pass = prompt("Enter password to clear week:");
+  if (pass !== CLEAR_PASSWORD) {
+    alert("Incorrect password.");
+    return;
+  }
+  for (const collectionName of ["chores", "notes", "notepads"]) {
+    const snap = await db.collection("weeks").doc(currentWeek).collection(collectionName).get();
+    for (const doc of snap.docs) await doc.ref.delete();
+  }
   await loadData(currentWeek);
 });
+document.getElementById("week-select").addEventListener("change", async event => {
+  await loadData(event.target.value);
+});
+document.body.addEventListener("change", event => {
+  const input = event.target.closest("[data-kid][data-day][data-type]");
+  if (input) saveData(input.dataset.kid);
+});
 
-// Init
-window.onload=async ()=>{
-  buildTables();
-  await loadData();
+window.onload = async () => {
+  await loadCategories();
+  buildShell();
   await populateWeekDropdown();
-  document.querySelectorAll('input').forEach(input=>{
-    input.addEventListener('change',()=>{ saveData(input.dataset.kid); });
-  });
+  await loadData(currentWeek);
 };
 </script>
 </body>

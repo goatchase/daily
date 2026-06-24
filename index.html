@@ -25,7 +25,7 @@ body {
   min-height:100vh;
   background:var(--bg);
   color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  font-family:"SF Pro Text","SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",sans-serif;
 }
 button, input, select, textarea { font:inherit; }
 .site-container { width:min(1180px,100%); margin:0 auto; }
@@ -85,19 +85,19 @@ button, input, select, textarea { font:inherit; }
 .tracker-card {
   background:var(--card);
   border:1px solid rgba(0,0,0,.04);
-  border-radius:16px;
+  border-radius:14px;
   box-shadow:var(--shadow);
   overflow:hidden;
 }
 .table-scroll { width:100%; overflow-x:auto; }
-table { width:100%; border-collapse:collapse; table-layout:fixed; min-width:680px; }
+table { width:100%; border-collapse:collapse; table-layout:fixed; min-width:620px; }
 th, td {
   border-bottom:1px solid var(--line);
   text-align:center;
-  padding:7px 5px;
+  padding:6px 4px;
   font-size:13px;
 }
-th:first-child, td:first-child { width:88px; text-align:left; padding-left:10px; }
+th:first-child, td:first-child { width:72px; text-align:left; padding-left:7px; }
 th { color:var(--muted); font-size:12px; font-weight:700; background:rgba(250,250,252,.9); }
 th.current-day { color:var(--blue); background:#eef6ff; }
 .day-head {
@@ -114,15 +114,19 @@ th.current-day { color:var(--blue); background:#eef6ff; }
 .note-dot.good { background:var(--green); }
 .note-dot.bad { background:var(--red); }
 .category-label {
+  width:100%;
+  border:0;
+  background:transparent;
+  padding:0;
   display:flex;
   align-items:center;
-  gap:6px;
-  min-width:0;
+  justify-content:flex-start;
   color:var(--ink);
-  font-weight:650;
+  font-weight:700;
+  cursor:pointer;
 }
-.category-icon { width:24px; text-align:center; color:var(--muted); font-size:15px; }
-.category-name { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.category-name { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:12px; }
+.category-label:active { color:var(--blue); }
 input[type="checkbox"] {
   appearance:none;
   -webkit-appearance:none;
@@ -176,7 +180,7 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   font-weight:750;
   transition:width .2s ease;
 }
-.below-grid {
+.work-grid {
   display:grid;
   grid-template-columns:1.1fr .9fr;
   gap:10px;
@@ -190,10 +194,33 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   padding:10px;
 }
 .panel-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:750; text-transform:uppercase; }
+.entry-row {
+  display:grid;
+  grid-template-columns:86px 1fr auto;
+  gap:7px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.log-row {
+  display:grid;
+  grid-template-columns:76px 92px 1fr;
+  gap:7px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.entry-row input, .entry-row select, .log-row input, .log-row select { min-height:36px; padding:7px 9px; }
+.log-note-row {
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:7px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.log-note-row input { min-height:36px; padding:7px 9px; }
 .task-list { display:grid; gap:7px; }
 .task-item {
   display:grid;
-  grid-template-columns:auto auto 1fr auto;
+  grid-template-columns:auto 1fr auto;
   gap:8px;
   align-items:center;
   min-height:38px;
@@ -204,19 +231,6 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
 }
 .task-item.done { opacity:.6; }
 .task-day { color:var(--blue); font-weight:800; font-size:12px; }
-.task-icon {
-  width:28px;
-  height:24px;
-  border-radius:999px;
-  background:rgba(0,122,255,.1);
-  color:var(--blue);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  font-weight:850;
-  letter-spacing:.2px;
-}
 .task-text { min-width:0; font-size:14px; overflow-wrap:anywhere; }
 .status-pill {
   border:0;
@@ -229,8 +243,21 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
 }
 .task-item.done .status-pill { background:rgba(52,199,89,.12); color:var(--green); }
 .empty-state { color:var(--muted); padding:8px; font-size:14px; }
-.week-notepad textarea { min-height:116px; resize:vertical; padding:9px; line-height:1.35; }
-.notepad-actions { display:flex; justify-content:flex-end; margin-top:7px; }
+.log-list { display:grid; gap:7px; }
+.log-item {
+  display:grid;
+  gap:4px;
+  padding:8px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fbfbfd;
+}
+.log-meta { display:flex; gap:6px; align-items:center; color:var(--muted); font-size:12px; font-weight:750; }
+.log-type { border-radius:999px; padding:3px 8px; color:#fff; }
+.log-type.good { background:var(--green); }
+.log-type.bad { background:var(--red); }
+.log-copy { font-size:14px; line-height:1.3; overflow-wrap:anywhere; }
+.log-outcome { color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
 .bottom-controls { display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
 .bottom-controls select { width:auto; min-width:132px; padding:7px 30px 7px 10px; }
 .modal {
@@ -261,22 +288,25 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
 .category-editor { display:grid; gap:8px; }
 .category-row {
   display:grid;
-  grid-template-columns:42px 1fr 90px 74px 34px;
+  grid-template-columns:80px 1fr 90px 74px 34px;
   gap:6px;
   align-items:center;
 }
 .category-row input, .category-row select { min-height:34px; padding:6px 8px; }
 .category-row .remove-category { color:var(--red); padding:0; }
+.category-detail { color:var(--muted); line-height:1.4; margin:0; }
 @media(max-width:760px) {
   body { padding:8px; }
   .top-bar { align-items:stretch; }
   .tab-container { grid-template-columns:repeat(2,1fr); }
   .tab { flex-direction:column; gap:2px; padding:6px 3px; font-size:13px; }
   .rank-circle { height:20px; min-width:34px; font-size:11px; }
-  .below-grid { grid-template-columns:1fr; }
+  .work-grid { grid-template-columns:1fr; }
+  .entry-row, .log-row, .log-note-row { grid-template-columns:1fr; }
   th,td { padding:6px 4px; font-size:12px; }
-  th:first-child, td:first-child { width:76px; padding-left:8px; }
-  .category-row { grid-template-columns:38px 1fr 78px 64px 32px; }
+  th:first-child, td:first-child { width:66px; padding-left:6px; }
+  .category-row { grid-template-columns:1fr 1fr; }
+  .category-row .remove-category { width:100%; }
   .modal-content { border-radius:16px; }
 }
 </style>
@@ -295,25 +325,13 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   </div>
 </div>
 
-<div class="modal" id="note-modal">
+<div class="modal" id="category-detail-modal">
   <div class="modal-content">
-    <h3 class="modal-title" id="note-title">Daily Notes</h3>
-    <div class="field">
-      <label for="note-other">Other task</label>
-      <textarea id="note-other" placeholder="Add a task or reminder"></textarea>
-    </div>
-    <div class="field">
-      <label for="note-good">Good + reward</label>
-      <textarea id="note-good" placeholder="What went well and the reward"></textarea>
-    </div>
-    <div class="field">
-      <label for="note-bad">Bad + punishment</label>
-      <textarea id="note-bad" placeholder="What happened and the consequence"></textarea>
-    </div>
+    <h3 class="modal-title" id="category-detail-title">Category</h3>
+    <p class="category-detail" id="category-detail-copy"></p>
     <div class="modal-actions">
-      <button class="btn danger" id="clear-note">Clear</button>
-      <button class="btn" id="close-note">Close</button>
-      <button class="btn primary" id="save-note">Save</button>
+      <button class="btn" id="edit-category-from-detail">Edit</button>
+      <button class="btn primary" id="close-category-detail">Close</button>
     </div>
   </div>
 </div>
@@ -349,22 +367,24 @@ const db = firebase.firestore();
 const kids = ["Ryan","Jack","Henry","Sonny"];
 const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const DEFAULT_CATEGORIES = [
-  {key:"showerTeeth", label:"Shower + teeth", icon:"ST", kind:"check", amount:0.25},
-  {key:"bedRoom", label:"Bedroom", icon:"BR", kind:"check", amount:0.25},
-  {key:"clothes", label:"Clothes", icon:"CL", kind:"check", amount:0.25},
-  {key:"other", label:"Other", icon:"OT", kind:"check", amount:0.25},
-  {key:"deduction", label:"Deduction", icon:"-2", kind:"check", amount:-2},
-  {key:"reading", label:"Reading", icon:"RD", kind:"number", amount:0.05},
-  {key:"practice", label:"Practice", icon:"PR", kind:"number", amount:0.05},
-  {key:"workout", label:"Workout", icon:"WO", kind:"number", amount:0.05}
+  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25},
+  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25},
+  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25},
+  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2},
+  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05},
+  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05},
+  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05}
 ];
+const DEFAULT_CATEGORY_MAP = Object.fromEntries(DEFAULT_CATEGORIES.map(category => [category.key, category]));
 const CLEAR_PASSWORD = "clear";
 const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 let currentWeek = getYearWeek();
 let categories = [...DEFAULT_CATEGORIES];
 let notesCache = {};
+let tasksCache = {};
+let logsCache = {};
 let activeKid = kids[0];
-let activeNote = {kid:null, day:null};
+let activeCategory = null;
 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -391,13 +411,23 @@ function combinedBad(data = {}) {
   return data.badPunishment ?? [data.bad, data.punishments].filter(Boolean).join("\n");
 }
 
+function dayOptions(selected = todayIndex) {
+  return days.map((day, index) => `<option value="${index}" ${index === selected ? "selected" : ""}>${day}</option>`).join("");
+}
+
+function makeId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 function normalizeCategory(category, index) {
-  const label = (category.label || category.key || `Row ${index + 1}`).trim();
+  const defaults = DEFAULT_CATEGORY_MAP[category.key] || {};
+  const rawLabel = (category.label || defaults.label || category.key || `Row ${index + 1}`).trim();
+  const label = defaults.label && !category.details ? defaults.label : rawLabel;
   const key = (category.key || label).trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || `row-${index + 1}`;
   return {
     key,
     label,
-    icon:(category.icon || label.slice(0,2).toUpperCase()).trim().slice(0,4),
+    details:(category.details || defaults.details || label).trim(),
     kind:category.kind === "number" ? "number" : "check",
     amount:Number(category.amount || 0)
   };
@@ -406,7 +436,7 @@ function normalizeCategory(category, index) {
 async function loadCategories() {
   const doc = await db.collection("settings").doc("tracker").get();
   if (doc.exists && Array.isArray(doc.data().categories) && doc.data().categories.length) {
-    categories = doc.data().categories.map(normalizeCategory);
+    categories = doc.data().categories.filter(category => category.key !== "other").map(normalizeCategory);
   }
 }
 
@@ -448,7 +478,7 @@ function buildTables() {
     });
     html += `</tr></thead><tbody>`;
     categories.forEach(category => {
-      html += `<tr><td><span class="category-label"><span class="category-icon">${category.icon}</span><span class="category-name">${category.label}</span></span></td>`;
+      html += `<tr><td><button class="category-label" data-category-key="${category.key}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
       days.forEach((day, i) => {
         if (category.kind === "number") {
           html += `<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
@@ -462,8 +492,8 @@ function buildTables() {
     html += `<tr class="total-row"><td>Total</td>`;
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}">$0</td>`; });
     html += `</tr></tbody></table></div><div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div></div>`;
-    html += `<div class="below-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="btn" data-add-note="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
-    html += `<div class="panel week-notepad"><div class="panel-head"><span>Week Notes</span><span>${kid}</span></div><textarea id="${kid}-week-note" placeholder="Add notes for this week"></textarea><div class="notepad-actions"><button class="btn primary" data-save-week-note="${kid}">Save</button></div></div></div>`;
+    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><span>${kid}</span></div><div class="entry-row"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
+    html += `<div class="panel"><div class="panel-head"><span>Good / Bad Log</span><span>${kid}</span></div><div class="log-row"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"></div><div class="log-note-row"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
     container.innerHTML = html;
   });
 }
@@ -486,6 +516,8 @@ async function loadData(weekKey = currentWeek) {
   currentWeek = weekKey;
   await ensureWeekOption(weekKey);
   notesCache = {};
+  tasksCache = {};
+  logsCache = {};
   for (const kid of kids) {
     const doc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
     const data = doc.exists ? doc.data() : {};
@@ -497,19 +529,21 @@ async function loadData(weekKey = currentWeek) {
         else input.checked = data[`${i}-${category.key}`] || false;
       });
     });
-    await loadWeekNote(kid);
   }
-  await loadAllNotes();
+  await loadWeeklyPanels();
   updateTotals();
 }
 
-async function loadAllNotes() {
+async function loadWeeklyPanels() {
   for (const kid of kids) {
     for (let i = 0; i < days.length; i++) {
       const doc = await db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, i)).get();
       notesCache[noteKey(kid, i)] = doc.exists ? doc.data() : {};
     }
+    await loadTasks(kid);
+    await loadLogs(kid);
     renderTaskList(kid);
+    renderLogList(kid);
   }
   renderNoteIndicators();
 }
@@ -545,87 +579,128 @@ function switchKid(kid) {
 function renderNoteIndicators() {
   kids.forEach(kid => {
     days.forEach((day, i) => {
-      const data = notesCache[noteKey(kid, i)] || {};
+      const hasTask = (tasksCache[kid] || []).some(task => Number(task.day) === i && (task.text || "").trim());
+      const hasGood = (logsCache[kid] || []).some(entry => Number(entry.day) === i && entry.type === "good");
+      const hasBad = (logsCache[kid] || []).some(entry => Number(entry.day) === i && entry.type === "bad");
       const dots = document.getElementById(`${kid}-dots-${i}`);
       if (!dots) return;
       dots.innerHTML = "";
-      if ((data.other || "").trim()) dots.insertAdjacentHTML("beforeend", `<span class="note-dot other" title="Other task"></span>`);
-      if (combinedGood(data).trim()) dots.insertAdjacentHTML("beforeend", `<span class="note-dot good" title="Good + reward"></span>`);
-      if (combinedBad(data).trim()) dots.insertAdjacentHTML("beforeend", `<span class="note-dot bad" title="Bad + punishment"></span>`);
+      if (hasTask) dots.insertAdjacentHTML("beforeend", `<span class="note-dot other" title="Other task"></span>`);
+      if (hasGood) dots.insertAdjacentHTML("beforeend", `<span class="note-dot good" title="Good"></span>`);
+      if (hasBad) dots.insertAdjacentHTML("beforeend", `<span class="note-dot bad" title="Bad"></span>`);
     });
   });
+}
+
+async function loadTasks(kid) {
+  const doc = await db.collection("weeks").doc(currentWeek).collection("tasks").doc(kid).get();
+  const saved = doc.exists && Array.isArray(doc.data().items) ? doc.data().items : [];
+  const legacy = [];
+  days.forEach((day, i) => {
+    const data = notesCache[noteKey(kid, i)] || {};
+    if ((data.other || "").trim()) {
+      legacy.push({id:`legacy-task-${i}`, day:i, text:data.other, done:!!data.otherDone, legacy:true});
+    }
+  });
+  tasksCache[kid] = saved.length ? saved : legacy;
+}
+
+async function saveTasks(kid) {
+  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await db.collection("weeks").doc(currentWeek).collection("tasks").doc(kid).set({items:tasksCache[kid] || [], updatedAt:new Date()});
 }
 
 function renderTaskList(kid) {
   const list = document.getElementById(`${kid}-tasks`);
   if (!list) return;
-  const items = days.map((day, i) => ({day, dayIndex:i, data:notesCache[noteKey(kid, i)] || {}})).filter(item => (item.data.other || "").trim());
+  const items = tasksCache[kid] || [];
   if (!items.length) {
     list.innerHTML = `<div class="empty-state">No other tasks added yet.</div>`;
     return;
   }
   list.innerHTML = items.map(item => {
-    const done = item.data.otherDone ? "done" : "";
-    const label = item.data.otherDone ? "Done" : "To do";
-    return `<div class="task-item ${done}"><div class="task-day">${item.day}</div><div class="task-icon">MSG</div><div class="task-text">${escapeHtml(item.data.other)}</div><button class="status-pill" data-toggle-task="${kid}" data-day="${item.dayIndex}">${label}</button></div>`;
+    const done = item.done ? "done" : "";
+    const label = item.done ? "Done" : "To do";
+    return `<div class="task-item ${done}"><div class="task-day">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><button class="status-pill" data-toggle-task="${kid}" data-task-id="${item.id}">${label}</button></div>`;
   }).join("");
 }
 
-async function toggleTask(kid, day) {
-  const key = noteKey(kid, day);
-  const data = notesCache[key] || {};
-  data.otherDone = !data.otherDone;
-  notesCache[key] = data;
-  await saveNoteData(kid, day, data);
+async function addTask(kid) {
+  const textInput = document.getElementById(`${kid}-task-text`);
+  const dayInput = document.getElementById(`${kid}-task-day`);
+  const text = textInput.value.trim();
+  if (!text) return;
+  tasksCache[kid] = [...(tasksCache[kid] || []), {id:makeId("task"), day:Number(dayInput.value), text, done:false}];
+  textInput.value = "";
+  await saveTasks(kid);
   renderTaskList(kid);
-}
-
-function openNote(kid, day) {
-  activeNote = {kid, day:String(day)};
-  const data = notesCache[noteKey(kid, day)] || {};
-  document.getElementById("note-title").textContent = `${kid} - ${days[day]}`;
-  document.getElementById("note-other").value = data.other || "";
-  document.getElementById("note-good").value = combinedGood(data);
-  document.getElementById("note-bad").value = combinedBad(data);
-  openModal("note-modal");
-}
-
-async function saveActiveNote() {
-  if (activeNote.kid === null) return;
-  const data = {
-    ...(notesCache[noteKey(activeNote.kid, activeNote.day)] || {}),
-    other:document.getElementById("note-other").value,
-    goodReward:document.getElementById("note-good").value,
-    badPunishment:document.getElementById("note-bad").value
-  };
-  await saveNoteData(activeNote.kid, activeNote.day, data);
-  notesCache[noteKey(activeNote.kid, activeNote.day)] = data;
   renderNoteIndicators();
-  renderTaskList(activeNote.kid);
-  closeModal("note-modal");
 }
 
-async function saveNoteData(kid, day, data) {
+async function toggleTask(kid, id) {
+  tasksCache[kid] = (tasksCache[kid] || []).map(task => task.id === id ? {...task, done:!task.done} : task);
+  await saveTasks(kid);
+  renderTaskList(kid);
+  renderNoteIndicators();
+}
+
+async function loadLogs(kid) {
+  const doc = await db.collection("weeks").doc(currentWeek).collection("logs").doc(kid).get();
+  const saved = doc.exists && Array.isArray(doc.data().entries) ? doc.data().entries : [];
+  const legacy = [];
+  days.forEach((day, i) => {
+    const data = notesCache[noteKey(kid, i)] || {};
+    const good = combinedGood(data).trim();
+    const bad = combinedBad(data).trim();
+    if (good) legacy.push({id:`legacy-good-${i}`, day:i, type:"good", note:good, outcome:"", legacy:true});
+    if (bad) legacy.push({id:`legacy-bad-${i}`, day:i, type:"bad", note:bad, outcome:"", legacy:true});
+  });
+  logsCache[kid] = saved.length ? saved : legacy;
+}
+
+async function saveLogs(kid) {
   await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
-  await db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, day)).set(data);
+  await db.collection("weeks").doc(currentWeek).collection("logs").doc(kid).set({entries:logsCache[kid] || [], updatedAt:new Date()});
 }
 
-function clearNoteFields() {
-  document.getElementById("note-other").value = "";
-  document.getElementById("note-good").value = "";
-  document.getElementById("note-bad").value = "";
+function renderLogList(kid) {
+  const list = document.getElementById(`${kid}-logs`);
+  if (!list) return;
+  const entries = logsCache[kid] || [];
+  if (!entries.length) {
+    list.innerHTML = `<div class="empty-state">No good or bad notes logged yet.</div>`;
+    return;
+  }
+  list.innerHTML = entries.slice().reverse().map(entry => {
+    const type = entry.type === "bad" ? "bad" : "good";
+    const outcomeLabel = type === "bad" ? "Punishment" : "Reward";
+    return `<div class="log-item"><div class="log-meta"><span>${days[Number(entry.day)] || "Any"}</span><span class="log-type ${type}">${type === "bad" ? "Bad" : "Good"}</span></div><div class="log-copy">${escapeHtml(entry.note || "")}</div><div class="log-outcome">${outcomeLabel}: ${escapeHtml(entry.outcome || "")}</div></div>`;
+  }).join("");
 }
 
-async function loadWeekNote(kid) {
-  const doc = await db.collection("weeks").doc(currentWeek).collection("notepads").doc(kid).get();
-  const textarea = document.getElementById(`${kid}-week-note`);
-  if (textarea) textarea.value = doc.exists ? doc.data().text || "" : "";
+async function addLog(kid) {
+  const dayInput = document.getElementById(`${kid}-log-day`);
+  const typeInput = document.getElementById(`${kid}-log-type`);
+  const noteInput = document.getElementById(`${kid}-log-note`);
+  const outcomeInput = document.getElementById(`${kid}-log-outcome`);
+  const note = noteInput.value.trim();
+  const outcome = outcomeInput.value.trim();
+  if (!note && !outcome) return;
+  logsCache[kid] = [...(logsCache[kid] || []), {id:makeId("log"), day:Number(dayInput.value), type:typeInput.value, note, outcome}];
+  noteInput.value = "";
+  outcomeInput.value = "";
+  await saveLogs(kid);
+  renderLogList(kid);
+  renderNoteIndicators();
 }
 
-async function saveWeekNote(kid) {
-  const textarea = document.getElementById(`${kid}-week-note`);
-  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
-  await db.collection("weeks").doc(currentWeek).collection("notepads").doc(kid).set({text:textarea.value, updatedAt:new Date()});
+function openCategoryDetail(key) {
+  const category = categories.find(item => item.key === key);
+  if (!category) return;
+  activeCategory = key;
+  document.getElementById("category-detail-title").textContent = category.label;
+  document.getElementById("category-detail-copy").textContent = category.details || "No notes added for this category yet.";
+  openModal("category-detail-modal");
 }
 
 async function populateWeekDropdown() {
@@ -655,14 +730,14 @@ function openCategoryEditor() {
   openModal("category-modal");
 }
 
-function addCategoryRow(category = {label:"New row", icon:"NW", kind:"check", amount:0.25}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
   row.dataset.key = category.key || "";
   row.innerHTML = `
-    <input aria-label="Icon" data-field="icon" value="${escapeAttr(category.icon || "")}">
-    <input aria-label="Label" data-field="label" value="${escapeAttr(category.label || "")}">
+    <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
+    <input aria-label="Notes" data-field="details" placeholder="Tap notes" value="${escapeAttr(category.details || "")}">
     <select aria-label="Type" data-field="kind">
       <option value="check" ${category.kind !== "number" ? "selected" : ""}>Check</option>
       <option value="number" ${category.kind === "number" ? "selected" : ""}>Number</option>
@@ -679,7 +754,7 @@ function readCategoryEditor() {
     return {
       key:row.dataset.key || label,
       label,
-      icon:row.querySelector('[data-field="icon"]').value.trim(),
+      details:row.querySelector('[data-field="details"]').value.trim(),
       kind:row.querySelector('[data-field="kind"]').value,
       amount:Number(row.querySelector('[data-field="amount"]').value || 0)
     };
@@ -706,17 +781,17 @@ document.body.addEventListener("click", async event => {
   const tab = event.target.closest(".tab");
   if (tab) switchKid(tab.dataset.kid);
 
-  const th = event.target.closest("th[data-day]");
-  if (th) openNote(th.dataset.kid, Number(th.dataset.day));
+  const categoryButton = event.target.closest("[data-category-key]");
+  if (categoryButton) openCategoryDetail(categoryButton.dataset.categoryKey);
 
-  const addNote = event.target.closest("[data-add-note]");
-  if (addNote) openNote(addNote.dataset.addNote, todayIndex);
+  const addTaskButton = event.target.closest("[data-add-task]");
+  if (addTaskButton) await addTask(addTaskButton.dataset.addTask);
 
   const toggle = event.target.closest("[data-toggle-task]");
-  if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.day);
+  if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.taskId);
 
-  const saveWeek = event.target.closest("[data-save-week-note]");
-  if (saveWeek) await saveWeekNote(saveWeek.dataset.saveWeekNote);
+  const addLogButton = event.target.closest("[data-add-log]");
+  if (addLogButton) await addLog(addLogButton.dataset.addLog);
 
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
 });
@@ -725,9 +800,11 @@ document.getElementById("edit-categories").addEventListener("click", openCategor
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
 document.getElementById("close-categories").addEventListener("click", () => closeModal("category-modal"));
 document.getElementById("save-categories").addEventListener("click", saveCategories);
-document.getElementById("close-note").addEventListener("click", () => closeModal("note-modal"));
-document.getElementById("clear-note").addEventListener("click", clearNoteFields);
-document.getElementById("save-note").addEventListener("click", saveActiveNote);
+document.getElementById("close-category-detail").addEventListener("click", () => closeModal("category-detail-modal"));
+document.getElementById("edit-category-from-detail").addEventListener("click", () => {
+  closeModal("category-detail-modal");
+  openCategoryEditor();
+});
 document.getElementById("archive-week").addEventListener("click", async () => {
   await db.collection("weeks").doc(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});
   await populateWeekDropdown();
@@ -738,7 +815,7 @@ document.getElementById("clear-week").addEventListener("click", async () => {
     alert("Incorrect password.");
     return;
   }
-  for (const collectionName of ["chores", "notes", "notepads"]) {
+  for (const collectionName of ["chores", "notes", "notepads", "tasks", "logs"]) {
     const snap = await db.collection("weeks").doc(currentWeek).collection(collectionName).get();
     for (const doc of snap.docs) await doc.ref.delete();
   }

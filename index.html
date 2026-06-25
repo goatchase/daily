@@ -171,21 +171,6 @@ input[type="number"], input[type="text"], select, textarea {
 input[type="number"] { width:44px; height:26px; text-align:center; padding:3px 2px; font-size:12px; }
 input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,122,255,.12); }
 .total-row td { background:#fafafa; font-weight:750; }
-.progress-wrapper { height:28px; margin:10px; border-radius:999px; background:#e9e9ed; overflow:hidden; }
-.progress-bar {
-  height:100%;
-  min-width:42px;
-  width:0;
-  border-radius:999px;
-  background:linear-gradient(90deg,var(--blue),#5ac8fa);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:13px;
-  font-weight:750;
-  transition:width .2s ease;
-}
 .work-grid {
   display:grid;
   grid-template-columns:1.1fr .9fr;
@@ -200,6 +185,22 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   padding:9px;
 }
 .panel-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; color:var(--muted); font-size:12px; font-weight:750; }
+.panel-add {
+  width:28px;
+  height:28px;
+  border:0;
+  border-radius:999px;
+  background:rgba(0,122,255,.1);
+  color:var(--blue);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+  font-weight:700;
+}
+.panel-add:active { transform:scale(.96); }
 .entry-row {
   display:grid;
   grid-template-columns:86px 1fr auto;
@@ -207,6 +208,7 @@ input:focus, textarea:focus, select:focus { border-color:var(--blue); box-shadow
   align-items:center;
   margin-bottom:8px;
 }
+.entry-row.collapsed, .log-compose.collapsed { display:none; }
 .log-compose {
   display:grid;
   grid-template-columns:68px 74px minmax(120px,1fr) minmax(120px,1fr) auto;
@@ -537,9 +539,9 @@ function buildTables() {
     });
     html += `<tr class="total-row"><td>Total</td>`;
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}">$0</td>`; });
-    html += `</tr></tbody></table></div><div class="progress-wrapper"><div id="${kid}-progress" class="progress-bar">$0</div></div></div>`;
-    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span></div><div class="entry-row"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
-    html += `<div class="panel"><div class="panel-head"><span>Log</span></div><div class="log-compose"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
+    html += `</tr></tbody></table></div></div>`;
+    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
+    html += `<div class="panel"><div class="panel-head"><span>Log</span><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
     container.innerHTML = html;
   });
 }
@@ -608,10 +610,6 @@ function updateTotals() {
       kidTotal += dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent = dollars(dayTotal);
     });
-    const progressBar = document.getElementById(`${kid}-progress`);
-    const progressPercent = Math.max(0, Math.min((kidTotal / 20) * 100, 100));
-    progressBar.style.width = `${progressPercent}%`;
-    progressBar.textContent = dollars(kidTotal);
     document.getElementById(`rank-${kid}`).textContent = dollars(kidTotal);
   });
 }
@@ -679,6 +677,7 @@ async function addTask(kid) {
   tasksCache[kid] = [...(tasksCache[kid] || []), {id:makeId("task"), day:Number(dayInput.value), text, done:false}];
   textInput.value = "";
   await saveTasks(kid);
+  document.getElementById(`${kid}-task-entry`)?.classList.add("collapsed");
   renderTaskList(kid);
   renderNoteIndicators();
 }
@@ -759,6 +758,7 @@ async function addLog(kid) {
   noteInput.value = "";
   outcomeInput.value = "";
   await saveLogs(kid);
+  document.getElementById(`${kid}-log-entry`)?.classList.add("collapsed");
   renderLogList(kid);
   renderNoteIndicators();
 }
@@ -878,6 +878,12 @@ document.body.addEventListener("click", async event => {
 
   const categoryButton = event.target.closest("[data-category-key]");
   if (categoryButton) openCategoryDetail(categoryButton.dataset.categoryKey);
+
+  const toggleEntryButton = event.target.closest("[data-toggle-entry]");
+  if (toggleEntryButton) {
+    const form = document.getElementById(toggleEntryButton.dataset.toggleEntry);
+    if (form) form.classList.toggle("collapsed");
+  }
 
   const addTaskButton = event.target.closest("[data-add-task]");
   if (addTaskButton) await addTask(addTaskButton.dataset.addTask);

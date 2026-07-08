@@ -97,6 +97,7 @@ button, input, select, textarea { font:inherit; }
   overflow:hidden;
 }
 .table-scroll { width:100%; overflow-x:auto; }
+.mobile-day-picker { display:none; }
 table { width:100%; border-collapse:collapse; table-layout:fixed; min-width:0; }
 th, td {
   border-bottom:1px solid var(--line);
@@ -273,6 +274,10 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 }
 .mini-action:hover { background:rgba(118,118,128,.12); }
 .mini-action.delete { color:var(--red); }
+@media (hover:hover) and (pointer:fine) {
+  .task-item .mini-action, .log-item .mini-action { opacity:0; pointer-events:none; transition:opacity .16s ease, background .16s ease; }
+  .task-item:hover .mini-action, .task-item:focus-within .mini-action, .log-item:hover .mini-action, .log-item:focus-within .mini-action { opacity:1; pointer-events:auto; }
+}
 .task-item.done .status-pill { background:#fff; color:var(--green); border-color:#d9d9dc; }
 .empty-state { color:var(--muted); padding:8px; font-size:14px; }
 .log-list { display:grid; gap:7px; }
@@ -333,6 +338,26 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .tab { flex-direction:row; gap:3px; padding:5px 2px; font-size:11px; }
   .rank-circle { height:18px; min-width:28px; padding:0 5px; font-size:10px; }
   .work-grid { grid-template-columns:1fr; }
+  .mobile-day-picker {
+    display:grid;
+    grid-template-columns:repeat(7,minmax(0,1fr));
+    gap:2px;
+    padding:4px;
+    border-bottom:1px solid var(--line);
+    background:#fff;
+  }
+  .day-filter {
+    border:0;
+    border-radius:8px;
+    background:#fff;
+    color:var(--muted);
+    min-height:26px;
+    padding:0;
+    font-size:10px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .day-filter.active { background:#f5f5f7; color:var(--ink); }
   .entry-row { grid-template-columns:72px 1fr auto; }
   .log-compose { grid-template-columns:58px 64px minmax(0,1fr) auto; gap:5px; }
   .log-compose input[id$="-log-outcome"] { grid-column:3 / 4; }
@@ -341,6 +366,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .task-item .mini-action { grid-column:auto; }
   .log-main { grid-template-columns:auto 1fr auto auto; }
   table { min-width:0; }
+  .hidden-day { display:none; }
   th,td { padding:3px 1px; font-size:10px; }
   th:first-child, td:first-child { width:82px; padding-left:5px; padding-right:3px; }
   .category-name { font-size:11px; }
@@ -397,13 +423,13 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 
 <script>
 const firebaseConfig = {
-  apiKey:"AIzaSyCLIgqUBUH-9OLNbPihVrNmy7UaEKzDKZ0",
-  authDomain:"goatchase-e9502.firebaseapp.com",
-  projectId:"goatchase-e9502",
-  storageBucket:"goatchase-e9502.firebasestorage.app",
-  messagingSenderId:"16998517478",
-  appId:"1:16998517478:web:71b79f6ffd9d8eefccc927",
-  measurementId:"G-H4KBYP0NXS"
+  apiKey:"AIzaSyD8cUG9VG3HbTER_s2g0KLkd1EXB_uIRIM",
+  authDomain:"daily-tracker-14ce4.firebaseapp.com",
+  projectId:"daily-tracker-14ce4",
+  storageBucket:"daily-tracker-14ce4.firebasestorage.app",
+  messagingSenderId:"91619417166",
+  appId:"1:91619417166:web:3af3f90053447e94d6f71f",
+  measurementId:"G-NXFJRPS7EL"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -522,30 +548,36 @@ function buildShell() {
 function buildTables() {
   kids.forEach(kid => {
     const container = document.getElementById(kid);
-    let html = `<div class="tracker-card"><div class="table-scroll"><table><thead><tr><th></th>`;
+    let html = `<div class="tracker-card"><div class="mobile-day-picker" data-day-picker="${kid}">`;
+    days.forEach((day, i) => {
+      const active = i === todayIndex ? "active" : "";
+      html += `<button class="day-filter ${active}" data-filter-day="${i}" data-filter-kid="${kid}">${day.slice(0,3)}</button>`;
+    });
+    html += `</div><div class="table-scroll"><table><thead><tr><th></th>`;
     days.forEach((day, i) => {
       const highlight = i === todayIndex ? "current-day" : "";
-      html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
+      html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
     html += `</tr></thead><tbody>`;
     categories.forEach(category => {
       html += `<tr><td><button class="category-label" data-category-key="${category.key}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
       days.forEach((day, i) => {
         if (category.kind === "number") {
-          html += `<td><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
+          html += `<td data-day-cell="${i}"><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         } else {
           const negative = category.amount < 0 ? "true" : "false";
-          html += `<td><input type="checkbox" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
+          html += `<td data-day-cell="${i}"><input type="checkbox" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
       html += `</tr>`;
     });
     html += `<tr class="total-row"><td>Total</td>`;
-    days.forEach((day, i) => { html += `<td id="${kid}-total-${i}">$0</td>`; });
+    days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
     html += `</tr></tbody></table></div></div>`;
     html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
     html += `<div class="panel"><div class="panel-head"><span>Log</span><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
     container.innerHTML = html;
+    applyDayFocus(kid, todayIndex);
   });
 }
 
@@ -621,6 +653,17 @@ function switchKid(kid) {
   activeKid = kid;
   document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.kid === kid));
   document.querySelectorAll(".table-container").forEach(view => view.classList.toggle("active", view.id === kid));
+}
+
+function applyDayFocus(kid, dayIndex) {
+  const container = document.getElementById(kid);
+  if (!container) return;
+  container.querySelectorAll("[data-day-cell]").forEach(cell => {
+    cell.classList.toggle("hidden-day", Number(cell.dataset.dayCell) !== Number(dayIndex));
+  });
+  container.querySelectorAll("[data-filter-day]").forEach(button => {
+    button.classList.toggle("active", Number(button.dataset.filterDay) === Number(dayIndex));
+  });
 }
 
 function renderNoteIndicators() {
@@ -881,6 +924,9 @@ document.body.addEventListener("click", async event => {
 
   const categoryButton = event.target.closest("[data-category-key]");
   if (categoryButton) openCategoryDetail(categoryButton.dataset.categoryKey);
+
+  const dayFilterButton = event.target.closest("[data-filter-day]");
+  if (dayFilterButton) applyDayFocus(dayFilterButton.dataset.filterKid, dayFilterButton.dataset.filterDay);
 
   const toggleEntryButton = event.target.closest("[data-toggle-entry]");
   if (toggleEntryButton) {

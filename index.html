@@ -316,17 +316,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   font-weight:400;
 }
 .task-text { min-width:0; font-size:10pt; overflow-wrap:anywhere; }
-.status-pill {
-  border:1px solid var(--line);
-  border-radius:999px;
-  min-height:22px;
-  padding:2px 7px;
-  background:#fff;
-  color:var(--blue);
-  font-size:10pt;
-  font-weight:400;
-  cursor:pointer;
-}
+.task-toggle { flex:0 0 auto; }
 .mini-action {
   border:0;
   background:transparent;
@@ -348,7 +338,6 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .task-item .mini-action, .log-item .mini-action { opacity:0; pointer-events:none; transition:opacity .16s ease, background .16s ease; }
   .task-item:hover .mini-action, .task-item:focus-within .mini-action, .log-item:hover .mini-action, .log-item:focus-within .mini-action { opacity:1; pointer-events:auto; }
 }
-.task-item.done .status-pill { background:#fff; color:var(--green); border-color:#d9d9dc; }
 .empty-state { color:var(--muted); padding:8px; font-size:10pt; }
 .log-list { display:grid; gap:7px; }
 .log-item {
@@ -529,7 +518,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .hidden-day { display:table-cell; }
   tbody tr, th,td { height:26px; min-height:26px; }
   th,td { padding:2px 0; font-size:9pt; }
-  th:first-child, td:first-child { width:78px; padding-left:4px; padding-right:2px; }
+  th:first-child, td:first-child { width:68px; padding-left:4px; padding-right:2px; }
   .category-name { font-size:9pt; }
   .day-head { gap:1px; min-height:19px; }
   .day-full { display:none; }
@@ -539,9 +528,9 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   input[type="checkbox"] { width:28px; height:16px; }
   input[type="checkbox"]::before { width:12px; height:12px; top:2px; }
   input[type="checkbox"]:checked::before { transform:translateX(12px); }
-  input[type="number"] { width:26px; height:18px; font-size:9pt; padding:1px; }
+  input[type="number"] { width:34px; height:18px; font-size:9pt; padding:1px; }
   .calc-value { width:26px; height:18px; font-size:9pt; }
-  .goal-progress-cell { width:40px; }
+  .goal-progress-cell { width:38px; }
   .goal-percent { min-width:32px; height:18px; padding:0 3px; font-size:9pt; }
   .category-row { grid-template-columns:1fr; }
   .category-editor { min-width:0; }
@@ -1166,9 +1155,9 @@ function renderDetailedSummary(kid, detail, mode) {
       const bucket = detail.buckets[label];
       const sum = bucket.values[category.key] || 0;
       const weeks = Math.max(bucket.weeks.size, 1);
-      const avg = sum / weeks;
+      const avg = category.goalPeriod === "daily" ? sum / (weeks * days.length) : sum / weeks;
       if (showSums) html += `<td class="${goalClass(category, sum, weeks)}">${sum.toFixed(0)}</td>`;
-      if (showAverages) html += `<td class="${goalClass(category, avg, 1)}">${avg.toFixed(1)}</td>`;
+      if (showAverages) html += `<td class="${goalClass(category, avg, 1, true)}">${avg.toFixed(1)}</td>`;
     });
     html += `</tr>`;
     return html;
@@ -1176,9 +1165,9 @@ function renderDetailedSummary(kid, detail, mode) {
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
-function goalClass(category, value, weeks = 1) {
+function goalClass(category, value, weeks = 1, valueIsNormalized = false) {
   const goal = Number(category.goal || 0);
-  const comparisonValue = goalComparisonValue(category, value, weeks);
+  const comparisonValue = valueIsNormalized ? Number(value || 0) : goalComparisonValue(category, value, weeks);
   if (!Number.isFinite(goal) || goal < 0) return "";
   if (category.goalType === "min") {
     if (goal === 0) return comparisonValue > 0 ? "summary-goal-blue" : "summary-goal-green";
@@ -1293,8 +1282,8 @@ function renderTaskList(kid) {
   }
   list.innerHTML = items.map(item => {
     const done = item.done ? "done" : "";
-    const label = item.done ? "Done" : "To do";
-    return `<div class="task-item ${done}"><div class="day-chip">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><button class="status-pill" data-toggle-task="${kid}" data-task-id="${item.id}">${label}</button><button class="mini-action" title="Edit" aria-label="Edit task" data-edit-task="${kid}" data-task-id="${item.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button></div>`;
+    const checked = item.done ? "checked" : "";
+    return `<div class="task-item ${done}"><div class="day-chip">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}"><button class="mini-action" title="Edit" aria-label="Edit task" data-edit-task="${kid}" data-task-id="${item.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button></div>`;
   }).join("");
 }
 

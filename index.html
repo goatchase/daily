@@ -203,6 +203,12 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   padding-top:4px;
   padding-bottom:4px;
 }
+.group-start td {
+  border-top:2px solid #c7c7cc;
+}
+.group-start:first-child td {
+  border-top:0;
+}
 .work-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -402,10 +408,12 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .category-editor { display:grid; gap:8px; }
 .category-row {
   display:grid;
-  grid-template-columns:130px minmax(320px,1fr) 96px 84px 34px;
+  grid-template-columns:64px 118px minmax(260px,1fr) 110px 86px 74px 74px 34px;
   gap:8px;
   align-items:center;
 }
+.move-pair { display:flex; gap:4px; }
+.move-category { width:28px; min-height:28px; padding:0; }
 .category-row input, .category-row select { min-height:30px; padding:5px 8px; }
 .category-row textarea {
   min-height:44px;
@@ -420,6 +428,8 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .summary-table th:first-child, .summary-table td:first-child { width:90px; }
 .summary-table td, .summary-table th { padding:6px 8px; }
 .summary-empty { color:var(--muted); padding:12px; }
+.summary-controls { display:grid; grid-template-columns:repeat(6,auto); gap:8px; align-items:center; margin-bottom:10px; }
+.summary-controls select, .summary-controls input { min-width:118px; padding:6px 9px; }
 @media(max-width:760px) {
   body { padding:8px; }
   .top-bar { align-items:stretch; }
@@ -467,7 +477,9 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   input[type="checkbox"]:checked::before { transform:translateX(14px); }
   input[type="number"] { width:32px; height:20px; font-size:10pt; }
   .category-row { grid-template-columns:1fr; }
+  .move-pair { justify-content:flex-start; }
   .category-row .remove-category { width:100%; }
+  .summary-controls { grid-template-columns:1fr 1fr; }
   .modal-content { border-radius:16px; }
 }
 </style>
@@ -521,15 +533,28 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 <div class="modal" id="summary-modal">
   <div class="modal-content">
     <h3 class="modal-title">Summary</h3>
-    <div class="modal-toolbar">
-      <select id="summary-period" aria-label="Summary period">
-        <option value="weekly">Weekly</option>
-        <option value="yearly">Yearly</option>
+    <div class="summary-controls">
+      <select id="summary-kind" aria-label="Summary type">
+        <option value="overall">Overall</option>
+        <option value="detailed">Detailed</option>
+      </select>
+      <select id="summary-timeframe" class="summary-overall-only" aria-label="Summary timeframe">
+        <option value="all">All Dates</option>
+        <option value="year">This Year</option>
+        <option value="week">This Week</option>
+      </select>
+      <select id="summary-person" class="summary-detail-only" aria-label="Summary person"></select>
+      <input id="summary-start" class="summary-detail-only" type="date" aria-label="Start date">
+      <input id="summary-end" class="summary-detail-only" type="date" aria-label="End date">
+      <select id="summary-bucket" class="summary-detail-only" aria-label="Detailed period">
+        <option value="week">Weeks</option>
+        <option value="month">Months</option>
+        <option value="year">Years</option>
       </select>
       <select id="summary-mode" aria-label="Summary mode">
-        <option value="both">Sums and Averages</option>
         <option value="sum">Sums</option>
         <option value="average">Averages</option>
+        <option value="both">Sums and Averages</option>
       </select>
       <button class="btn" id="summary-refresh">Refresh</button>
     </div>
@@ -559,13 +584,13 @@ const db = firebase.firestore();
 const kids = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
 const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const DEFAULT_CATEGORIES = [
-  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25},
-  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25},
-  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25},
-  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2},
-  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05},
-  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05},
-  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05}
+  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7},
+  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25, group:"Care", goal:7},
+  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25, group:"Care", goal:7},
+  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2, group:"Behavior", goal:0},
+  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05, group:"Growth", goal:100},
+  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05, group:"Growth", goal:100},
+  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05, group:"Growth", goal:100}
 ];
 const DEFAULT_CATEGORY_MAP = Object.fromEntries(DEFAULT_CATEGORIES.map(category => [category.key, category]));
 const CLEAR_PASSWORD = "clear";
@@ -630,7 +655,9 @@ function normalizeCategory(category, index) {
     label,
     details:(category.details || defaults.details || label).trim(),
     kind:category.kind === "number" ? "number" : "check",
-    amount:Number(category.amount || 0)
+    amount:Number(category.amount || 0),
+    group:(category.group || defaults.group || "").trim(),
+    goal:Number(category.goal ?? defaults.goal ?? 0)
   };
 }
 
@@ -713,8 +740,12 @@ function buildTables() {
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
     html += `</tr></thead><tbody>`;
+    let previousGroup = "";
     categoriesForKid(kid).forEach(category => {
-      html += `<tr><td><button class="category-label" data-category-key="${category.key}" data-category-kid="${kid}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
+      const group = category.group || "";
+      const groupClass = group && group !== previousGroup ? "group-start" : "";
+      previousGroup = group;
+      html += `<tr class="${groupClass}"><td><button class="category-label" data-category-key="${category.key}" data-category-kid="${kid}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
       days.forEach((day, i) => {
         if (category.kind === "number") {
           html += `<td data-day-cell="${i}"><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
@@ -815,19 +846,61 @@ function scoreDataForKid(kid, data = {}) {
   return total;
 }
 
-async function summaryWeekKeys(period) {
-  if (period === "weekly") return [currentWeek];
-  const year = String(currentWeek).split("-W")[0] || String(new Date().getFullYear());
+function categoryRawValue(category, data = {}) {
+  let total = 0;
+  days.forEach((day, i) => {
+    const value = data[`${i}-${category.key}`];
+    if (category.kind === "number") total += Number(value || 0);
+    else if (value) total += 1;
+  });
+  return total;
+}
+
+function dateFromWeekKey(weekKey) {
+  const match = String(weekKey).match(/^(\d{4})-W(\d{1,2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const week = Number(match[2]);
+  const simple = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7));
+  const day = simple.getUTCDay() || 7;
+  simple.setUTCDate(simple.getUTCDate() + 1 - day);
+  return simple;
+}
+
+function bucketLabel(weekKey, bucket) {
+  const date = dateFromWeekKey(weekKey);
+  if (!date) return weekKey;
+  if (bucket === "year") return String(date.getUTCFullYear());
+  if (bucket === "month") return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  return weekKey;
+}
+
+function weekInRange(weekKey, startValue, endValue) {
+  const date = dateFromWeekKey(weekKey);
+  if (!date) return true;
+  const start = startValue ? new Date(`${startValue}T00:00:00Z`) : null;
+  const end = endValue ? new Date(`${endValue}T23:59:59Z`) : null;
+  if (start && date < start) return false;
+  if (end && date > end) return false;
+  return true;
+}
+
+async function summaryWeekKeys(timeframe = "all", startValue = "", endValue = "") {
   const snap = await db.collection("weeks").orderBy("timestamp", "desc").get();
   const keys = new Set([currentWeek]);
   snap.forEach(doc => {
-    if (doc.id.startsWith(`${year}-W`)) keys.add(doc.id);
+    keys.add(doc.id);
   });
-  return [...keys].sort();
+  const currentYear = String(currentWeek).split("-W")[0] || String(new Date().getFullYear());
+  return [...keys].filter(key => {
+    if (timeframe === "week" && key !== currentWeek) return false;
+    if (timeframe === "year" && !key.startsWith(`${currentYear}-W`)) return false;
+    return weekInRange(key, startValue, endValue);
+  }).sort().reverse();
 }
 
-async function fetchSummaryRows(period) {
-  const weekKeys = await summaryWeekKeys(period);
+async function fetchOverallSummaryRows(timeframe) {
+  const weekKeys = await summaryWeekKeys(timeframe);
   const rows = kids.map(kid => ({
     kid,
     score:0,
@@ -856,7 +929,7 @@ async function fetchSummaryRows(period) {
   return rows;
 }
 
-function renderSummaryRows(rows, mode) {
+function renderOverallSummaryRows(rows, mode) {
   const showSums = mode === "sum" || mode === "both";
   const showAverages = mode === "average" || mode === "both";
   let head = `<tr><th>Person</th>`;
@@ -875,20 +948,90 @@ function renderSummaryRows(rows, mode) {
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
+async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
+  const weekKeys = await summaryWeekKeys("all", startValue, endValue);
+  const buckets = {};
+  for (const weekKey of weekKeys) {
+    const label = bucketLabel(weekKey, bucket);
+    if (!buckets[label]) buckets[label] = {weeks:new Set(), values:{}};
+    buckets[label].weeks.add(weekKey);
+    const choresDoc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
+    const data = choresDoc.exists ? choresDoc.data() : {};
+    categoriesForKid(kid).forEach(category => {
+      buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(category, data);
+    });
+  }
+  return {
+    labels:Object.keys(buckets).sort().reverse(),
+    buckets
+  };
+}
+
+function renderDetailedSummary(kid, detail, mode) {
+  const categories = categoriesForKid(kid);
+  const showSums = mode === "sum" || mode === "both";
+  const showAverages = mode === "average" || mode === "both";
+  let head = `<tr><th>Item</th><th>Goal</th>`;
+  detail.labels.forEach(label => {
+    if (showSums) head += `<th>${label} sum</th>`;
+    if (showAverages) head += `<th>${label} avg</th>`;
+  });
+  head += `</tr>`;
+  let previousGroup = "";
+  const body = categories.map(category => {
+    const group = category.group || "";
+    const groupClass = group && group !== previousGroup ? "group-start" : "";
+    previousGroup = group;
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${Number(category.goal || 0)}</td>`;
+    detail.labels.forEach(label => {
+      const bucket = detail.buckets[label];
+      const sum = bucket.values[category.key] || 0;
+      const avg = sum / Math.max(bucket.weeks.size, 1);
+      if (showSums) html += `<td>${sum.toFixed(category.kind === "number" ? 0 : 0)}</td>`;
+      if (showAverages) html += `<td>${avg.toFixed(1)}</td>`;
+    });
+    html += `</tr>`;
+    return html;
+  }).join("");
+  return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
 async function refreshSummary() {
   const content = document.getElementById("summary-content");
-  const period = document.getElementById("summary-period").value;
+  const kind = document.getElementById("summary-kind").value;
   const mode = document.getElementById("summary-mode").value;
   content.className = "summary-empty";
   content.textContent = "Loading summary...";
-  const rows = await fetchSummaryRows(period);
+  if (kind === "detailed") {
+    const kid = document.getElementById("summary-person").value || activeKid;
+    const bucket = document.getElementById("summary-bucket").value;
+    const startValue = document.getElementById("summary-start").value;
+    const endValue = document.getElementById("summary-end").value;
+    const detail = await fetchDetailedSummary(kid, bucket, startValue, endValue);
+    content.className = "";
+    content.innerHTML = detail.labels.length ? renderDetailedSummary(kid, detail, mode) : `<div class="summary-empty">No data in this range.</div>`;
+    return;
+  }
+  const rows = await fetchOverallSummaryRows(document.getElementById("summary-timeframe").value);
   content.className = "";
-  content.innerHTML = renderSummaryRows(rows, mode);
+  content.innerHTML = renderOverallSummaryRows(rows, mode);
 }
 
 async function openSummary() {
+  document.getElementById("summary-person").innerHTML = kids.map(kid => `<option value="${kid}" ${kid === activeKid ? "selected" : ""}>${kid}</option>`).join("");
+  syncSummaryControls();
   openModal("summary-modal");
   await refreshSummary();
+}
+
+function syncSummaryControls() {
+  const detailed = document.getElementById("summary-kind").value === "detailed";
+  document.querySelectorAll(".summary-detail-only").forEach(control => {
+    control.style.display = detailed ? "" : "none";
+  });
+  document.querySelectorAll(".summary-overall-only").forEach(control => {
+    control.style.display = detailed ? "none" : "";
+  });
 }
 
 function switchKid(kid) {
@@ -1082,7 +1225,8 @@ function openCategoryDetail(key, kid = activeKid) {
   if (!category) return;
   activeCategory = key;
   document.getElementById("category-detail-title").textContent = category.label;
-  document.getElementById("category-detail-copy").textContent = category.details || "No notes added for this category yet.";
+  const meta = [category.group ? `Group: ${category.group}` : "", Number(category.goal || 0) ? `Goal: ${category.goal}` : ""].filter(Boolean).join("  ");
+  document.getElementById("category-detail-copy").textContent = [category.details || "No notes added for this category yet.", meta].filter(Boolean).join("\n");
   openModal("category-detail-modal");
 }
 
@@ -1120,19 +1264,25 @@ function openCategoryEditor(kid = activeKid) {
   openModal("category-modal");
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
   row.dataset.key = category.key || "";
   row.innerHTML = `
+    <div class="move-pair">
+      <button class="btn move-category" type="button" data-move-category="up" aria-label="Move up">↑</button>
+      <button class="btn move-category" type="button" data-move-category="down" aria-label="Move down">↓</button>
+    </div>
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
     <textarea aria-label="Notes" data-field="details" placeholder="Tap notes">${escapeHtml(category.details || "")}</textarea>
+    <input aria-label="Group" data-field="group" placeholder="Group" value="${escapeAttr(category.group || "")}">
     <select aria-label="Type" data-field="kind">
       <option value="check" ${category.kind !== "number" ? "selected" : ""}>Check</option>
       <option value="number" ${category.kind === "number" ? "selected" : ""}>Number</option>
     </select>
     <input aria-label="Value" data-field="amount" type="number" step="0.01" value="${Number(category.amount || 0)}">
+    <input aria-label="Goal" data-field="goal" type="number" step="1" value="${Number(category.goal || 0)}">
     <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
   editor.appendChild(row);
@@ -1146,7 +1296,9 @@ function readCategoryEditor() {
       label,
       details:row.querySelector('[data-field="details"]').value.trim(),
       kind:row.querySelector('[data-field="kind"]').value,
-      amount:Number(row.querySelector('[data-field="amount"]').value || 0)
+      amount:Number(row.querySelector('[data-field="amount"]').value || 0),
+      group:row.querySelector('[data-field="group"]').value.trim(),
+      goal:Number(row.querySelector('[data-field="goal"]').value || 0)
     };
   });
 }
@@ -1215,6 +1367,17 @@ document.body.addEventListener("click", async event => {
   const deleteLogButton = event.target.closest("[data-delete-log]");
   if (deleteLogButton) await deleteLog(deleteLogButton.dataset.deleteLog, deleteLogButton.dataset.logId);
 
+  const moveCategoryButton = event.target.closest("[data-move-category]");
+  if (moveCategoryButton) {
+    const row = moveCategoryButton.closest(".category-row");
+    if (row && moveCategoryButton.dataset.moveCategory === "up" && row.previousElementSibling) {
+      row.parentElement.insertBefore(row, row.previousElementSibling);
+    }
+    if (row && moveCategoryButton.dataset.moveCategory === "down" && row.nextElementSibling) {
+      row.parentElement.insertBefore(row.nextElementSibling, row);
+    }
+  }
+
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
 });
 
@@ -1227,7 +1390,15 @@ document.getElementById("summary-open").addEventListener("click", async () => {
   await openSummary();
 });
 document.getElementById("summary-refresh").addEventListener("click", refreshSummary);
-document.getElementById("summary-period").addEventListener("change", refreshSummary);
+document.getElementById("summary-kind").addEventListener("change", async () => {
+  syncSummaryControls();
+  await refreshSummary();
+});
+document.getElementById("summary-timeframe").addEventListener("change", refreshSummary);
+document.getElementById("summary-person").addEventListener("change", refreshSummary);
+document.getElementById("summary-start").addEventListener("change", refreshSummary);
+document.getElementById("summary-end").addEventListener("change", refreshSummary);
+document.getElementById("summary-bucket").addEventListener("change", refreshSummary);
 document.getElementById("summary-mode").addEventListener("change", refreshSummary);
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());

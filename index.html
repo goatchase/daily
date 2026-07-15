@@ -106,11 +106,13 @@ button, input, select, textarea {
 .table-scroll { width:100%; overflow-x:auto; }
 .mobile-day-picker { display:none; }
 table { width:100%; border-collapse:collapse; table-layout:fixed; min-width:0; }
+tbody tr { min-height:30px; }
 th, td {
   border-bottom:1px solid var(--line);
   text-align:center;
   padding:3px 2px;
   font-size:10pt;
+  height:30px;
 }
 th:first-child, td:first-child { width:120px; text-align:left; padding-left:8px; padding-right:5px; }
 th { color:var(--muted); font-size:10pt; font-weight:400; background:#fff; }
@@ -192,7 +194,15 @@ input[type="number"]::-webkit-inner-spin-button {
   margin:0;
 }
 input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:none; }
-.total-row td { background:#fff; font-weight:400; }
+.total-row td {
+  background:#fff;
+  font-weight:400;
+  border-top:1px solid #c7c7cc;
+  border-bottom:0;
+  height:30px;
+  padding-top:4px;
+  padding-bottom:4px;
+}
 .work-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -319,6 +329,23 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .bottom-controls { display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
 .bottom-controls select { width:auto; min-width:132px; padding:7px 30px 7px 10px; }
 .menu-wrap { position:relative; }
+.menu-button {
+  width:34px;
+  min-width:34px;
+  padding:0;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+}
+.menu-button span {
+  width:14px;
+  height:1px;
+  border-radius:999px;
+  background:var(--ink);
+  display:block;
+}
 .overflow-menu {
   display:none;
   position:absolute;
@@ -357,7 +384,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   z-index:20;
 }
 .modal-content {
-  width:min(760px,96vw);
+  width:min(920px,96vw);
   max-height:96vh;
   overflow:auto;
   background:var(--card);
@@ -366,6 +393,8 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   padding:14px;
 }
 .modal-title { margin:0 0 12px; font-size:10pt; font-weight:400; }
+.modal-toolbar { display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+.modal-toolbar select { width:auto; min-width:130px; padding:6px 28px 6px 9px; }
 .field { display:grid; gap:5px; margin-bottom:10px; }
 .field label { color:var(--muted); font-size:10pt; font-weight:400; }
 .field textarea { min-height:72px; resize:vertical; padding:9px; }
@@ -373,13 +402,24 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .category-editor { display:grid; gap:8px; }
 .category-row {
   display:grid;
-  grid-template-columns:110px minmax(220px,1fr) 90px 74px 34px;
-  gap:6px;
+  grid-template-columns:130px minmax(320px,1fr) 96px 84px 34px;
+  gap:8px;
   align-items:center;
 }
 .category-row input, .category-row select { min-height:30px; padding:5px 8px; }
+.category-row textarea {
+  min-height:44px;
+  padding:5px 8px;
+  resize:vertical;
+  overflow-wrap:anywhere;
+}
 .category-row .remove-category { color:var(--red); padding:0; }
 .category-detail { color:var(--muted); line-height:1.4; margin:0; }
+.summary-table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; }
+.summary-table { min-width:640px; }
+.summary-table th:first-child, .summary-table td:first-child { width:90px; }
+.summary-table td, .summary-table th { padding:6px 8px; }
+.summary-empty { color:var(--muted); padding:12px; }
 @media(max-width:760px) {
   body { padding:8px; }
   .top-bar { align-items:stretch; }
@@ -417,6 +457,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .log-main { grid-template-columns:auto 1fr auto auto; }
   table { min-width:0; }
   .hidden-day { display:none; }
+  tbody tr, th,td { height:26px; min-height:26px; }
   th,td { padding:2px 1px; font-size:10pt; }
   th:first-child, td:first-child { width:106px; padding-left:5px; padding-right:3px; }
   .category-name { font-size:10pt; }
@@ -425,7 +466,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   input[type="checkbox"]::before { width:18px; height:18px; top:2px; }
   input[type="checkbox"]:checked::before { transform:translateX(14px); }
   input[type="number"] { width:32px; height:20px; font-size:10pt; }
-  .category-row { grid-template-columns:1fr 1fr; }
+  .category-row { grid-template-columns:1fr; }
   .category-row .remove-category { width:100%; }
   .modal-content { border-radius:16px; }
 }
@@ -440,11 +481,12 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   <div class="bottom-controls">
     <select id="week-select" aria-label="Week"></select>
     <div class="menu-wrap">
-      <button class="btn" id="more-actions" aria-label="More actions">...</button>
+      <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
-        <button class="menu-item" id="archive-week">archive</button>
-        <button class="menu-item" id="edit-categories">edit</button>
-        <button class="menu-item danger" id="clear-week">clear</button>
+        <button class="menu-item" id="summary-open">Summary</button>
+        <button class="menu-item" id="archive-week">Archive</button>
+        <button class="menu-item" id="edit-categories">Edit</button>
+        <button class="menu-item danger" id="clear-week">Clear</button>
       </div>
     </div>
   </div>
@@ -464,11 +506,36 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 <div class="modal" id="category-modal">
   <div class="modal-content">
     <h3 class="modal-title">Categories</h3>
+    <div class="modal-toolbar">
+      <select id="category-person" aria-label="Person"></select>
+    </div>
     <div class="category-editor" id="category-editor"></div>
     <div class="modal-actions">
       <button class="btn" id="add-category">Add Row</button>
       <button class="btn" id="close-categories">Close</button>
       <button class="btn primary" id="save-categories">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="summary-modal">
+  <div class="modal-content">
+    <h3 class="modal-title">Summary</h3>
+    <div class="modal-toolbar">
+      <select id="summary-period" aria-label="Summary period">
+        <option value="weekly">Weekly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+      <select id="summary-mode" aria-label="Summary mode">
+        <option value="both">Sums and Averages</option>
+        <option value="sum">Sums</option>
+        <option value="average">Averages</option>
+      </select>
+      <button class="btn" id="summary-refresh">Refresh</button>
+    </div>
+    <div id="summary-content" class="summary-empty">Choose a summary.</div>
+    <div class="modal-actions">
+      <button class="btn primary" id="summary-close">Close</button>
     </div>
   </div>
 </div>
@@ -505,11 +572,13 @@ const CLEAR_PASSWORD = "clear";
 const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 let currentWeek = getYearWeek();
 let categories = [...DEFAULT_CATEGORIES];
+let categoriesByKid = {};
 let notesCache = {};
 let tasksCache = {};
 let logsCache = {};
 let activeKid = kids[0];
 let activeCategory = null;
+let categoryEditorKid = kids[0];
 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -565,16 +634,46 @@ function normalizeCategory(category, index) {
   };
 }
 
+function cloneCategories(list = DEFAULT_CATEGORIES) {
+  return list.map((category, index) => normalizeCategory({...category}, index));
+}
+
+function categoriesForKid(kid) {
+  if (!categoriesByKid[kid] || !categoriesByKid[kid].length) {
+    categoriesByKid[kid] = cloneCategories(categories);
+  }
+  return categoriesByKid[kid];
+}
+
+function setAllKidsCategories(list) {
+  const normalized = cloneCategories(list);
+  categories = cloneCategories(normalized);
+  categoriesByKid = Object.fromEntries(kids.map(kid => [kid, cloneCategories(normalized)]));
+}
+
 async function loadCategories() {
   const doc = await db.collection("settings").doc("tracker").get();
-  if (doc.exists && Array.isArray(doc.data().categories) && doc.data().categories.length) {
-    categories = doc.data().categories.filter(category => category.key !== "other").map(normalizeCategory);
+  const data = doc.exists ? doc.data() : {};
+  if (data.categoriesByKid && typeof data.categoriesByKid === "object") {
+    kids.forEach(kid => {
+      const saved = Array.isArray(data.categoriesByKid[kid]) && data.categoriesByKid[kid].length ? data.categoriesByKid[kid] : data.categories;
+      categoriesByKid[kid] = cloneCategories((saved || DEFAULT_CATEGORIES).filter(category => category.key !== "other"));
+    });
+    categories = cloneCategories(categoriesByKid[kids[0]]);
+  } else if (Array.isArray(data.categories) && data.categories.length) {
+    setAllKidsCategories(data.categories.filter(category => category.key !== "other"));
+  } else {
+    setAllKidsCategories(DEFAULT_CATEGORIES);
   }
 }
 
 async function saveCategories() {
-  categories = readCategoryEditor().map(normalizeCategory);
-  await db.collection("settings").doc("tracker").set({categories}, {merge:true});
+  categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
+  categories = cloneCategories(categoriesByKid[kids[0]]);
+  await db.collection("settings").doc("tracker").set({
+    categories:categoriesByKid[kids[0]],
+    categoriesByKid
+  }, {merge:true});
   buildShell();
   await loadData(currentWeek);
   closeModal("category-modal");
@@ -614,8 +713,8 @@ function buildTables() {
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
     html += `</tr></thead><tbody>`;
-    categories.forEach(category => {
-      html += `<tr><td><button class="category-label" data-category-key="${category.key}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
+    categoriesForKid(kid).forEach(category => {
+      html += `<tr><td><button class="category-label" data-category-key="${category.key}" data-category-kid="${kid}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
       days.forEach((day, i) => {
         if (category.kind === "number") {
           html += `<td data-day-cell="${i}"><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
@@ -639,7 +738,7 @@ function buildTables() {
 async function saveData(kid) {
   const data = {};
   days.forEach((day, i) => {
-    categories.forEach(category => {
+    categoriesForKid(kid).forEach(category => {
       const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
       if (!input) return;
       data[`${i}-${category.key}`] = category.kind === "number" ? input.value : input.checked;
@@ -660,7 +759,7 @@ async function loadData(weekKey = currentWeek) {
     const doc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
     const data = doc.exists ? doc.data() : {};
     days.forEach((day, i) => {
-      categories.forEach(category => {
+      categoriesForKid(kid).forEach(category => {
         const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
         if (!input) return;
         if (category.kind === "number") input.value = data[`${i}-${category.key}`] || "";
@@ -691,7 +790,7 @@ function updateTotals() {
     let kidTotal = 0;
     days.forEach((day, i) => {
       let dayTotal = 0;
-      categories.forEach(category => {
+      categoriesForKid(kid).forEach(category => {
         const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
         if (!input) return;
         if (category.kind === "number") dayTotal += Number(input.value || 0) * category.amount;
@@ -702,6 +801,94 @@ function updateTotals() {
     });
     document.getElementById(`rank-${kid}`).textContent = dollars(kidTotal);
   });
+}
+
+function scoreDataForKid(kid, data = {}) {
+  let total = 0;
+  days.forEach((day, i) => {
+    categoriesForKid(kid).forEach(category => {
+      const value = data[`${i}-${category.key}`];
+      if (category.kind === "number") total += Number(value || 0) * category.amount;
+      else if (value) total += category.amount;
+    });
+  });
+  return total;
+}
+
+async function summaryWeekKeys(period) {
+  if (period === "weekly") return [currentWeek];
+  const year = String(currentWeek).split("-W")[0] || String(new Date().getFullYear());
+  const snap = await db.collection("weeks").orderBy("timestamp", "desc").get();
+  const keys = new Set([currentWeek]);
+  snap.forEach(doc => {
+    if (doc.id.startsWith(`${year}-W`)) keys.add(doc.id);
+  });
+  return [...keys].sort();
+}
+
+async function fetchSummaryRows(period) {
+  const weekKeys = await summaryWeekKeys(period);
+  const rows = kids.map(kid => ({
+    kid,
+    score:0,
+    tasks:0,
+    done:0,
+    good:0,
+    bad:0,
+    weeks:weekKeys.length || 1
+  }));
+  for (const weekKey of weekKeys) {
+    for (const row of rows) {
+      const choresDoc = await db.collection("weeks").doc(weekKey).collection("chores").doc(row.kid).get();
+      row.score += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
+
+      const taskDoc = await db.collection("weeks").doc(weekKey).collection("tasks").doc(row.kid).get();
+      const taskItems = taskDoc.exists && Array.isArray(taskDoc.data().items) ? taskDoc.data().items : [];
+      row.tasks += taskItems.length;
+      row.done += taskItems.filter(item => item.done).length;
+
+      const logDoc = await db.collection("weeks").doc(weekKey).collection("logs").doc(row.kid).get();
+      const logItems = logDoc.exists && Array.isArray(logDoc.data().entries) ? logDoc.data().entries : [];
+      row.good += logItems.filter(item => item.type !== "bad").length;
+      row.bad += logItems.filter(item => item.type === "bad").length;
+    }
+  }
+  return rows;
+}
+
+function renderSummaryRows(rows, mode) {
+  const showSums = mode === "sum" || mode === "both";
+  const showAverages = mode === "average" || mode === "both";
+  let head = `<tr><th>Person</th>`;
+  if (showSums) head += `<th>Score</th><th>Tasks</th><th>Done</th><th>Good</th><th>Bad</th>`;
+  if (showAverages) head += `<th>Avg/day</th><th>Avg/week</th><th>Tasks/week</th><th>Logs/week</th>`;
+  head += `</tr>`;
+  const body = rows.map(row => {
+    const weeks = row.weeks || 1;
+    const dayCount = weeks * days.length;
+    let html = `<tr><td>${row.kid}</td>`;
+    if (showSums) html += `<td>${dollars(row.score)}</td><td>${row.tasks}</td><td>${row.done}</td><td>${row.good}</td><td>${row.bad}</td>`;
+    if (showAverages) html += `<td>${dollars(row.score / dayCount)}</td><td>${dollars(row.score / weeks)}</td><td>${(row.tasks / weeks).toFixed(1)}</td><td>${((row.good + row.bad) / weeks).toFixed(1)}</td>`;
+    html += `</tr>`;
+    return html;
+  }).join("");
+  return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
+async function refreshSummary() {
+  const content = document.getElementById("summary-content");
+  const period = document.getElementById("summary-period").value;
+  const mode = document.getElementById("summary-mode").value;
+  content.className = "summary-empty";
+  content.textContent = "Loading summary...";
+  const rows = await fetchSummaryRows(period);
+  content.className = "";
+  content.innerHTML = renderSummaryRows(rows, mode);
+}
+
+async function openSummary() {
+  openModal("summary-modal");
+  await refreshSummary();
 }
 
 function switchKid(kid) {
@@ -890,8 +1077,8 @@ async function deleteLog(kid, id) {
   renderNoteIndicators();
 }
 
-function openCategoryDetail(key) {
-  const category = categories.find(item => item.key === key);
+function openCategoryDetail(key, kid = activeKid) {
+  const category = categoriesForKid(kid).find(item => item.key === key);
   if (!category) return;
   activeCategory = key;
   document.getElementById("category-detail-title").textContent = category.label;
@@ -919,10 +1106,17 @@ async function ensureWeekOption(weekKey) {
   select.value = weekKey;
 }
 
-function openCategoryEditor() {
+function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
   editor.innerHTML = "";
-  categories.forEach(addCategoryRow);
+  categoriesForKid(kid).forEach(addCategoryRow);
+}
+
+function openCategoryEditor(kid = activeKid) {
+  categoryEditorKid = kid;
+  const personSelect = document.getElementById("category-person");
+  personSelect.innerHTML = kids.map(name => `<option value="${name}" ${name === categoryEditorKid ? "selected" : ""}>${name}</option>`).join("");
+  renderCategoryEditor(categoryEditorKid);
   openModal("category-modal");
 }
 
@@ -933,7 +1127,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   row.dataset.key = category.key || "";
   row.innerHTML = `
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
-    <input aria-label="Notes" data-field="details" placeholder="Tap notes" value="${escapeAttr(category.details || "")}">
+    <textarea aria-label="Notes" data-field="details" placeholder="Tap notes">${escapeHtml(category.details || "")}</textarea>
     <select aria-label="Type" data-field="kind">
       <option value="check" ${category.kind !== "number" ? "selected" : ""}>Check</option>
       <option value="number" ${category.kind === "number" ? "selected" : ""}>Number</option>
@@ -989,7 +1183,7 @@ document.body.addEventListener("click", async event => {
   if (tab) switchKid(tab.dataset.kid);
 
   const categoryButton = event.target.closest("[data-category-key]");
-  if (categoryButton) openCategoryDetail(categoryButton.dataset.categoryKey);
+  if (categoryButton) openCategoryDetail(categoryButton.dataset.categoryKey, categoryButton.dataset.categoryKid);
 
   const dayFilterButton = event.target.closest("[data-filter-day]");
   if (dayFilterButton) applyDayFocus(dayFilterButton.dataset.filterKid, dayFilterButton.dataset.filterDay);
@@ -1028,7 +1222,20 @@ document.getElementById("edit-categories").addEventListener("click", () => {
   closeActionsMenu();
   openCategoryEditor();
 });
+document.getElementById("summary-open").addEventListener("click", async () => {
+  closeActionsMenu();
+  await openSummary();
+});
+document.getElementById("summary-refresh").addEventListener("click", refreshSummary);
+document.getElementById("summary-period").addEventListener("change", refreshSummary);
+document.getElementById("summary-mode").addEventListener("change", refreshSummary);
+document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
+document.getElementById("category-person").addEventListener("change", event => {
+  categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
+  categoryEditorKid = event.target.value;
+  renderCategoryEditor(categoryEditorKid);
+});
 document.getElementById("close-categories").addEventListener("click", () => closeModal("category-modal"));
 document.getElementById("save-categories").addEventListener("click", saveCategories);
 document.getElementById("close-category-detail").addEventListener("click", () => closeModal("category-detail-modal"));

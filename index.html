@@ -958,8 +958,8 @@ function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()
 }
 
 function goalPercent(category, value) {
-  const goal = goalTarget(category, 1);
-  const number = Number(value || 0);
+  const goal = Number(category.goal || 0);
+  const number = goalComparisonValue(category, value, 1);
   if (!Number.isFinite(goal) || goal <= 0) {
     if (category.goalType === "max") return number <= 0 ? 100 : 0;
     return number > 0 ? 100 : 0;
@@ -967,10 +967,10 @@ function goalPercent(category, value) {
   return Math.round((number / goal) * 100);
 }
 
-function goalTarget(category, weeks = 1) {
-  const goal = Number(category.goal || 0);
+function goalComparisonValue(category, value, weeks = 1) {
+  const number = Number(value || 0);
   const weekCount = Math.max(Number(weeks || 1), 1);
-  return category.goalPeriod === "daily" ? goal * days.length * weekCount : goal * weekCount;
+  return category.goalPeriod === "daily" ? number / (days.length * weekCount) : number / weekCount;
 }
 
 function updateTotals() {
@@ -1168,19 +1168,20 @@ function renderDetailedSummary(kid, detail, mode) {
 }
 
 function goalClass(category, value, weeks = 1) {
-  const goal = goalTarget(category, weeks);
+  const goal = Number(category.goal || 0);
+  const comparisonValue = goalComparisonValue(category, value, weeks);
   if (!Number.isFinite(goal) || goal < 0) return "";
   if (category.goalType === "min") {
-    if (goal === 0) return value > 0 ? "summary-goal-blue" : "summary-goal-green";
-    if (value >= goal * 1.5) return "summary-goal-blue";
-    if (value >= goal) return "summary-goal-green";
-    if (value >= goal * .5) return "summary-goal-yellow";
+    if (goal === 0) return comparisonValue > 0 ? "summary-goal-blue" : "summary-goal-green";
+    if (comparisonValue >= goal * 1.5) return "summary-goal-blue";
+    if (comparisonValue >= goal) return "summary-goal-green";
+    if (comparisonValue >= goal * .5) return "summary-goal-yellow";
     return "summary-goal-red";
   }
-  if (goal === 0) return value <= 0 ? "summary-goal-green" : "summary-goal-red";
-  if (value <= goal * .5) return "summary-goal-blue";
-  if (value <= goal) return "summary-goal-green";
-  if (value <= goal * 1.5) return "summary-goal-yellow";
+  if (goal === 0) return comparisonValue <= 0 ? "summary-goal-green" : "summary-goal-red";
+  if (comparisonValue <= goal * .5) return "summary-goal-blue";
+  if (comparisonValue <= goal) return "summary-goal-green";
+  if (comparisonValue <= goal * 1.5) return "summary-goal-yellow";
   return "summary-goal-red";
 }
 

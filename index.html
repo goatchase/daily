@@ -45,11 +45,6 @@ button, input, select, textarea {
   gap:6px;
   flex:0 0 auto;
 }
-.current-date {
-  font-size:12pt;
-  font-weight:700;
-  white-space:nowrap;
-}
 .top-controls select {
   width:auto;
   min-width:96px;
@@ -132,6 +127,7 @@ th, td {
   padding:3px 2px;
   font-size:10pt;
   height:30px;
+  vertical-align:middle;
 }
 th:first-child, td:first-child { width:120px; text-align:left; padding-left:8px; padding-right:5px; }
 th { color:var(--muted); font-size:10pt; font-weight:400; background:#fff; }
@@ -143,8 +139,17 @@ th.current-day { color:var(--blue); background:#fff; }
   gap:4px;
   cursor:pointer;
   min-height:22px;
+  width:100%;
+  position:relative;
 }
-.note-dots { display:inline-flex; gap:2px; min-width:20px; justify-content:center; }
+.note-dots {
+  position:absolute;
+  right:1px;
+  display:inline-flex;
+  gap:2px;
+  min-width:18px;
+  justify-content:flex-end;
+}
 .note-dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
 .note-dot.other { background:var(--blue); }
 .note-dot.good { background:var(--green); }
@@ -187,7 +192,7 @@ input[type="checkbox"]::before {
   box-shadow:0 1px 2px rgba(0,0,0,.18);
   transition:transform .18s ease;
 }
-input[type="checkbox"]:checked { background:var(--green); }
+input[type="checkbox"]:checked { background:var(--blue); }
 input[type="checkbox"][data-negative="true"]:checked { background:var(--red); }
 input[type="checkbox"]:checked::before { transform:translateX(16px); }
 input[type="number"], input[type="text"], select, textarea {
@@ -373,7 +378,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   display:none;
   position:absolute;
   right:0;
-  bottom:calc(100% + 6px);
+  top:calc(100% + 6px);
   min-width:132px;
   padding:6px;
   border:1px solid var(--line);
@@ -510,13 +515,11 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 <div class="site-container">
   <div class="top-bar">
     <div class="top-controls">
-      <span class="current-date" id="current-date"></span>
       <select id="week-select" aria-label="Week"></select>
       <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
         <button class="menu-item" id="summary-open">Summary</button>
-        <button class="menu-item" id="add-history-week">Add Week</button>
         <button class="menu-item" id="archive-week">Archive</button>
         <button class="menu-item" id="edit-categories">Edit</button>
         <button class="menu-item danger" id="clear-week">Clear</button>
@@ -1293,6 +1296,7 @@ async function populateWeekDropdown() {
     select.appendChild(new Option(doc.id, doc.id, doc.id === currentWeek, doc.id === currentWeek));
   });
   if (!seen.has(currentWeek)) select.prepend(new Option(currentWeek, currentWeek, true, true));
+  select.appendChild(new Option("Add New", "__add_new__"));
 }
 
 async function ensureWeekOption(weekKey) {
@@ -1304,11 +1308,18 @@ async function ensureWeekOption(weekKey) {
 }
 
 async function addHistoricalWeek() {
-  const entered = prompt("Week to add, like 2026-W27:", previousWeekKey());
+  const entered = prompt("Week to add, like 2026-W07:", previousWeekKey());
   if (entered === null) return;
-  const weekKey = entered.trim();
-  if (!/^\d{4}-W\d{1,2}$/.test(weekKey)) {
+  const weekKey = entered.trim().toUpperCase();
+  if (!/^\d{4}-W\d{2}$/.test(weekKey)) {
     alert("Use the format YYYY-W##.");
+    document.getElementById("week-select").value = currentWeek;
+    return;
+  }
+  const existing = document.getElementById("week-select");
+  if ([...existing.options].some(option => option.value === weekKey)) {
+    alert("That week already exists.");
+    existing.value = currentWeek;
     return;
   }
   await db.collection("weeks").doc(weekKey).set({timestamp:new Date(), historical:true}, {merge:true});
@@ -1460,10 +1471,6 @@ document.getElementById("summary-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
 });
-document.getElementById("add-history-week").addEventListener("click", async () => {
-  closeActionsMenu();
-  await addHistoricalWeek();
-});
 document.getElementById("summary-refresh").addEventListener("click", refreshSummary);
 document.getElementById("summary-kind").addEventListener("change", async () => {
   syncSummaryControls();
@@ -1508,6 +1515,10 @@ document.getElementById("clear-week").addEventListener("click", async () => {
   await loadData(currentWeek);
 });
 document.getElementById("week-select").addEventListener("change", async event => {
+  if (event.target.value === "__add_new__") {
+    await addHistoricalWeek();
+    return;
+  }
   await loadData(event.target.value);
 });
 document.body.addEventListener("change", event => {
@@ -1516,7 +1527,6 @@ document.body.addEventListener("change", event => {
 });
 
 window.onload = async () => {
-  document.getElementById("current-date").textContent = formatTodayLabel();
   await loadCategories();
   buildShell();
   await populateWeekDropdown();

@@ -914,6 +914,18 @@ function formulaAliases(category) {
   return [...names].filter(name => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name));
 }
 
+function escapeRegExp(text = "") {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function formulaReferencesCategory(formula = "", category) {
+  const text = String(formula || "");
+  if (!text.trim()) return false;
+  const quotedNames = [category.key, category.label].filter(Boolean);
+  if (quotedNames.some(name => new RegExp(`(["'])${escapeRegExp(name)}\\1`, "i").test(text))) return true;
+  return formulaAliases(category).some(alias => new RegExp(`\\b${escapeRegExp(alias)}\\b`).test(text));
+}
+
 function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set()) {
   if (category.kind === "calculated") return evaluateFormula(category, kid, dayIndex, data, stack);
   if (data) {
@@ -923,6 +935,24 @@ function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set(
   const input = document.querySelector(`[data-kid="${kid}"][data-day="${dayIndex}"][data-type="${category.key}"]`);
   if (!input) return 0;
   return category.kind === "number" ? Number(input.value || 0) : input.checked ? 1 : 0;
+}
+
+function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new Set()) {
+  if (category.kind === "calculated") {
+    if (stack.has(category.key)) return false;
+    const nextStack = new Set(stack);
+    nextStack.add(category.key);
+    const referenced = categoriesForKid(kid).filter(other => {
+      if (other.key === category.key) return false;
+      return formulaReferencesCategory(category.formula, other);
+    });
+    const dependencies = referenced.length ? referenced : categoriesForKid(kid).filter(other => other.key !== category.key);
+    return dependencies.some(other => categoryDayHasEntry(kid, other, dayIndex, data, nextStack));
+  }
+  if (data) return Object.prototype.hasOwnProperty.call(data, `${dayIndex}-${category.key}`);
+  const input = document.querySelector(`[data-kid="${kid}"][data-day="${dayIndex}"][data-type="${category.key}"]`);
+  if (!input) return false;
+  return category.kind === "number" ? input.value !== "" : true;
 }
 
 function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()) {
@@ -955,9 +985,9 @@ function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()
   }
 }
 
-function goalPercent(category, value) {
+function goalPercent(category, value, count = 1) {
   const goal = Number(category.goal || 0);
-  const number = goalComparisonValue(category, value, 1);
+  const number = goalComparisonValue(category, value, count);
   if (!Number.isFinite(goal) || goal <= 0) {
     if (category.goalType === "max") return number <= 0 ? 100 : 0;
     return number > 0 ? 100 : 0;
@@ -965,16 +995,17 @@ function goalPercent(category, value) {
   return Math.round((number / goal) * 100);
 }
 
-function goalComparisonValue(category, value, weeks = 1) {
+function goalComparisonValue(category, value, count = 1) {
   const number = Number(value || 0);
-  const weekCount = Math.max(Number(weeks || 1), 1);
-  return category.goalPeriod === "daily" ? number / (days.length * weekCount) : number / weekCount;
+  const divisor = Math.max(Number(count || 1), 1);
+  return number / divisor;
 }
 
 function updateTotals() {
   kids.forEach(kid => {
     let kidTotal = 0;
     const weeklyRaw = {};
+    const weeklyCounts = {};
     days.forEach((day, i) => {
       let dayTotal = 0;
       categoriesForKid(kid).forEach(category => {
@@ -984,6 +1015,9 @@ function updateTotals() {
           if (calcNode) calcNode.textContent = formatRawValue(raw);
         }
         weeklyRaw[category.key] = (weeklyRaw[category.key] || 0) + raw;
+        if (category.goalPeriod === "daily" && categoryDayHasEntry(kid, category, i)) {
+          weeklyCounts[category.key] = (weeklyCounts[category.key] || 0) + 1;
+        }
         dayTotal += raw * category.amount;
       });
       kidTotal += dayTotal;
@@ -994,7 +1028,8 @@ function updateTotals() {
       if (weekNode) {
         if (category.showProgress) {
           const value = weeklyRaw[category.key] || 0;
-          weekNode.innerHTML = `<span class="goal-percent ${goalClass(category, value)}">${goalPercent(category, value)}%</span>`;
+          const count = category.goalPeriod === "daily" ? weeklyCounts[category.key] || 1 : 1;
+          weekNode.innerHTML = `<span class="goal-percent ${goalClass(category, value, count)}">${goalPercent(category, value, count)}%</span>`;
         } else {
           weekNode.textContent = "";
         }
@@ -1018,6 +1053,14 @@ function categoryRawValue(kid, category, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
     total += categoryDayValue(kid, category, i, data);
+  });
+  return total;
+}
+
+function categoryEntryCount(kid, category, data = {}) {
+  let total = 0;
+  days.forEach((day, i) => {
+    if (categoryDayHasEntry(kid, category, i, data)) total += 1;
   });
   return total;
 }
@@ -1125,6 +1168,7 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
     const data = choresDoc.exists ? choresDoc.data() : {};
     categoriesForKid(kid).forEach(category => {
       buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(kid, category, data);
+      buckets[label].values[`${category.key}__count`] = (buckets[label].values[`${category.key}__count`] || 0) + categoryEntryCount(kid, category, data);
     });
   }
   return {
@@ -1155,8 +1199,9 @@ function renderDetailedSummary(kid, detail, mode) {
       const bucket = detail.buckets[label];
       const sum = bucket.values[category.key] || 0;
       const weeks = Math.max(bucket.weeks.size, 1);
-      const avg = category.goalPeriod === "daily" ? sum / (weeks * days.length) : sum / weeks;
-      if (showSums) html += `<td class="${goalClass(category, sum, weeks)}">${sum.toFixed(0)}</td>`;
+      const count = category.goalPeriod === "daily" ? bucket.values[`${category.key}__count`] || 1 : weeks;
+      const avg = sum / count;
+      if (showSums) html += `<td class="${goalClass(category, sum, count)}">${sum.toFixed(0)}</td>`;
       if (showAverages) html += `<td class="${goalClass(category, avg, 1, true)}">${avg.toFixed(1)}</td>`;
     });
     html += `</tr>`;
@@ -1165,9 +1210,9 @@ function renderDetailedSummary(kid, detail, mode) {
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
-function goalClass(category, value, weeks = 1, valueIsNormalized = false) {
+function goalClass(category, value, count = 1, valueIsNormalized = false) {
   const goal = Number(category.goal || 0);
-  const comparisonValue = valueIsNormalized ? Number(value || 0) : goalComparisonValue(category, value, weeks);
+  const comparisonValue = valueIsNormalized ? Number(value || 0) : goalComparisonValue(category, value, count);
   if (!Number.isFinite(goal) || goal < 0) return "";
   if (category.goalType === "min") {
     if (goal === 0) return comparisonValue > 0 ? "summary-goal-blue" : "summary-goal-green";

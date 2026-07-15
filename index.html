@@ -434,7 +434,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .category-editor { display:grid; gap:8px; min-width:1120px; }
 .category-row {
   display:grid;
-  grid-template-columns:64px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 74px 74px 34px;
+  grid-template-columns:64px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 96px 34px;
   gap:8px;
   align-items:center;
 }
@@ -469,7 +469,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   height:22px;
   color:var(--muted);
 }
-.target-cell, .week-total-cell { color:var(--muted); width:46px; }
+.goal-progress-cell { color:var(--muted); width:58px; white-space:nowrap; }
 @media(max-width:760px) {
   body { padding:8px; }
   .top-bar { align-items:stretch; flex-wrap:wrap; }
@@ -716,8 +716,7 @@ function normalizeCategory(category, index) {
     group:(category.group || defaults.group || "").trim(),
     goal:Number(category.goal ?? defaults.goal ?? 0),
     goalType:category.goalType === "max" ? "max" : "min",
-    showTarget:category.showTarget === true,
-    showWeekly:category.showWeekly === true,
+    showProgress:category.showProgress === true || category.showTarget === true || category.showWeekly === true,
     formula:(category.formula || "").trim()
   };
 }
@@ -791,15 +790,13 @@ function buildTables() {
   kids.forEach(kid => {
     const container = document.getElementById(kid);
     const kidCategories = categoriesForKid(kid);
-    const showTargetColumn = kidCategories.some(category => category.showTarget);
-    const showWeeklyColumn = kidCategories.some(category => category.showWeekly);
+    const showProgressColumn = kidCategories.some(category => category.showProgress);
     let html = `<div class="tracker-card"><div class="table-scroll"><table><thead><tr><th></th>`;
     days.forEach((day, i) => {
       const highlight = i === todayIndex ? "current-day" : "";
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
-    if (showTargetColumn) html += `<th class="target-cell">Target</th>`;
-    if (showWeeklyColumn) html += `<th class="week-total-cell">Week</th>`;
+    if (showProgressColumn) html += `<th class="goal-progress-cell"></th>`;
     html += `</tr></thead><tbody>`;
     let previousGroup = "";
     kidCategories.forEach(category => {
@@ -817,14 +814,12 @@ function buildTables() {
           html += `<td data-day-cell="${i}"><input type="checkbox" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
-      if (showTargetColumn) html += `<td class="target-cell">${category.showTarget ? formatGoal(category) : ""}</td>`;
-      if (showWeeklyColumn) html += `<td class="week-total-cell" id="${kid}-week-${category.key}">${category.showWeekly ? "0" : ""}</td>`;
+      if (showProgressColumn) html += `<td class="goal-progress-cell" id="${kid}-week-${category.key}">${category.showProgress ? "0 / " + formatRawValue(category.goal) : ""}</td>`;
       html += `</tr>`;
     });
     html += `<tr class="total-row"><td>Total</td>`;
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
-    if (showTargetColumn) html += `<td></td>`;
-    if (showWeeklyColumn) html += `<td></td>`;
+    if (showProgressColumn) html += `<td></td>`;
     html += `</tr></tbody></table></div></div>`;
     html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
     html += `<div class="panel"><div class="panel-head"><span>Log</span><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
@@ -891,12 +886,6 @@ function formatRawValue(value) {
   return Number.isInteger(number) ? String(number) : number.toFixed(1);
 }
 
-function formatGoal(category) {
-  const goal = Number(category.goal || 0);
-  const label = category.goalType === "max" ? "Max" : "Min";
-  return `${label} ${formatRawValue(goal)}`;
-}
-
 function formulaName(category) {
   return String(category.key || category.label || "").replace(/[^a-z0-9_]+/gi, "_").replace(/^_+|_+$/g, "") || "value";
 }
@@ -953,7 +942,7 @@ function updateTotals() {
     });
     categoriesForKid(kid).forEach(category => {
       const weekNode = document.getElementById(`${kid}-week-${category.key}`);
-      if (weekNode) weekNode.textContent = category.showWeekly ? formatRawValue(weeklyRaw[category.key]) : "";
+      if (weekNode) weekNode.textContent = category.showProgress ? `${formatRawValue(weeklyRaw[category.key])} / ${formatRawValue(category.goal)}` : "";
     });
     document.getElementById(`rank-${kid}`).textContent = dollars(kidTotal);
   });
@@ -1441,11 +1430,12 @@ function importCategoryConfig() {
   renderCategoryEditor(categoryEditorKid);
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", showTarget:false, showWeekly:false, formula:""}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", showProgress:false, formula:""}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
   row.dataset.key = category.key || "";
+  const showProgress = category.showProgress === true || category.showTarget === true || category.showWeekly === true;
   row.innerHTML = `
     <div class="move-pair">
       <button class="btn move-category" type="button" data-move-category="up" aria-label="Move up">↑</button>
@@ -1466,13 +1456,9 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
       <option value="min" ${category.goalType === "min" ? "selected" : ""}>Min</option>
       <option value="max" ${category.goalType === "max" ? "selected" : ""}>Max</option>
     </select>
-    <select aria-label="Show target" data-field="showTarget">
-      <option value="false" ${category.showTarget ? "" : "selected"}>Hide Target</option>
-      <option value="true" ${category.showTarget ? "selected" : ""}>Show Target</option>
-    </select>
-    <select aria-label="Show week" data-field="showWeekly">
-      <option value="false" ${category.showWeekly ? "" : "selected"}>Hide Week</option>
-      <option value="true" ${category.showWeekly ? "selected" : ""}>Show Week</option>
+    <select aria-label="Show weekly target" data-field="showProgress">
+      <option value="false" ${showProgress ? "" : "selected"}>Hide</option>
+      <option value="true" ${showProgress ? "selected" : ""}>Show</option>
     </select>
     <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
@@ -1491,8 +1477,7 @@ function readCategoryEditor() {
       group:row.querySelector('[data-field="group"]').value.trim(),
       goal:Number(row.querySelector('[data-field="goal"]').value || 0),
       goalType:row.querySelector('[data-field="goalType"]').value,
-      showTarget:row.querySelector('[data-field="showTarget"]').value === "true",
-      showWeekly:row.querySelector('[data-field="showWeekly"]').value === "true",
+      showProgress:row.querySelector('[data-field="showProgress"]').value === "true",
       formula:row.querySelector('[data-field="formula"]').value.trim()
     };
   });

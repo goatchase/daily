@@ -39,6 +39,24 @@ button, input, select, textarea {
 }
 .site-container { width:min(1180px,100%); margin:0 auto; }
 .top-bar { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.top-controls {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+}
+.current-date {
+  font-size:12pt;
+  font-weight:700;
+  white-space:nowrap;
+}
+.top-controls select {
+  width:auto;
+  min-width:96px;
+  padding:5px 26px 5px 8px;
+  font-size:12pt;
+  font-weight:700;
+}
 .tab-container {
   flex:1;
   display:grid;
@@ -67,7 +85,8 @@ button, input, select, textarea {
 }
 .tab > span:first-child { min-width:0; overflow:hidden; text-overflow:ellipsis; }
 .kid-name { font-size:12pt; font-weight:700; line-height:1; }
-.tab.active { background:#f5f5f7; color:var(--ink); box-shadow:none; }
+.tab.active { background:var(--blue); color:#fff; box-shadow:none; }
+.tab.active .rank-circle { background:#fff; color:var(--blue); }
 .rank-circle {
   min-width:38px;
   height:22px;
@@ -326,14 +345,12 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   border:1px solid var(--line);
   border-radius:12px;
   background:#fff;
-  border-left:3px solid var(--green);
 }
-.log-item.bad { border-left-color:var(--red); }
+.log-item.good .day-chip { background:#e8f7ee; color:#1b7f3a; border-color:#ccebd6; }
+.log-item.bad .day-chip { background:#fdebea; color:#b42318; border-color:#f8d0cd; }
 .log-main { display:grid; grid-template-columns:auto 1fr auto auto; gap:7px; align-items:center; }
 .log-copy { min-width:0; font-size:10pt; line-height:1.2; overflow-wrap:anywhere; }
 .log-outcome { color:var(--muted); font-size:10pt; overflow-wrap:anywhere; }
-.bottom-controls { display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
-.bottom-controls select { width:auto; min-width:132px; padding:7px 30px 7px 10px; }
 .menu-wrap { position:relative; }
 .menu-button {
   width:34px;
@@ -408,7 +425,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .category-editor { display:grid; gap:8px; }
 .category-row {
   display:grid;
-  grid-template-columns:64px 118px minmax(260px,1fr) 110px 86px 74px 74px 34px;
+  grid-template-columns:64px 112px minmax(230px,1fr) 102px 82px 68px 68px 78px 34px;
   gap:8px;
   align-items:center;
 }
@@ -428,11 +445,16 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .summary-table th:first-child, .summary-table td:first-child { width:90px; }
 .summary-table td, .summary-table th { padding:6px 8px; }
 .summary-empty { color:var(--muted); padding:12px; }
+.summary-goal-blue { background:#eaf3ff; }
+.summary-goal-green { background:#eaf8ef; }
+.summary-goal-yellow { background:#fff8d8; }
+.summary-goal-red { background:#fdecea; }
 .summary-controls { display:grid; grid-template-columns:repeat(6,auto); gap:8px; align-items:center; margin-bottom:10px; }
 .summary-controls select, .summary-controls input { min-width:118px; padding:6px 9px; }
 @media(max-width:760px) {
   body { padding:8px; }
-  .top-bar { align-items:stretch; }
+  .top-bar { align-items:stretch; flex-wrap:wrap; }
+  .top-controls { width:100%; }
   .tab-container { grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; padding:3px; }
   .tab { flex-direction:row; gap:2px; padding:5px 1px; font-size:10pt; }
   .kid-name { font-size:12pt; }
@@ -487,21 +509,23 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 <body>
 <div class="site-container">
   <div class="top-bar">
-    <div class="tab-container" id="kid-tabs"></div>
-  </div>
-  <div id="kid-views"></div>
-  <div class="bottom-controls">
-    <select id="week-select" aria-label="Week"></select>
-    <div class="menu-wrap">
+    <div class="top-controls">
+      <span class="current-date" id="current-date"></span>
+      <select id="week-select" aria-label="Week"></select>
+      <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
         <button class="menu-item" id="summary-open">Summary</button>
+        <button class="menu-item" id="add-history-week">Add Week</button>
         <button class="menu-item" id="archive-week">Archive</button>
         <button class="menu-item" id="edit-categories">Edit</button>
         <button class="menu-item danger" id="clear-week">Clear</button>
       </div>
+      </div>
     </div>
+    <div class="tab-container" id="kid-tabs"></div>
   </div>
+  <div id="kid-views"></div>
 </div>
 
 <div class="modal" id="category-detail-modal">
@@ -584,13 +608,13 @@ const db = firebase.firestore();
 const kids = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
 const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const DEFAULT_CATEGORIES = [
-  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7},
-  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25, group:"Care", goal:7},
-  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25, group:"Care", goal:7},
-  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2, group:"Behavior", goal:0},
-  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05, group:"Growth", goal:100},
-  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05, group:"Growth", goal:100},
-  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05, group:"Growth", goal:100}
+  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"max"},
+  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"max"},
+  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"max"},
+  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2, group:"Behavior", goal:0, goalType:"max"},
+  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"max"},
+  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"max"},
+  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"max"}
 ];
 const DEFAULT_CATEGORY_MAP = Object.fromEntries(DEFAULT_CATEGORIES.map(category => [category.key, category]));
 const CLEAR_PASSWORD = "clear";
@@ -645,6 +669,16 @@ function promptDay(currentDay) {
   return Number.isInteger(day) && day >= 0 && day < days.length ? day : Number(currentDay);
 }
 
+function formatTodayLabel() {
+  return new Date().toLocaleDateString(undefined, {month:"short", day:"numeric"});
+}
+
+function previousWeekKey(weekKey = currentWeek) {
+  const date = dateFromWeekKey(weekKey) || new Date();
+  date.setUTCDate(date.getUTCDate() - 7);
+  return getYearWeek(date);
+}
+
 function normalizeCategory(category, index) {
   const defaults = DEFAULT_CATEGORY_MAP[category.key] || {};
   const rawLabel = (category.label || defaults.label || category.key || `Row ${index + 1}`).trim();
@@ -657,7 +691,8 @@ function normalizeCategory(category, index) {
     kind:category.kind === "number" ? "number" : "check",
     amount:Number(category.amount || 0),
     group:(category.group || defaults.group || "").trim(),
-    goal:Number(category.goal ?? defaults.goal ?? 0)
+    goal:Number(category.goal ?? defaults.goal ?? 0),
+    goalType:category.goalType === "min" ? "min" : "max"
   };
 }
 
@@ -973,8 +1008,8 @@ function renderDetailedSummary(kid, detail, mode) {
   const showAverages = mode === "average" || mode === "both";
   let head = `<tr><th>Item</th><th>Goal</th>`;
   detail.labels.forEach(label => {
-    if (showSums) head += `<th>${label} sum</th>`;
-    if (showAverages) head += `<th>${label} avg</th>`;
+    if (showSums) head += `<th>${label}</th>`;
+    if (showAverages) head += `<th>${label}</th>`;
   });
   head += `</tr>`;
   let previousGroup = "";
@@ -982,18 +1017,36 @@ function renderDetailedSummary(kid, detail, mode) {
     const group = category.group || "";
     const groupClass = group && group !== previousGroup ? "group-start" : "";
     previousGroup = group;
-    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${Number(category.goal || 0)}</td>`;
+    const goalType = category.goalType === "min" ? "Min" : "Max";
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalType} ${Number(category.goal || 0)}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
       const sum = bucket.values[category.key] || 0;
       const avg = sum / Math.max(bucket.weeks.size, 1);
-      if (showSums) html += `<td>${sum.toFixed(category.kind === "number" ? 0 : 0)}</td>`;
-      if (showAverages) html += `<td>${avg.toFixed(1)}</td>`;
+      if (showSums) html += `<td class="${goalClass(category, sum)}">${sum.toFixed(0)}</td>`;
+      if (showAverages) html += `<td class="${goalClass(category, avg)}">${avg.toFixed(1)}</td>`;
     });
     html += `</tr>`;
     return html;
   }).join("");
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
+function goalClass(category, value) {
+  const goal = Number(category.goal || 0);
+  if (!Number.isFinite(goal) || goal < 0) return "";
+  if (category.goalType === "min") {
+    if (goal === 0) return value > 0 ? "summary-goal-blue" : "summary-goal-green";
+    if (value >= goal * 1.5) return "summary-goal-blue";
+    if (value >= goal) return "summary-goal-green";
+    if (value >= goal * .5) return "summary-goal-yellow";
+    return "summary-goal-red";
+  }
+  if (goal === 0) return value <= 0 ? "summary-goal-green" : "summary-goal-red";
+  if (value <= goal * .5) return "summary-goal-blue";
+  if (value <= goal) return "summary-goal-green";
+  if (value <= goal * 1.5) return "summary-goal-yellow";
+  return "summary-goal-red";
 }
 
 async function refreshSummary() {
@@ -1225,7 +1278,7 @@ function openCategoryDetail(key, kid = activeKid) {
   if (!category) return;
   activeCategory = key;
   document.getElementById("category-detail-title").textContent = category.label;
-  const meta = [category.group ? `Group: ${category.group}` : "", Number(category.goal || 0) ? `Goal: ${category.goal}` : ""].filter(Boolean).join("  ");
+  const meta = [category.group ? `Group: ${category.group}` : "", Number(category.goal || 0) ? `Goal: ${category.goalType === "min" ? "Min" : "Max"} ${category.goal}` : ""].filter(Boolean).join("  ");
   document.getElementById("category-detail-copy").textContent = [category.details || "No notes added for this category yet.", meta].filter(Boolean).join("\n");
   openModal("category-detail-modal");
 }
@@ -1250,6 +1303,19 @@ async function ensureWeekOption(weekKey) {
   select.value = weekKey;
 }
 
+async function addHistoricalWeek() {
+  const entered = prompt("Week to add, like 2026-W27:", previousWeekKey());
+  if (entered === null) return;
+  const weekKey = entered.trim();
+  if (!/^\d{4}-W\d{1,2}$/.test(weekKey)) {
+    alert("Use the format YYYY-W##.");
+    return;
+  }
+  await db.collection("weeks").doc(weekKey).set({timestamp:new Date(), historical:true}, {merge:true});
+  await populateWeekDropdown();
+  await loadData(weekKey);
+}
+
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
   editor.innerHTML = "";
@@ -1264,7 +1330,7 @@ function openCategoryEditor(kid = activeKid) {
   openModal("category-modal");
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"max"}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
@@ -1283,6 +1349,10 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
     </select>
     <input aria-label="Value" data-field="amount" type="number" step="0.01" value="${Number(category.amount || 0)}">
     <input aria-label="Goal" data-field="goal" type="number" step="1" value="${Number(category.goal || 0)}">
+    <select aria-label="Goal type" data-field="goalType">
+      <option value="max" ${category.goalType !== "min" ? "selected" : ""}>Max</option>
+      <option value="min" ${category.goalType === "min" ? "selected" : ""}>Min</option>
+    </select>
     <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
   editor.appendChild(row);
@@ -1298,7 +1368,8 @@ function readCategoryEditor() {
       kind:row.querySelector('[data-field="kind"]').value,
       amount:Number(row.querySelector('[data-field="amount"]').value || 0),
       group:row.querySelector('[data-field="group"]').value.trim(),
-      goal:Number(row.querySelector('[data-field="goal"]').value || 0)
+      goal:Number(row.querySelector('[data-field="goal"]').value || 0),
+      goalType:row.querySelector('[data-field="goalType"]').value
     };
   });
 }
@@ -1389,6 +1460,10 @@ document.getElementById("summary-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
 });
+document.getElementById("add-history-week").addEventListener("click", async () => {
+  closeActionsMenu();
+  await addHistoricalWeek();
+});
 document.getElementById("summary-refresh").addEventListener("click", refreshSummary);
 document.getElementById("summary-kind").addEventListener("change", async () => {
   syncSummaryControls();
@@ -1441,6 +1516,7 @@ document.body.addEventListener("change", event => {
 });
 
 window.onload = async () => {
+  document.getElementById("current-date").textContent = formatTodayLabel();
   await loadCategories();
   buildShell();
   await populateWeekDropdown();

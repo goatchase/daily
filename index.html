@@ -135,6 +135,7 @@ th, td {
   font-size:10pt;
   height:30px;
   vertical-align:middle;
+  user-select:none;
 }
 th:first-child, td:first-child { width:120px; text-align:left; padding-left:8px; padding-right:5px; }
 th { color:var(--muted); font-size:10pt; font-weight:400; background:#fff; }
@@ -144,7 +145,7 @@ th.current-day { color:var(--blue); background:#fff; }
   align-items:center;
   justify-content:center;
   gap:4px;
-  cursor:pointer;
+  cursor:default;
   min-height:22px;
   width:100%;
   position:relative;
@@ -219,6 +220,7 @@ input[type="number"] {
   font-size:10pt;
   appearance:textfield;
   -moz-appearance:textfield;
+  cursor:text;
 }
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -464,6 +466,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   width:38px;
   height:22px;
   color:var(--muted);
+  user-select:none;
 }
 .goal-progress-cell { color:var(--muted); width:50px; white-space:nowrap; }
 .goal-percent {
@@ -927,7 +930,10 @@ function formulaReferencesCategory(formula = "", category) {
 }
 
 function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set()) {
-  if (category.kind === "calculated") return evaluateFormula(category, kid, dayIndex, data, stack);
+  if (category.kind === "calculated") {
+    if (!categoryDayHasEntry(kid, category, dayIndex, data, stack)) return 0;
+    return evaluateFormula(category, kid, dayIndex, data, stack);
+  }
   if (data) {
     const value = data[`${dayIndex}-${category.key}`];
     return category.kind === "number" ? Number(value || 0) : value ? 1 : 0;
@@ -1012,7 +1018,7 @@ function updateTotals() {
         const raw = categoryDayValue(kid, category, i);
         if (category.kind === "calculated") {
           const calcNode = document.getElementById(`${kid}-calc-${category.key}-${i}`);
-          if (calcNode) calcNode.textContent = formatRawValue(raw);
+          if (calcNode) calcNode.textContent = categoryDayHasEntry(kid, category, i) ? formatRawValue(raw) : "";
         }
         weeklyRaw[category.key] = (weeklyRaw[category.key] || 0) + raw;
         if (category.goalPeriod === "daily" && categoryDayHasEntry(kid, category, i)) {
@@ -1286,15 +1292,11 @@ function applyDayFocus(kid, dayIndex) {
 function renderNoteIndicators() {
   kids.forEach(kid => {
     days.forEach((day, i) => {
-      const hasTask = (tasksCache[kid] || []).some(task => Number(task.day) === i && (task.text || "").trim());
       const hasGood = (logsCache[kid] || []).some(entry => Number(entry.day) === i && entry.type === "good");
-      const hasBad = (logsCache[kid] || []).some(entry => Number(entry.day) === i && entry.type === "bad");
       const dots = document.getElementById(`${kid}-dots-${i}`);
       if (!dots) return;
       dots.innerHTML = "";
-      if (hasTask) dots.insertAdjacentHTML("beforeend", `<span class="note-dot other" title="Other task"></span>`);
       if (hasGood) dots.insertAdjacentHTML("beforeend", `<span class="note-dot good" title="Good"></span>`);
-      if (hasBad) dots.insertAdjacentHTML("beforeend", `<span class="note-dot bad" title="Bad"></span>`);
     });
   });
 }

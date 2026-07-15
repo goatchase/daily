@@ -462,7 +462,8 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .top-controls { width:100%; }
   .tab-container { grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; padding:3px; }
   .tab { flex-direction:row; gap:2px; padding:5px 1px; font-size:10pt; }
-  .kid-name { font-size:12pt; }
+  .kid-name { font-size:0; }
+  .kid-name::first-letter { font-size:12pt; }
   .rank-circle { height:18px; min-width:25px; padding:0 4px; font-size:10pt; }
   .work-grid { grid-template-columns:1fr; }
   .mobile-day-picker {
@@ -493,7 +494,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .task-item .mini-action { grid-column:auto; }
   .log-main { grid-template-columns:auto 1fr auto auto; }
   table { min-width:0; }
-  .hidden-day { display:none; }
+  .hidden-day { display:table-cell; }
   tbody tr, th,td { height:26px; min-height:26px; }
   th,td { padding:2px 1px; font-size:10pt; }
   th:first-child, td:first-child { width:106px; padding-left:5px; padding-right:3px; }

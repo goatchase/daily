@@ -51,6 +51,8 @@ button, input, select, textarea {
   padding:5px 26px 5px 8px;
   font-size:12pt;
   font-weight:700;
+  min-height:36px;
+  border-radius:12px;
 }
 .tab-container {
   flex:1;
@@ -358,8 +360,9 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .log-outcome { color:var(--muted); font-size:10pt; overflow-wrap:anywhere; }
 .menu-wrap { position:relative; }
 .menu-button {
-  width:34px;
-  min-width:34px;
+  width:36px;
+  min-width:36px;
+  min-height:36px;
   padding:0;
   display:inline-flex;
   flex-direction:column;
@@ -377,7 +380,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .overflow-menu {
   display:none;
   position:absolute;
-  right:0;
+  left:0;
   top:calc(100% + 6px);
   min-width:132px;
   padding:6px;
@@ -412,7 +415,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   z-index:20;
 }
 .modal-content {
-  width:min(920px,96vw);
+  width:min(1040px,96vw);
   max-height:96vh;
   overflow:auto;
   background:var(--card);
@@ -427,16 +430,18 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .field label { color:var(--muted); font-size:10pt; font-weight:400; }
 .field textarea { min-height:72px; resize:vertical; padding:9px; }
 .modal-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:12px; }
-.category-editor { display:grid; gap:8px; }
+#category-modal .modal-content { width:min(1320px,98vw); }
+.category-editor { display:grid; gap:8px; min-width:1120px; }
 .category-row {
   display:grid;
-  grid-template-columns:64px 112px minmax(230px,1fr) 102px 82px 68px 68px 78px 34px;
+  grid-template-columns:64px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 74px 74px 34px;
   gap:8px;
   align-items:center;
 }
 .move-pair { display:flex; gap:4px; }
 .move-category { width:28px; min-height:28px; padding:0; }
-.category-row input, .category-row select { min-height:30px; padding:5px 8px; }
+.category-row input, .category-row select { min-height:30px; padding:5px 8px; min-width:0; }
+.category-row input[type="number"] { width:100%; min-width:82px; }
 .category-row textarea {
   min-height:44px;
   padding:5px 8px;
@@ -456,10 +461,20 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .summary-goal-red { background:#fdecea; }
 .summary-controls { display:grid; grid-template-columns:repeat(6,auto); gap:8px; align-items:center; margin-bottom:10px; }
 .summary-controls select, .summary-controls input { min-width:118px; padding:6px 9px; }
+.calc-value {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:22px;
+  color:var(--muted);
+}
+.target-cell, .week-total-cell { color:var(--muted); width:46px; }
 @media(max-width:760px) {
   body { padding:8px; }
   .top-bar { align-items:stretch; flex-wrap:wrap; }
   .top-controls { width:100%; }
+  .site-container { min-width:740px; }
   .tab-container { grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; padding:3px; }
   .tab { flex-direction:row; gap:2px; padding:5px 1px; font-size:10pt; }
   .kid-name { font-size:0; }
@@ -467,7 +482,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .rank-circle { height:18px; min-width:25px; padding:0 4px; font-size:10pt; }
   .work-grid { grid-template-columns:1fr; }
   .mobile-day-picker {
-    display:grid;
+    display:none;
     grid-template-columns:repeat(7,minmax(0,1fr));
     gap:2px;
     padding:4px;
@@ -504,6 +519,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   input[type="checkbox"]::before { width:18px; height:18px; top:2px; }
   input[type="checkbox"]:checked::before { transform:translateX(14px); }
   input[type="number"] { width:32px; height:20px; font-size:10pt; }
+  .calc-value { width:32px; height:20px; }
   .category-row { grid-template-columns:1fr; }
   .move-pair { justify-content:flex-start; }
   .category-row .remove-category { width:100%; }
@@ -516,7 +532,6 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 <div class="site-container">
   <div class="top-bar">
     <div class="top-controls">
-      <select id="week-select" aria-label="Week"></select>
       <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
@@ -526,6 +541,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
         <button class="menu-item danger" id="clear-week">Clear</button>
       </div>
       </div>
+      <select id="week-select" aria-label="Week"></select>
     </div>
     <div class="tab-container" id="kid-tabs"></div>
   </div>
@@ -690,15 +706,19 @@ function normalizeCategory(category, index) {
   const rawLabel = (category.label || defaults.label || category.key || `Row ${index + 1}`).trim();
   const label = defaults.label && !category.details ? defaults.label : rawLabel;
   const key = (category.key || label).trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || `row-${index + 1}`;
+  const kind = ["check","number","calculated"].includes(category.kind) ? category.kind : "check";
   return {
     key,
     label,
     details:(category.details || defaults.details || label).trim(),
-    kind:category.kind === "number" ? "number" : "check",
+    kind,
     amount:Number(category.amount || 0),
     group:(category.group || defaults.group || "").trim(),
     goal:Number(category.goal ?? defaults.goal ?? 0),
-    goalType:category.goalType === "max" ? "max" : "min"
+    goalType:category.goalType === "max" ? "max" : "min",
+    showTarget:category.showTarget === true,
+    showWeekly:category.showWeekly === true,
+    formula:(category.formula || "").trim()
   };
 }
 
@@ -770,35 +790,41 @@ function buildShell() {
 function buildTables() {
   kids.forEach(kid => {
     const container = document.getElementById(kid);
-    let html = `<div class="tracker-card"><div class="mobile-day-picker" data-day-picker="${kid}">`;
-    days.forEach((day, i) => {
-      const active = i === todayIndex ? "active" : "";
-      html += `<button class="day-filter ${active}" data-filter-day="${i}" data-filter-kid="${kid}">${day.slice(0,3)}</button>`;
-    });
-    html += `</div><div class="table-scroll"><table><thead><tr><th></th>`;
+    const kidCategories = categoriesForKid(kid);
+    const showTargetColumn = kidCategories.some(category => category.showTarget);
+    const showWeeklyColumn = kidCategories.some(category => category.showWeekly);
+    let html = `<div class="tracker-card"><div class="table-scroll"><table><thead><tr><th></th>`;
     days.forEach((day, i) => {
       const highlight = i === todayIndex ? "current-day" : "";
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head">${day}<span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
+    if (showTargetColumn) html += `<th class="target-cell">Target</th>`;
+    if (showWeeklyColumn) html += `<th class="week-total-cell">Week</th>`;
     html += `</tr></thead><tbody>`;
     let previousGroup = "";
-    categoriesForKid(kid).forEach(category => {
+    kidCategories.forEach(category => {
       const group = category.group || "";
       const groupClass = group && group !== previousGroup ? "group-start" : "";
       previousGroup = group;
       html += `<tr class="${groupClass}"><td><button class="category-label" data-category-key="${category.key}" data-category-kid="${kid}"><span class="category-name">${escapeHtml(category.label)}</span></button></td>`;
       days.forEach((day, i) => {
-        if (category.kind === "number") {
+        if (category.kind === "calculated") {
+          html += `<td data-day-cell="${i}"><span class="calc-value" id="${kid}-calc-${category.key}-${i}">0</span></td>`;
+        } else if (category.kind === "number") {
           html += `<td data-day-cell="${i}"><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         } else {
           const negative = category.amount < 0 ? "true" : "false";
           html += `<td data-day-cell="${i}"><input type="checkbox" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
+      if (showTargetColumn) html += `<td class="target-cell">${category.showTarget ? formatGoal(category) : ""}</td>`;
+      if (showWeeklyColumn) html += `<td class="week-total-cell" id="${kid}-week-${category.key}">${category.showWeekly ? "0" : ""}</td>`;
       html += `</tr>`;
     });
     html += `<tr class="total-row"><td>Total</td>`;
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
+    if (showTargetColumn) html += `<td></td>`;
+    if (showWeeklyColumn) html += `<td></td>`;
     html += `</tr></tbody></table></div></div>`;
     html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
     html += `<div class="panel"><div class="panel-head"><span>Log</span><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
@@ -811,6 +837,7 @@ async function saveData(kid) {
   const data = {};
   days.forEach((day, i) => {
     categoriesForKid(kid).forEach(category => {
+      if (category.kind === "calculated") return;
       const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
       if (!input) return;
       data[`${i}-${category.key}`] = category.kind === "number" ? input.value : input.checked;
@@ -832,6 +859,7 @@ async function loadData(weekKey = currentWeek) {
     const data = doc.exists ? doc.data() : {};
     days.forEach((day, i) => {
       categoriesForKid(kid).forEach(category => {
+        if (category.kind === "calculated") return;
         const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
         if (!input) return;
         if (category.kind === "number") input.value = data[`${i}-${category.key}`] || "";
@@ -857,19 +885,75 @@ async function loadWeeklyPanels() {
   renderNoteIndicators();
 }
 
+function formatRawValue(value) {
+  const number = Number(value || 0);
+  if (!Number.isFinite(number)) return "0";
+  return Number.isInteger(number) ? String(number) : number.toFixed(1);
+}
+
+function formatGoal(category) {
+  const goal = Number(category.goal || 0);
+  const label = category.goalType === "max" ? "Max" : "Min";
+  return `${label} ${formatRawValue(goal)}`;
+}
+
+function formulaName(category) {
+  return String(category.key || category.label || "").replace(/[^a-z0-9_]+/gi, "_").replace(/^_+|_+$/g, "") || "value";
+}
+
+function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set()) {
+  if (category.kind === "calculated") return evaluateFormula(category, kid, dayIndex, data, stack);
+  if (data) {
+    const value = data[`${dayIndex}-${category.key}`];
+    return category.kind === "number" ? Number(value || 0) : value ? 1 : 0;
+  }
+  const input = document.querySelector(`[data-kid="${kid}"][data-day="${dayIndex}"][data-type="${category.key}"]`);
+  if (!input) return 0;
+  return category.kind === "number" ? Number(input.value || 0) : input.checked ? 1 : 0;
+}
+
+function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()) {
+  const formula = (category.formula || "").trim();
+  if (!formula || stack.has(category.key)) return 0;
+  const nextStack = new Set(stack);
+  nextStack.add(category.key);
+  const scope = {};
+  categoriesForKid(kid).forEach(other => {
+    if (other.key === category.key) return;
+    scope[formulaName(other)] = categoryDayValue(kid, other, dayIndex, data, nextStack);
+  });
+  try {
+    const names = Object.keys(scope);
+    const values = Object.values(scope);
+    const result = Function(...names, `"use strict"; return (${formula});`)(...values);
+    const number = Number(result);
+    return Number.isFinite(number) ? number : 0;
+  } catch (error) {
+    return 0;
+  }
+}
+
 function updateTotals() {
   kids.forEach(kid => {
     let kidTotal = 0;
+    const weeklyRaw = {};
     days.forEach((day, i) => {
       let dayTotal = 0;
       categoriesForKid(kid).forEach(category => {
-        const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
-        if (!input) return;
-        if (category.kind === "number") dayTotal += Number(input.value || 0) * category.amount;
-        else if (input.checked) dayTotal += category.amount;
+        const raw = categoryDayValue(kid, category, i);
+        if (category.kind === "calculated") {
+          const calcNode = document.getElementById(`${kid}-calc-${category.key}-${i}`);
+          if (calcNode) calcNode.textContent = formatRawValue(raw);
+        }
+        weeklyRaw[category.key] = (weeklyRaw[category.key] || 0) + raw;
+        dayTotal += raw * category.amount;
       });
       kidTotal += dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent = dollars(dayTotal);
+    });
+    categoriesForKid(kid).forEach(category => {
+      const weekNode = document.getElementById(`${kid}-week-${category.key}`);
+      if (weekNode) weekNode.textContent = category.showWeekly ? formatRawValue(weeklyRaw[category.key]) : "";
     });
     document.getElementById(`rank-${kid}`).textContent = dollars(kidTotal);
   });
@@ -879,20 +963,16 @@ function scoreDataForKid(kid, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
     categoriesForKid(kid).forEach(category => {
-      const value = data[`${i}-${category.key}`];
-      if (category.kind === "number") total += Number(value || 0) * category.amount;
-      else if (value) total += category.amount;
+      total += categoryDayValue(kid, category, i, data) * category.amount;
     });
   });
   return total;
 }
 
-function categoryRawValue(category, data = {}) {
+function categoryRawValue(kid, category, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
-    const value = data[`${i}-${category.key}`];
-    if (category.kind === "number") total += Number(value || 0);
-    else if (value) total += 1;
+    total += categoryDayValue(kid, category, i, data);
   });
   return total;
 }
@@ -999,7 +1079,7 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
     const choresDoc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
     const data = choresDoc.exists ? choresDoc.data() : {};
     categoriesForKid(kid).forEach(category => {
-      buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(category, data);
+      buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(kid, category, data);
     });
   }
   return {
@@ -1361,7 +1441,7 @@ function importCategoryConfig() {
   renderCategoryEditor(categoryEditorKid);
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min"}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", showTarget:false, showWeekly:false, formula:""}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
@@ -1374,15 +1454,25 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
     <textarea aria-label="Notes" data-field="details" placeholder="Tap notes">${escapeHtml(category.details || "")}</textarea>
     <input aria-label="Group" data-field="group" placeholder="Group" value="${escapeAttr(category.group || "")}">
+    <input aria-label="Formula" data-field="formula" placeholder="Formula" value="${escapeAttr(category.formula || "")}">
     <select aria-label="Type" data-field="kind">
-      <option value="check" ${category.kind !== "number" ? "selected" : ""}>Check</option>
+      <option value="check" ${category.kind === "check" ? "selected" : ""}>Check</option>
       <option value="number" ${category.kind === "number" ? "selected" : ""}>Number</option>
+      <option value="calculated" ${category.kind === "calculated" ? "selected" : ""}>Calc</option>
     </select>
     <input aria-label="Value" data-field="amount" type="number" step="0.01" value="${Number(category.amount || 0)}">
     <input aria-label="Goal" data-field="goal" type="number" step="1" value="${Number(category.goal || 0)}">
     <select aria-label="Goal type" data-field="goalType">
       <option value="min" ${category.goalType === "min" ? "selected" : ""}>Min</option>
       <option value="max" ${category.goalType === "max" ? "selected" : ""}>Max</option>
+    </select>
+    <select aria-label="Show target" data-field="showTarget">
+      <option value="false" ${category.showTarget ? "" : "selected"}>Hide Target</option>
+      <option value="true" ${category.showTarget ? "selected" : ""}>Show Target</option>
+    </select>
+    <select aria-label="Show week" data-field="showWeekly">
+      <option value="false" ${category.showWeekly ? "" : "selected"}>Hide Week</option>
+      <option value="true" ${category.showWeekly ? "selected" : ""}>Show Week</option>
     </select>
     <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
@@ -1400,7 +1490,10 @@ function readCategoryEditor() {
       amount:Number(row.querySelector('[data-field="amount"]').value || 0),
       group:row.querySelector('[data-field="group"]').value.trim(),
       goal:Number(row.querySelector('[data-field="goal"]').value || 0),
-      goalType:row.querySelector('[data-field="goalType"]').value
+      goalType:row.querySelector('[data-field="goalType"]').value,
+      showTarget:row.querySelector('[data-field="showTarget"]').value === "true",
+      showWeekly:row.querySelector('[data-field="showWeekly"]').value === "true",
+      formula:row.querySelector('[data-field="formula"]').value.trim()
     };
   });
 }
@@ -1546,6 +1639,11 @@ document.getElementById("week-select").addEventListener("change", async event =>
 document.body.addEventListener("change", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) saveData(input.dataset.kid);
+});
+
+document.body.addEventListener("input", event => {
+  const input = event.target.closest("[data-kid][data-day][data-type]");
+  if (input) updateTotals();
 });
 
 window.onload = async () => {

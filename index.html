@@ -548,6 +548,8 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
     <h3 class="modal-title">Categories</h3>
     <div class="modal-toolbar">
       <select id="category-person" aria-label="Person"></select>
+      <select id="category-import-person" aria-label="Import from"></select>
+      <button class="btn" id="import-categories" type="button">Import</button>
     </div>
     <div class="category-editor" id="category-editor"></div>
     <div class="modal-actions">
@@ -612,13 +614,13 @@ const db = firebase.firestore();
 const kids = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
 const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const DEFAULT_CATEGORIES = [
-  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"max"},
-  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"max"},
-  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"max"},
-  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2, group:"Behavior", goal:0, goalType:"max"},
-  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"max"},
-  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"max"},
-  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"max"}
+  {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"min"},
+  {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"min"},
+  {key:"clothes", label:"Clothes", details:"Clothes put away or laundry handled.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"min"},
+  {key:"deduction", label:"Deduct", details:"Daily deduction when needed.", kind:"check", amount:-2, group:"Behavior", goal:0, goalType:"min"},
+  {key:"reading", label:"Read", details:"Reading or homework minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"min"},
+  {key:"practice", label:"Practice", details:"Sports or skill practice minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"min"},
+  {key:"workout", label:"Workout", details:"Workout or active movement minutes.", kind:"number", amount:0.05, group:"Growth", goal:100, goalType:"min"}
 ];
 const DEFAULT_CATEGORY_MAP = Object.fromEntries(DEFAULT_CATEGORIES.map(category => [category.key, category]));
 const CLEAR_PASSWORD = "clear";
@@ -696,7 +698,7 @@ function normalizeCategory(category, index) {
     amount:Number(category.amount || 0),
     group:(category.group || defaults.group || "").trim(),
     goal:Number(category.goal ?? defaults.goal ?? 0),
-    goalType:category.goalType === "min" ? "min" : "max"
+    goalType:category.goalType === "max" ? "max" : "min"
   };
 }
 
@@ -1290,13 +1292,15 @@ function openCategoryDetail(key, kid = activeKid) {
 async function populateWeekDropdown() {
   const select = document.getElementById("week-select");
   select.innerHTML = "";
-  const weeksSnap = await db.collection("weeks").orderBy("timestamp", "desc").get();
+  const weeksSnap = await db.collection("weeks").get();
   const seen = new Set();
   weeksSnap.forEach(doc => {
     seen.add(doc.id);
-    select.appendChild(new Option(doc.id, doc.id, doc.id === currentWeek, doc.id === currentWeek));
   });
-  if (!seen.has(currentWeek)) select.prepend(new Option(currentWeek, currentWeek, true, true));
+  seen.add(currentWeek);
+  [...seen].sort((a, b) => b.localeCompare(a, undefined, {numeric:true})).forEach(weekKey => {
+    select.appendChild(new Option(weekKey, weekKey, weekKey === currentWeek, weekKey === currentWeek));
+  });
   select.appendChild(new Option("Add New", "__add_new__"));
 }
 
@@ -1338,11 +1342,26 @@ function openCategoryEditor(kid = activeKid) {
   categoryEditorKid = kid;
   const personSelect = document.getElementById("category-person");
   personSelect.innerHTML = kids.map(name => `<option value="${name}" ${name === categoryEditorKid ? "selected" : ""}>${name}</option>`).join("");
+  const importSelect = document.getElementById("category-import-person");
+  importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${name}</option>`).join("");
   renderCategoryEditor(categoryEditorKid);
   openModal("category-modal");
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"max"}) {
+function refreshImportOptions() {
+  const importSelect = document.getElementById("category-import-person");
+  importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${name}</option>`).join("");
+}
+
+function importCategoryConfig() {
+  const importFrom = document.getElementById("category-import-person").value;
+  if (!importFrom || importFrom === categoryEditorKid) return;
+  if (!confirm(`Import ${importFrom}'s configuration for ${categoryEditorKid}? This will not change any tracker data.`)) return;
+  categoriesByKid[categoryEditorKid] = cloneCategories(categoriesForKid(importFrom));
+  renderCategoryEditor(categoryEditorKid);
+}
+
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min"}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
@@ -1362,8 +1381,8 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
     <input aria-label="Value" data-field="amount" type="number" step="0.01" value="${Number(category.amount || 0)}">
     <input aria-label="Goal" data-field="goal" type="number" step="1" value="${Number(category.goal || 0)}">
     <select aria-label="Goal type" data-field="goalType">
-      <option value="max" ${category.goalType !== "min" ? "selected" : ""}>Max</option>
       <option value="min" ${category.goalType === "min" ? "selected" : ""}>Min</option>
+      <option value="max" ${category.goalType === "max" ? "selected" : ""}>Max</option>
     </select>
     <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
@@ -1485,9 +1504,11 @@ document.getElementById("summary-bucket").addEventListener("change", refreshSumm
 document.getElementById("summary-mode").addEventListener("change", refreshSummary);
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
+document.getElementById("import-categories").addEventListener("click", importCategoryConfig);
 document.getElementById("category-person").addEventListener("change", event => {
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
   categoryEditorKid = event.target.value;
+  refreshImportOptions();
   renderCategoryEditor(categoryEditorKid);
 });
 document.getElementById("close-categories").addEventListener("click", () => closeModal("category-modal"));

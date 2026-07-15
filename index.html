@@ -60,17 +60,20 @@ button, input, select, textarea {
   display:grid;
   grid-template-columns:repeat(6,1fr);
   gap:2px;
-  padding:3px;
+  padding:0;
+  height:36px;
   background:#fff;
   border:1px solid var(--line);
-  border-radius:12px;
+  border-radius:10px;
+  overflow:hidden;
 }
 .tab {
   min-width:0;
   border:0;
   border-radius:9px;
-  padding:7px 6px;
-  min-height:36px;
+  padding:6px 6px;
+  height:34px;
+  min-height:34px;
   background:transparent;
   color:var(--muted);
   cursor:pointer;
@@ -437,7 +440,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .category-editor { display:grid; gap:8px; min-width:1120px; }
 .category-row {
   display:grid;
-  grid-template-columns:64px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 96px 34px;
+  grid-template-columns:64px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 78px 96px 34px;
   gap:8px;
   align-items:center;
 }
@@ -487,8 +490,8 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .top-bar { align-items:stretch; flex-wrap:wrap; }
   .top-controls { width:100%; }
   .site-container { min-width:740px; }
-  .tab-container { grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; padding:3px; }
-  .tab { flex-direction:row; gap:2px; padding:5px 1px; font-size:10pt; min-height:36px; }
+  .tab-container { grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; padding:0; height:36px; }
+  .tab { flex-direction:row; gap:2px; padding:5px 1px; font-size:10pt; height:34px; min-height:34px; }
   .kid-name { font-size:0; }
   .kid-name::first-letter { font-size:12pt; }
   .rank-circle { height:18px; min-width:25px; padding:0 4px; font-size:10pt; }
@@ -728,6 +731,7 @@ function normalizeCategory(category, index) {
     group:(category.group || defaults.group || "").trim(),
     goal:Number(category.goal ?? defaults.goal ?? 0),
     goalType:category.goalType === "max" ? "max" : "min",
+    goalPeriod:category.goalPeriod === "daily" ? "daily" : "weekly",
     showProgress:category.showProgress === true || category.showTarget === true || category.showWeekly === true,
     formula:(category.formula || "").trim()
   };
@@ -954,13 +958,19 @@ function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()
 }
 
 function goalPercent(category, value) {
-  const goal = Number(category.goal || 0);
+  const goal = goalTarget(category, 1);
   const number = Number(value || 0);
   if (!Number.isFinite(goal) || goal <= 0) {
     if (category.goalType === "max") return number <= 0 ? 100 : 0;
     return number > 0 ? 100 : 0;
   }
   return Math.round((number / goal) * 100);
+}
+
+function goalTarget(category, weeks = 1) {
+  const goal = Number(category.goal || 0);
+  const weekCount = Math.max(Number(weeks || 1), 1);
+  return category.goalPeriod === "daily" ? goal * days.length * weekCount : goal * weekCount;
 }
 
 function updateTotals() {
@@ -1141,13 +1151,15 @@ function renderDetailedSummary(kid, detail, mode) {
     const groupClass = group && group !== previousGroup ? "group-start" : "";
     previousGroup = group;
     const goalType = category.goalType === "min" ? "Min" : "Max";
-    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalType} ${Number(category.goal || 0)}</td>`;
+    const goalPeriod = category.goalPeriod === "daily" ? "/day" : "/week";
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalType} ${Number(category.goal || 0)}${goalPeriod}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
       const sum = bucket.values[category.key] || 0;
-      const avg = sum / Math.max(bucket.weeks.size, 1);
-      if (showSums) html += `<td class="${goalClass(category, sum)}">${sum.toFixed(0)}</td>`;
-      if (showAverages) html += `<td class="${goalClass(category, avg)}">${avg.toFixed(1)}</td>`;
+      const weeks = Math.max(bucket.weeks.size, 1);
+      const avg = sum / weeks;
+      if (showSums) html += `<td class="${goalClass(category, sum, weeks)}">${sum.toFixed(0)}</td>`;
+      if (showAverages) html += `<td class="${goalClass(category, avg, 1)}">${avg.toFixed(1)}</td>`;
     });
     html += `</tr>`;
     return html;
@@ -1155,8 +1167,8 @@ function renderDetailedSummary(kid, detail, mode) {
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
-function goalClass(category, value) {
-  const goal = Number(category.goal || 0);
+function goalClass(category, value, weeks = 1) {
+  const goal = goalTarget(category, weeks);
   if (!Number.isFinite(goal) || goal < 0) return "";
   if (category.goalType === "min") {
     if (goal === 0) return value > 0 ? "summary-goal-blue" : "summary-goal-green";
@@ -1401,7 +1413,8 @@ function openCategoryDetail(key, kid = activeKid) {
   if (!category) return;
   activeCategory = key;
   document.getElementById("category-detail-title").textContent = category.label;
-  const meta = [category.group ? `Group: ${category.group}` : "", Number(category.goal || 0) ? `Goal: ${category.goalType === "min" ? "Min" : "Max"} ${category.goal}` : ""].filter(Boolean).join("  ");
+  const goalPeriod = category.goalPeriod === "daily" ? "/day" : "/week";
+  const meta = [category.group ? `Group: ${category.group}` : "", Number(category.goal || 0) ? `Goal: ${category.goalType === "min" ? "Min" : "Max"} ${category.goal}${goalPeriod}` : ""].filter(Boolean).join("  ");
   document.getElementById("category-detail-copy").textContent = [category.details || "No notes added for this category yet.", meta].filter(Boolean).join("\n");
   openModal("category-detail-modal");
 }
@@ -1478,7 +1491,7 @@ function importCategoryConfig() {
   renderCategoryEditor(categoryEditorKid);
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", showProgress:false, formula:""}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", goalPeriod:"weekly", showProgress:false, formula:""}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
@@ -1504,6 +1517,10 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
       <option value="min" ${category.goalType === "min" ? "selected" : ""}>Min</option>
       <option value="max" ${category.goalType === "max" ? "selected" : ""}>Max</option>
     </select>
+    <select aria-label="Goal period" data-field="goalPeriod">
+      <option value="weekly" ${category.goalPeriod === "daily" ? "" : "selected"}>Weekly</option>
+      <option value="daily" ${category.goalPeriod === "daily" ? "selected" : ""}>Daily</option>
+    </select>
     <select aria-label="Show weekly target" data-field="showProgress">
       <option value="false" ${showProgress ? "" : "selected"}>Hide</option>
       <option value="true" ${showProgress ? "selected" : ""}>Show</option>
@@ -1525,6 +1542,7 @@ function readCategoryEditor() {
       group:row.querySelector('[data-field="group"]').value.trim(),
       goal:Number(row.querySelector('[data-field="goal"]').value || 0),
       goalType:row.querySelector('[data-field="goalType"]').value,
+      goalPeriod:row.querySelector('[data-field="goalPeriod"]').value,
       showProgress:row.querySelector('[data-field="showProgress"]').value === "true",
       formula:row.querySelector('[data-field="formula"]').value.trim()
     };

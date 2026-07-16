@@ -752,6 +752,7 @@ let categoryEditorKid = kids[0];
 let currentUser = null;
 let householdId = null;
 let householdData = null;
+let authLoadToken = 0;
 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -831,6 +832,17 @@ function setAuthMessage(message = "") {
 function setHouseholdMessage(message = "") {
   const node = document.getElementById("household-message");
   if (node) node.textContent = message;
+}
+
+function friendlyFirebaseError(error, fallback = "Something went wrong.") {
+  const code = error?.code || "";
+  if (code === "auth/email-already-in-use") return "That email already has an account. Use Sign In.";
+  if (code === "auth/invalid-email") return "Enter a valid email address.";
+  if (code === "auth/weak-password") return "Use a password with at least 6 characters.";
+  if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-login-credentials") return "Email or password is incorrect.";
+  if (code === "auth/operation-not-allowed") return "Email/password sign-in is not enabled in Firebase Authentication.";
+  if (code === "permission-denied") return "Signed in, but Firestore rules blocked account or household data. Temporarily allow legacy migration or deploy the household rules.";
+  return error?.message || fallback;
 }
 
 function promptDay(currentDay) {
@@ -1918,12 +1930,15 @@ async function startHouseholdApp() {
 }
 
 async function handleSignedInUser(user) {
+  const token = ++authLoadToken;
   currentUser = user;
-  setAuthMessage("");
+  setAuthMessage("Signed in. Loading household...");
   const hasHousehold = await loadUserHousehold();
+  if (token !== authLoadToken) return;
   if (hasHousehold) {
     await startHouseholdApp();
   } else {
+    setHouseholdMessage("Create a household to continue.");
     showOnly("household-screen");
   }
 }
@@ -1935,12 +1950,14 @@ async function signInOrCreate(createAccount = false) {
     setAuthMessage("Enter an email and password.");
     return;
   }
-  setAuthMessage("Loading...");
+  setAuthMessage(createAccount ? "Creating account..." : "Signing in...");
   try {
-    if (createAccount) await auth.createUserWithEmailAndPassword(email, password);
-    else await auth.signInWithEmailAndPassword(email, password);
+    const credential = createAccount
+      ? await auth.createUserWithEmailAndPassword(email, password)
+      : await auth.signInWithEmailAndPassword(email, password);
+    await handleSignedInUser(credential.user);
   } catch (error) {
-    setAuthMessage(error.message || "Sign in failed.");
+    setAuthMessage(friendlyFirebaseError(error, "Sign in failed."));
   }
 }
 
@@ -2125,15 +2142,17 @@ window.onload = () => {
   auth.onAuthStateChanged(async user => {
     try {
       if (!user) {
+        authLoadToken++;
         currentUser = null;
         householdId = null;
         showOnly("auth-screen");
         return;
       }
+      if (currentUser?.uid === user.uid && householdId) return;
       await handleSignedInUser(user);
     } catch (error) {
       console.error(error);
-      setAuthMessage(error.message || "Could not load account.");
+      setAuthMessage(friendlyFirebaseError(error, "Could not load account."));
       showOnly("auth-screen");
     }
   });

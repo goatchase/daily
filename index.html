@@ -28,12 +28,12 @@ body {
   min-height:100vh;
   background:var(--bg);
   color:var(--ink);
-  font-family:"Source Sans Pro","Helvetica Neue",Arial,sans-serif;
+  font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;
   font-size:10pt;
   font-weight:400;
 }
 button, input, select, textarea {
-  font-family:"Source Sans Pro","Helvetica Neue",Arial,sans-serif;
+  font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;
   font-size:10pt;
   font-weight:400;
 }
@@ -54,6 +54,7 @@ button, input, select, textarea {
   font-weight:700;
   min-height:36px;
   border-radius:10px;
+  color:var(--blue);
 }
 .tab-container {
   flex:1;
@@ -378,22 +379,32 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   position:absolute;
   left:0;
   top:calc(100% + 6px);
-  min-width:132px;
+  min-width:150px;
   padding:6px;
   border:1px solid var(--line);
   border-radius:12px;
   background:#fff;
-  box-shadow:0 14px 34px rgba(0,0,0,.12);
+  box-shadow:0 8px 22px rgba(0,0,0,.10);
   z-index:10;
 }
 .overflow-menu.open { display:grid; gap:2px; }
 .menu-section {
   display:none;
+  position:absolute;
+  left:calc(100% - 2px);
+  top:0;
+  min-width:172px;
   gap:2px;
-  padding-left:8px;
-  border-left:1px solid var(--line);
+  padding:6px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(0,0,0,.10);
 }
 .menu-section.open { display:grid; }
+#goal-folder-items { top:6px; }
+#settings-folder-items { top:42px; }
+#tracker-settings-folder-items { top:66px; }
 .menu-item {
   border:0;
   background:#fff;
@@ -472,13 +483,26 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 }
 .setup-check input[type="checkbox"] { flex:0 0 auto; }
 #category-modal .modal-content { width:min(1320px,98vw); }
-.category-editor { display:grid; gap:8px; min-width:1120px; }
-.category-row {
+.category-editor { display:grid; gap:0; min-width:1120px; max-height:68vh; overflow:auto; }
+.category-header, .category-row {
   display:grid;
-  grid-template-columns:64px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 78px 96px 34px;
+  grid-template-columns:34px 104px minmax(210px,1fr) 92px 92px 78px 68px 68px 74px 78px 96px 34px;
   gap:8px;
   align-items:center;
 }
+.category-header {
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:0 0 7px;
+  background:#fff;
+  color:var(--muted);
+  font-weight:700;
+  border-bottom:1px solid var(--line);
+}
+.category-row { padding:7px 0; border-bottom:1px solid var(--line); }
+.drag-handle { cursor:grab; color:var(--muted); text-align:center; user-select:none; }
+.category-row.dragging { opacity:.45; }
 .move-pair { display:flex; gap:4px; }
 .move-category { width:28px; min-height:28px; padding:0; }
 .category-row input, .category-row select { min-height:30px; padding:5px 8px; min-width:0; }
@@ -490,7 +514,11 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   overflow-wrap:anywhere;
 }
 .category-row .remove-category { color:var(--red); padding:0; }
-.category-detail { color:var(--muted); line-height:1.4; margin:0; }
+.category-detail { color:var(--muted); line-height:1.4; margin:0; white-space:pre-wrap; }
+#category-detail-modal .modal-content { width:min(430px,92vw); }
+.category-detail-form { display:grid; gap:8px; }
+.category-detail-form textarea { min-height:108px; padding:8px; resize:vertical; }
+.category-detail-meta { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
 .summary-table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; }
 .summary-table { min-width:640px; }
 .summary-table th:first-child, .summary-table td:first-child { width:90px; }
@@ -500,8 +528,9 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .summary-goal-green { background:#a7e8bd; color:#0b4f24; }
 .summary-goal-yellow { background:#ffe27a; color:#5c4300; }
 .summary-goal-red { background:#ffaaa4; color:#7a120b; }
-.summary-controls { display:grid; grid-template-columns:repeat(6,auto); gap:8px; align-items:center; margin-bottom:10px; }
-.summary-controls select, .summary-controls input { min-width:118px; padding:6px 9px; }
+.summary-controls { display:grid; grid-template-columns:auto auto auto auto 1fr auto; gap:8px; align-items:center; margin-bottom:10px; }
+.summary-controls select, .summary-controls input { min-width:112px; padding:6px 9px; }
+.summary-refresh { justify-self:end; width:30px; min-height:30px; border-radius:999px; padding:0; }
 .calc-value {
   display:inline-flex;
   align-items:center;
@@ -689,10 +718,18 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 <div class="modal" id="category-detail-modal">
   <div class="modal-content">
     <h3 class="modal-title" id="category-detail-title">Category</h3>
-    <p class="category-detail" id="category-detail-copy"></p>
+    <div class="category-detail-form">
+      <label class="field">Notes<textarea id="category-detail-notes" placeholder="Notes, bullets, or reminders"></textarea></label>
+      <div class="category-detail-meta">
+        <label class="field">Group<input id="category-detail-group" type="text"></label>
+        <label class="field">Type<select id="category-detail-goal-type"><option value="min">Min</option><option value="max">Max</option></select></label>
+        <label class="field">Goal<input id="category-detail-goal" type="number" step="1"></label>
+      </div>
+      <label class="field">Period<select id="category-detail-goal-period"><option value="daily">Daily</option><option value="weekly">Weekly</option></select></label>
+    </div>
     <div class="modal-actions">
-      <button class="btn" id="edit-category-from-detail">Edit</button>
-      <button class="btn primary" id="close-category-detail">Close</button>
+      <button class="btn" id="close-category-detail">Close</button>
+      <button class="btn primary" id="save-category-detail">Save</button>
     </div>
   </div>
 </div>
@@ -761,31 +798,26 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 
 <div class="modal" id="summary-modal">
   <div class="modal-content">
-    <h3 class="modal-title">Summary</h3>
     <div class="summary-controls">
       <select id="summary-kind" aria-label="Summary type">
         <option value="overall">Overall</option>
         <option value="detailed">Detailed</option>
       </select>
-      <button class="btn" id="summary-refresh">Refresh</button>
-      <select id="summary-timeframe" class="summary-overall-only" aria-label="Summary timeframe">
-        <option value="all">All Dates</option>
-        <option value="year">This Year</option>
-        <option value="week">This Week</option>
-      </select>
       <select id="summary-person" class="summary-detail-only" aria-label="Summary person"></select>
-      <input id="summary-start" class="summary-detail-only" type="date" aria-label="Start date">
-      <input id="summary-end" class="summary-detail-only" type="date" aria-label="End date">
-      <select id="summary-bucket" class="summary-detail-only" aria-label="Detailed period">
+      <select id="summary-bucket" aria-label="Summary period">
         <option value="week">Weeks</option>
         <option value="month">Months</option>
         <option value="year">Years</option>
       </select>
-      <select id="summary-mode" class="summary-overall-only" aria-label="Summary mode">
-        <option value="sum">Sums</option>
-        <option value="average">Averages</option>
-        <option value="both">Sums and Averages</option>
+      <select id="summary-count" aria-label="Number to show">
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="12" selected>12</option>
+        <option value="26">26</option>
+        <option value="52">52</option>
       </select>
+      <span></span>
+      <button class="btn summary-refresh" id="summary-refresh" aria-label="Refresh">↻</button>
     </div>
     <div id="summary-content" class="summary-empty">Choose a summary.</div>
     <div class="modal-actions">
@@ -815,7 +847,7 @@ const db = firebase.firestore();
 const LEGACY_KIDS = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
 let kids = [...LEGACY_KIDS];
 let householdMembers = [];
-const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const DEFAULT_CATEGORIES = [
   {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"min"},
   {key:"bedRoom", label:"Room", details:"Bedroom picked up and reset.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"min"},
@@ -838,6 +870,7 @@ let taskEditMode = {};
 let logEditMode = {};
 let activeKid = kids[0];
 let activeCategory = null;
+let activeCategoryKid = null;
 let categoryEditorKid = kids[0];
 let currentUser = null;
 let householdId = null;
@@ -1437,81 +1470,55 @@ function bucketLabel(weekKey, bucket) {
   return weekKey;
 }
 
-function weekInRange(weekKey, startValue, endValue) {
-  const date = dateFromWeekKey(weekKey);
-  if (!date) return true;
-  const start = startValue ? new Date(`${startValue}T00:00:00Z`) : null;
-  const end = endValue ? new Date(`${endValue}T23:59:59Z`) : null;
-  if (start && date < start) return false;
-  if (end && date > end) return false;
-  return true;
+function periodStart(date, bucket) {
+  const copy = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  if (bucket === "year") copy.setUTCMonth(0, 1);
+  if (bucket === "month") copy.setUTCDate(1);
+  if (bucket === "week") {
+    const day = copy.getUTCDay() || 7;
+    copy.setUTCDate(copy.getUTCDate() + 1 - day);
+  }
+  copy.setUTCHours(0, 0, 0, 0);
+  return copy;
 }
 
-async function summaryWeekKeys(timeframe = "all", startValue = "", endValue = "") {
+async function summaryWeekKeys(bucket = "week", count = 12) {
   const snap = await householdCollection("weeks").orderBy("timestamp", "desc").get();
   const keys = new Set([currentWeek]);
-  snap.forEach(doc => {
-    keys.add(doc.id);
-  });
-  const currentYear = String(currentWeek).split("-W")[0] || String(new Date().getFullYear());
-  return [...keys].filter(key => {
-    if (timeframe === "week" && key !== currentWeek) return false;
-    if (timeframe === "year" && !key.startsWith(`${currentYear}-W`)) return false;
-    return weekInRange(key, startValue, endValue);
-  }).sort().reverse();
+  snap.forEach(doc => keys.add(doc.id));
+  const parsed = [...keys].map(key => ({key, date:dateFromWeekKey(key)})).filter(item => item.date);
+  const starts = [...new Set(parsed.map(item => periodStart(item.date, bucket).toISOString()))].sort().reverse().slice(0, Math.max(Number(count || 12), 1));
+  const allowed = new Set(starts);
+  return parsed.filter(item => allowed.has(periodStart(item.date, bucket).toISOString())).map(item => item.key).sort().reverse();
 }
 
-async function fetchOverallSummaryRows(timeframe) {
-  const weekKeys = await summaryWeekKeys(timeframe);
-  const rows = kids.map(kid => ({
-    kid,
-    score:0,
-    tasks:0,
-    done:0,
-    good:0,
-    bad:0,
-    weeks:weekKeys.length || 1
-  }));
+function formatSummaryMetric(value) {
+  const mode = householdData?.scoringMode || "money";
+  const rounded = Math.round(Number(value || 0));
+  if (mode === "money") return dollars(value);
+  if (mode === "percent") return `${rounded}%`;
+  if (mode === "completion") return String(rounded);
+  return `${rounded} pts`;
+}
+
+async function fetchOverallSummaryRows(bucket, count) {
+  const weekKeys = await summaryWeekKeys(bucket, count);
+  const rows = kids.map(kid => ({kid, score:0, weeks:weekKeys.length || 1}));
   await Promise.all(weekKeys.flatMap(weekKey => rows.map(async row => {
-      const [choresDoc, taskDoc, logDoc] = await Promise.all([
-        weekRef(weekKey).collection("chores").doc(row.kid).get(),
-        weekRef(weekKey).collection("tasks").doc(row.kid).get(),
-        weekRef(weekKey).collection("logs").doc(row.kid).get()
-      ]);
-      row.score += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
-
-      const taskItems = taskDoc.exists && Array.isArray(taskDoc.data().items) ? taskDoc.data().items : [];
-      row.tasks += taskItems.length;
-      row.done += taskItems.filter(item => item.done).length;
-
-      const logItems = logDoc.exists && Array.isArray(logDoc.data().entries) ? logDoc.data().entries : [];
-      row.good += logItems.filter(item => item.type !== "bad").length;
-      row.bad += logItems.filter(item => item.type === "bad").length;
+    const choresDoc = await weekRef(weekKey).collection("chores").doc(row.kid).get();
+    row.score += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
   })));
   return rows;
 }
 
-function renderOverallSummaryRows(rows, mode) {
-  const showSums = mode === "sum" || mode === "both";
-  const showAverages = mode === "average" || mode === "both";
-  let head = `<tr><th>Person</th>`;
-  if (showSums) head += `<th>Score</th><th>Tasks</th><th>Done</th><th>Good</th><th>Bad</th>`;
-  if (showAverages) head += `<th>Avg/day</th><th>Avg/week</th><th>Tasks/week</th><th>Logs/week</th>`;
-  head += `</tr>`;
-  const body = rows.map(row => {
-    const weeks = row.weeks || 1;
-    const dayCount = weeks * days.length;
-    let html = `<tr><td>${row.kid}</td>`;
-    if (showSums) html += `<td>${dollars(row.score)}</td><td>${row.tasks}</td><td>${row.done}</td><td>${row.good}</td><td>${row.bad}</td>`;
-    if (showAverages) html += `<td>${dollars(row.score / dayCount)}</td><td>${dollars(row.score / weeks)}</td><td>${(row.tasks / weeks).toFixed(1)}</td><td>${((row.good + row.bad) / weeks).toFixed(1)}</td>`;
-    html += `</tr>`;
-    return html;
-  }).join("");
+function renderOverallSummaryRows(rows) {
+  const head = `<tr><th>Person</th><th>Total</th></tr>`;
+  const body = rows.map(row => `<tr><td>${escapeHtml(memberLabel(row.kid))}</td><td>${formatSummaryMetric(row.score)}</td></tr>`).join("");
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
-async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
-  const weekKeys = await summaryWeekKeys("all", startValue, endValue);
+async function fetchDetailedSummary(kid, bucket, count) {
+  const weekKeys = await summaryWeekKeys(bucket, count);
   const buckets = {};
   await Promise.all(weekKeys.map(async weekKey => {
     const label = bucketLabel(weekKey, bucket);
@@ -1524,18 +1531,13 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
       buckets[label].values[`${category.key}__count`] = (buckets[label].values[`${category.key}__count`] || 0) + categoryEntryCount(kid, category, data);
     });
   }));
-  return {
-    labels:Object.keys(buckets).sort().reverse(),
-    buckets
-  };
+  return {labels:Object.keys(buckets).sort().reverse().slice(0, Math.max(Number(count || 12), 1)), buckets};
 }
 
-function renderDetailedSummary(kid, detail, mode) {
+function renderDetailedSummary(kid, detail) {
   const categories = categoriesForKid(kid);
   let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
-  detail.labels.forEach(label => {
-    head += `<th>${label}</th>`;
-  });
+  detail.labels.forEach(label => { head += `<th>${label}</th>`; });
   head += `</tr>`;
   let previousGroup = "";
   const body = categories.map(category => {
@@ -1552,8 +1554,7 @@ function renderDetailedSummary(kid, detail, mode) {
       const count = category.goalPeriod === "daily" ? bucket.values[`${category.key}__count`] || 1 : weeks;
       const value = category.goalPeriod === "daily" ? sum / count : sum;
       const cellClass = category.goalPeriod === "daily" ? goalClass(category, value, 1, true) : goalClass(category, value, count);
-      const text = value.toFixed(0);
-      html += `<td class="${cellClass}">${text}</td>`;
+      html += `<td class="${cellClass}">${value.toFixed(0)}</td>`;
     });
     html += `</tr>`;
     return html;
@@ -1582,22 +1583,20 @@ function goalClass(category, value, count = 1, valueIsNormalized = false) {
 async function refreshSummary() {
   const content = document.getElementById("summary-content");
   const kind = document.getElementById("summary-kind").value;
-  const mode = document.getElementById("summary-mode").value;
+  const bucket = document.getElementById("summary-bucket").value;
+  const count = Number(document.getElementById("summary-count").value || 12);
   content.className = "summary-empty";
   content.textContent = "Loading summary...";
   if (kind === "detailed") {
     const kid = document.getElementById("summary-person").value || activeKid;
-    const bucket = document.getElementById("summary-bucket").value;
-    const startValue = document.getElementById("summary-start").value;
-    const endValue = document.getElementById("summary-end").value;
-    const detail = await fetchDetailedSummary(kid, bucket, startValue, endValue);
+    const detail = await fetchDetailedSummary(kid, bucket, count);
     content.className = "";
-    content.innerHTML = detail.labels.length ? renderDetailedSummary(kid, detail, mode) : `<div class="summary-empty">No data in this range.</div>`;
+    content.innerHTML = detail.labels.length ? renderDetailedSummary(kid, detail) : `<div class="summary-empty">No data in this range.</div>`;
     return;
   }
-  const rows = await fetchOverallSummaryRows(document.getElementById("summary-timeframe").value);
+  const rows = await fetchOverallSummaryRows(bucket, count);
   content.className = "";
-  content.innerHTML = renderOverallSummaryRows(rows, mode);
+  content.innerHTML = renderOverallSummaryRows(rows);
 }
 
 async function openSummary() {
@@ -1807,11 +1806,34 @@ function openCategoryDetail(key, kid = activeKid) {
   const category = categoriesForKid(kid).find(item => item.key === key);
   if (!category) return;
   activeCategory = key;
+  activeCategoryKid = kid;
   document.getElementById("category-detail-title").textContent = category.label;
-  const goalPeriod = category.goalPeriod === "daily" ? "/day" : "/week";
-  const meta = [category.group ? `Group: ${category.group}` : "", Number(category.goal || 0) ? `Goal: ${category.goalType === "min" ? "Min" : "Max"} ${category.goal}${goalPeriod}` : ""].filter(Boolean).join("  ");
-  document.getElementById("category-detail-copy").textContent = [category.details || "No notes added for this category yet.", meta].filter(Boolean).join("\n");
+  document.getElementById("category-detail-notes").value = category.details || "";
+  document.getElementById("category-detail-group").value = category.group || "";
+  document.getElementById("category-detail-goal-type").value = category.goalType === "max" ? "max" : "min";
+  document.getElementById("category-detail-goal").value = Number(category.goal || 0);
+  document.getElementById("category-detail-goal-period").value = category.goalPeriod === "daily" ? "daily" : "weekly";
   openModal("category-detail-modal");
+}
+
+async function saveCategoryDetail() {
+  if (!activeCategory || !activeCategoryKid) return;
+  const updated = categoriesForKid(activeCategoryKid).map(category => {
+    if (category.key !== activeCategory) return category;
+    return {
+      ...category,
+      details:document.getElementById("category-detail-notes").value.trim(),
+      group:document.getElementById("category-detail-group").value.trim(),
+      goalType:document.getElementById("category-detail-goal-type").value,
+      goal:Number(document.getElementById("category-detail-goal").value || 0),
+      goalPeriod:document.getElementById("category-detail-goal-period").value
+    };
+  });
+  categoriesByKid[activeCategoryKid] = updated;
+  await saveCategoriesForKid(activeCategoryKid, updated);
+  buildShell();
+  await loadData(currentWeek);
+  closeModal("category-detail-modal");
 }
 
 async function populateWeekDropdown() {
@@ -1859,7 +1881,7 @@ async function addHistoricalWeek() {
 
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
-  editor.innerHTML = "";
+  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Total</span><span></span></div>`;
   categoriesForKid(kid).forEach(addCategoryRow);
 }
 
@@ -1973,10 +1995,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   row.dataset.key = category.key || "";
   const showProgress = category.showProgress === true || category.showTarget === true || category.showWeekly === true;
   row.innerHTML = `
-    <div class="move-pair">
-      <button class="btn move-category" type="button" data-move-category="up" aria-label="Move up">↑</button>
-      <button class="btn move-category" type="button" data-move-category="down" aria-label="Move down">↓</button>
-    </div>
+    <span class="drag-handle" draggable="true" aria-label="Drag row">☰</span>
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
     <textarea aria-label="Notes" data-field="details" placeholder="Tap notes">${escapeHtml(category.details || "")}</textarea>
     <input aria-label="Group" data-field="group" placeholder="Group" value="${escapeAttr(category.group || "")}">
@@ -2006,7 +2025,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
 }
 
 function readCategoryEditor() {
-  return [...document.querySelectorAll(".category-row")].map((row, index) => {
+  return [...document.querySelectorAll("#category-editor .category-row")].map((row, index) => {
     const label = row.querySelector('[data-field="label"]').value.trim() || `Row ${index + 1}`;
     return {
       key:row.dataset.key || label,
@@ -2234,6 +2253,29 @@ document.body.addEventListener("click", async event => {
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
 });
 
+let draggedCategoryRow = null;
+document.body.addEventListener("dragstart", event => {
+  const handle = event.target.closest(".drag-handle");
+  if (!handle) return;
+  draggedCategoryRow = handle.closest(".category-row");
+  if (!draggedCategoryRow) return;
+  draggedCategoryRow.classList.add("dragging");
+  event.dataTransfer.effectAllowed = "move";
+});
+document.body.addEventListener("dragend", () => {
+  draggedCategoryRow?.classList.remove("dragging");
+  draggedCategoryRow = null;
+});
+document.body.addEventListener("dragover", event => {
+  if (!draggedCategoryRow) return;
+  const target = event.target.closest("#category-editor .category-row");
+  if (!target || target === draggedCategoryRow) return;
+  event.preventDefault();
+  const rect = target.getBoundingClientRect();
+  const after = event.clientY > rect.top + rect.height / 2;
+  target.parentElement.insertBefore(draggedCategoryRow, after ? target.nextSibling : target);
+});
+
 document.getElementById("edit-categories").addEventListener("click", () => {
   closeActionsMenu();
   openCategoryEditor();
@@ -2280,12 +2322,9 @@ document.getElementById("summary-kind").addEventListener("change", async () => {
   syncSummaryControls();
   await refreshSummary();
 });
-document.getElementById("summary-timeframe").addEventListener("change", refreshSummary);
 document.getElementById("summary-person").addEventListener("change", refreshSummary);
-document.getElementById("summary-start").addEventListener("change", refreshSummary);
-document.getElementById("summary-end").addEventListener("change", refreshSummary);
 document.getElementById("summary-bucket").addEventListener("change", refreshSummary);
-document.getElementById("summary-mode").addEventListener("change", refreshSummary);
+document.getElementById("summary-count").addEventListener("change", refreshSummary);
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
 document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
@@ -2311,10 +2350,7 @@ document.getElementById("category-person").addEventListener("change", event => {
 document.getElementById("close-categories").addEventListener("click", () => closeModal("category-modal"));
 document.getElementById("save-categories").addEventListener("click", saveCategories);
 document.getElementById("close-category-detail").addEventListener("click", () => closeModal("category-detail-modal"));
-document.getElementById("edit-category-from-detail").addEventListener("click", () => {
-  closeModal("category-detail-modal");
-  openCategoryEditor();
-});
+document.getElementById("save-category-detail").addEventListener("click", saveCategoryDetail);
 document.getElementById("archive-week").addEventListener("click", async () => {
   closeActionsMenu();
   await weekRef(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});

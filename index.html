@@ -257,6 +257,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   padding:9px;
 }
 .panel-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; color:var(--muted); font-size:10pt; font-weight:400; }
+.panel-actions { display:flex; gap:5px; align-items:center; }
 .panel-add {
   width:28px;
   height:28px;
@@ -274,6 +275,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   font-weight:400;
 }
 .panel-add:active { transform:scale(.96); }
+.panel-edit.active { background:var(--blue); color:#fff; border-color:var(--blue); }
 .entry-row {
   display:grid;
   grid-template-columns:86px 1fr auto;
@@ -336,10 +338,6 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 }
 .mini-action:hover { background:rgba(118,118,128,.12); }
 .mini-action.delete { color:var(--red); }
-@media (hover:hover) and (pointer:fine) {
-  .task-item .mini-action, .log-item .mini-action { opacity:0; pointer-events:none; transition:opacity .16s ease, background .16s ease; }
-  .task-item:hover .mini-action, .task-item:focus-within .mini-action, .log-item:hover .mini-action, .log-item:focus-within .mini-action { opacity:1; pointer-events:auto; }
-}
 .empty-state { color:var(--muted); padding:8px; font-size:10pt; }
 .log-list { display:grid; gap:7px; }
 .log-item {
@@ -600,6 +598,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
         <option value="overall">Overall</option>
         <option value="detailed">Detailed</option>
       </select>
+      <button class="btn" id="summary-refresh">Refresh</button>
       <select id="summary-timeframe" class="summary-overall-only" aria-label="Summary timeframe">
         <option value="all">All Dates</option>
         <option value="year">This Year</option>
@@ -613,12 +612,11 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
         <option value="month">Months</option>
         <option value="year">Years</option>
       </select>
-      <select id="summary-mode" aria-label="Summary mode">
+      <select id="summary-mode" class="summary-overall-only" aria-label="Summary mode">
         <option value="sum">Sums</option>
         <option value="average">Averages</option>
         <option value="both">Sums and Averages</option>
       </select>
-      <button class="btn" id="summary-refresh">Refresh</button>
     </div>
     <div id="summary-content" class="summary-empty">Choose a summary.</div>
     <div class="modal-actions">
@@ -663,6 +661,8 @@ let categoriesByKid = {};
 let notesCache = {};
 let tasksCache = {};
 let logsCache = {};
+let taskEditMode = {};
+let logEditMode = {};
 let activeKid = kids[0];
 let activeCategory = null;
 let categoryEditorKid = kids[0];
@@ -838,8 +838,8 @@ function buildTables() {
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
     if (showProgressColumn) html += `<td></td>`;
     html += `</tr></tbody></table></div></div>`;
-    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
-    html += `<div class="panel"><div class="panel-head"><span>Log</span><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
+    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-task-edit="${kid}" aria-label="Edit other tasks">✎</button><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
+    html += `<div class="panel"><div class="panel-head"><span>Log</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-log-edit="${kid}" aria-label="Edit log entries">✎</button><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div>`;
     container.innerHTML = html;
     applyDayFocus(kid, todayIndex);
   });
@@ -866,7 +866,7 @@ async function loadData(weekKey = currentWeek) {
   notesCache = {};
   tasksCache = {};
   logsCache = {};
-  for (const kid of kids) {
+  await Promise.all(kids.map(async kid => {
     const doc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
     const data = doc.exists ? doc.data() : {};
     days.forEach((day, i) => {
@@ -878,22 +878,21 @@ async function loadData(weekKey = currentWeek) {
         else input.checked = data[`${i}-${category.key}`] || false;
       });
     });
-  }
+  }));
   await loadWeeklyPanels();
   updateTotals();
 }
 
 async function loadWeeklyPanels() {
-  for (const kid of kids) {
-    for (let i = 0; i < days.length; i++) {
-      const doc = await db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, i)).get();
+  await Promise.all(kids.map(async kid => {
+    const noteDocs = await Promise.all(days.map((day, i) => db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, i)).get()));
+    noteDocs.forEach((doc, i) => {
       notesCache[noteKey(kid, i)] = doc.exists ? doc.data() : {};
-    }
-    await loadTasks(kid);
-    await loadLogs(kid);
+    });
+    await Promise.all([loadTasks(kid), loadLogs(kid)]);
     renderTaskList(kid);
     renderLogList(kid);
-  }
+  }));
   renderNoteIndicators();
 }
 
@@ -1125,22 +1124,22 @@ async function fetchOverallSummaryRows(timeframe) {
     bad:0,
     weeks:weekKeys.length || 1
   }));
-  for (const weekKey of weekKeys) {
-    for (const row of rows) {
-      const choresDoc = await db.collection("weeks").doc(weekKey).collection("chores").doc(row.kid).get();
+  await Promise.all(weekKeys.flatMap(weekKey => rows.map(async row => {
+      const [choresDoc, taskDoc, logDoc] = await Promise.all([
+        db.collection("weeks").doc(weekKey).collection("chores").doc(row.kid).get(),
+        db.collection("weeks").doc(weekKey).collection("tasks").doc(row.kid).get(),
+        db.collection("weeks").doc(weekKey).collection("logs").doc(row.kid).get()
+      ]);
       row.score += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
 
-      const taskDoc = await db.collection("weeks").doc(weekKey).collection("tasks").doc(row.kid).get();
       const taskItems = taskDoc.exists && Array.isArray(taskDoc.data().items) ? taskDoc.data().items : [];
       row.tasks += taskItems.length;
       row.done += taskItems.filter(item => item.done).length;
 
-      const logDoc = await db.collection("weeks").doc(weekKey).collection("logs").doc(row.kid).get();
       const logItems = logDoc.exists && Array.isArray(logDoc.data().entries) ? logDoc.data().entries : [];
       row.good += logItems.filter(item => item.type !== "bad").length;
       row.bad += logItems.filter(item => item.type === "bad").length;
-    }
-  }
+  })));
   return rows;
 }
 
@@ -1166,7 +1165,7 @@ function renderOverallSummaryRows(rows, mode) {
 async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
   const weekKeys = await summaryWeekKeys("all", startValue, endValue);
   const buckets = {};
-  for (const weekKey of weekKeys) {
+  await Promise.all(weekKeys.map(async weekKey => {
     const label = bucketLabel(weekKey, bucket);
     if (!buckets[label]) buckets[label] = {weeks:new Set(), values:{}};
     buckets[label].weeks.add(weekKey);
@@ -1176,7 +1175,7 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
       buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(kid, category, data);
       buckets[label].values[`${category.key}__count`] = (buckets[label].values[`${category.key}__count`] || 0) + categoryEntryCount(kid, category, data);
     });
-  }
+  }));
   return {
     labels:Object.keys(buckets).sort().reverse(),
     buckets
@@ -1185,12 +1184,9 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
 
 function renderDetailedSummary(kid, detail, mode) {
   const categories = categoriesForKid(kid);
-  const showSums = mode === "sum" || mode === "both";
-  const showAverages = mode === "average" || mode === "both";
-  let head = `<tr><th>Item</th><th>Goal</th>`;
+  let head = `<tr><th>Item</th><th>Goal</th><th>Type</th><th>Period</th>`;
   detail.labels.forEach(label => {
-    if (showSums) head += `<th>${label}</th>`;
-    if (showAverages) head += `<th>${label}</th>`;
+    head += `<th>${label}</th>`;
   });
   head += `</tr>`;
   let previousGroup = "";
@@ -1199,16 +1195,17 @@ function renderDetailedSummary(kid, detail, mode) {
     const groupClass = group && group !== previousGroup ? "group-start" : "";
     previousGroup = group;
     const goalType = category.goalType === "min" ? "Min" : "Max";
-    const goalPeriod = category.goalPeriod === "daily" ? "/day" : "/week";
-    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalType} ${Number(category.goal || 0)}${goalPeriod}</td>`;
+    const goalPeriod = category.goalPeriod === "daily" ? "Daily" : "Weekly";
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${Number(category.goal || 0)}</td><td>${goalType}</td><td>${goalPeriod}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
       const sum = bucket.values[category.key] || 0;
       const weeks = Math.max(bucket.weeks.size, 1);
       const count = category.goalPeriod === "daily" ? bucket.values[`${category.key}__count`] || 1 : weeks;
-      const avg = sum / count;
-      if (showSums) html += `<td class="${goalClass(category, sum, count)}">${sum.toFixed(0)}</td>`;
-      if (showAverages) html += `<td class="${goalClass(category, avg, 1, true)}">${avg.toFixed(1)}</td>`;
+      const value = category.goalPeriod === "daily" ? sum / count : sum;
+      const cellClass = category.goalPeriod === "daily" ? goalClass(category, value, 1, true) : goalClass(category, value, count);
+      const text = category.goalPeriod === "daily" ? value.toFixed(1) : value.toFixed(0);
+      html += `<td class="${cellClass}">${text}</td>`;
     });
     html += `</tr>`;
     return html;
@@ -1322,6 +1319,7 @@ async function saveTasks(kid) {
 function renderTaskList(kid) {
   const list = document.getElementById(`${kid}-tasks`);
   if (!list) return;
+  document.querySelector(`[data-toggle-task-edit="${kid}"]`)?.classList.toggle("active", !!taskEditMode[kid]);
   const items = tasksCache[kid] || [];
   if (!items.length) {
     list.innerHTML = `<div class="empty-state">No other tasks added yet.</div>`;
@@ -1330,7 +1328,8 @@ function renderTaskList(kid) {
   list.innerHTML = items.map(item => {
     const done = item.done ? "done" : "";
     const checked = item.done ? "checked" : "";
-    return `<div class="task-item ${done}"><div class="day-chip">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}"><button class="mini-action" title="Edit" aria-label="Edit task" data-edit-task="${kid}" data-task-id="${item.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button></div>`;
+    const actions = taskEditMode[kid] ? `<button class="mini-action" title="Edit" aria-label="Edit task" data-edit-task="${kid}" data-task-id="${item.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button>` : "";
+    return `<div class="task-item ${done}"><div class="day-chip">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}">${actions}</div>`;
   }).join("");
 }
 
@@ -1399,6 +1398,7 @@ async function saveLogs(kid) {
 function renderLogList(kid) {
   const list = document.getElementById(`${kid}-logs`);
   if (!list) return;
+  document.querySelector(`[data-toggle-log-edit="${kid}"]`)?.classList.toggle("active", !!logEditMode[kid]);
   const entries = logsCache[kid] || [];
   if (!entries.length) {
     list.innerHTML = `<div class="empty-state">No good or bad notes logged yet.</div>`;
@@ -1407,7 +1407,8 @@ function renderLogList(kid) {
   list.innerHTML = entries.slice().reverse().map(entry => {
     const type = entry.type === "bad" ? "bad" : "good";
     const outcomeLabel = type === "bad" ? "Punishment" : "Reward";
-    return `<div class="log-item ${type}"><div class="log-main"><span class="day-chip">${days[Number(entry.day)] || "Any"}</span><div class="log-copy">${escapeHtml(entry.note || "")}</div><button class="mini-action" title="Edit" aria-label="Edit log entry" data-edit-log="${kid}" data-log-id="${entry.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete log entry" data-delete-log="${kid}" data-log-id="${entry.id}">×</button></div><div class="log-outcome">${outcomeLabel}: ${escapeHtml(entry.outcome || "")}</div></div>`;
+    const actions = logEditMode[kid] ? `<button class="mini-action" title="Edit" aria-label="Edit log entry" data-edit-log="${kid}" data-log-id="${entry.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete log entry" data-delete-log="${kid}" data-log-id="${entry.id}">×</button>` : "";
+    return `<div class="log-item ${type}"><div class="log-main"><span class="day-chip">${days[Number(entry.day)] || "Any"}</span><div class="log-copy">${escapeHtml(entry.note || "")}</div>${actions}</div><div class="log-outcome">${outcomeLabel}: ${escapeHtml(entry.outcome || "")}</div></div>`;
   }).join("");
 }
 
@@ -1636,6 +1637,20 @@ document.body.addEventListener("click", async event => {
   if (toggleEntryButton) {
     const form = document.getElementById(toggleEntryButton.dataset.toggleEntry);
     if (form) form.classList.toggle("collapsed");
+  }
+
+  const taskEditButton = event.target.closest("[data-toggle-task-edit]");
+  if (taskEditButton) {
+    const kid = taskEditButton.dataset.toggleTaskEdit;
+    taskEditMode[kid] = !taskEditMode[kid];
+    renderTaskList(kid);
+  }
+
+  const logEditButton = event.target.closest("[data-toggle-log-edit]");
+  if (logEditButton) {
+    const kid = logEditButton.dataset.toggleLogEdit;
+    logEditMode[kid] = !logEditMode[kid];
+    renderLogList(kid);
   }
 
   const addTaskButton = event.target.closest("[data-add-task]");

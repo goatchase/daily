@@ -426,6 +426,20 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 .field label { color:var(--muted); font-size:10pt; font-weight:400; }
 .field textarea { min-height:72px; resize:vertical; padding:9px; }
 .modal-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.auth-screen {
+  min-height:100vh;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.auth-card {
+  width:min(380px,100%);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+}
 #category-modal .modal-content { width:min(1320px,98vw); }
 .category-editor { display:grid; gap:8px; min-width:1120px; }
 .category-row {
@@ -538,18 +552,71 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   .move-pair { justify-content:flex-start; }
   .category-row .remove-category { width:100%; }
   .summary-controls { grid-template-columns:1fr 1fr; }
-  .modal-content { border-radius:16px; }
+.modal-content { border-radius:16px; }
 }
 </style>
 </head>
 <body>
-<div class="site-container">
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-card">
+    <h3 class="modal-title">Daily Progress</h3>
+    <div class="field">
+      <label>Email</label>
+      <input id="auth-email" type="email" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="auth-password" type="password" autocomplete="current-password">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="auth-create">Create Account</button>
+      <button class="btn primary" id="auth-signin">Sign In</button>
+    </div>
+    <div class="empty-state" id="auth-message"></div>
+  </div>
+</div>
+
+<div class="auth-screen" id="household-screen">
+  <div class="auth-card">
+    <h3 class="modal-title">Household Setup</h3>
+    <div class="field">
+      <label>Household Name</label>
+      <input id="household-name" type="text" placeholder="Family name">
+    </div>
+    <div class="field">
+      <label>Scoring</label>
+      <select id="household-scoring">
+        <option value="money">Money</option>
+        <option value="points">Points</option>
+        <option value="percent">Percentages</option>
+        <option value="completion">Completion</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Weekly Reset Day</label>
+      <select id="household-reset-day">
+        <option value="1">Monday</option>
+        <option value="0">Sunday</option>
+        <option value="6">Saturday</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="household-signout">Sign Out</button>
+      <button class="btn primary" id="household-create">Create Household</button>
+    </div>
+    <div class="empty-state" id="household-message"></div>
+  </div>
+</div>
+
+<div class="site-container" id="app-shell" style="display:none">
   <div class="top-bar">
     <div class="top-controls">
       <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
         <button class="menu-item" id="summary-open">Summary</button>
+        <button class="menu-item" id="manage-members">Members</button>
+        <button class="menu-item" id="sign-out">Sign Out</button>
         <button class="menu-item" id="archive-week">Archive</button>
         <button class="menu-item" id="edit-categories">Edit</button>
         <button class="menu-item danger" id="clear-week">Clear</button>
@@ -590,6 +657,18 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   </div>
 </div>
 
+<div class="modal" id="members-modal">
+  <div class="modal-content">
+    <h3 class="modal-title">Members</h3>
+    <div class="category-editor" id="member-editor"></div>
+    <div class="modal-actions">
+      <button class="btn" id="add-member">Add Member</button>
+      <button class="btn" id="close-members">Close</button>
+      <button class="btn primary" id="save-members">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="summary-modal">
   <div class="modal-content">
     <h3 class="modal-title">Summary</h3>
@@ -626,6 +705,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
@@ -639,9 +719,12 @@ const firebaseConfig = {
   measurementId:"G-NXFJRPS7EL"
 };
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.firestore();
 
-const kids = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
+const LEGACY_KIDS = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
+let kids = [...LEGACY_KIDS];
+let householdMembers = [];
 const days = ["Mon","Tues","Wed","Thurs","Fri","Sat","Sun"];
 const DEFAULT_CATEGORIES = [
   {key:"showerTeeth", label:"Shower", details:"Shower and brush teeth.", kind:"check", amount:0.25, group:"Care", goal:7, goalType:"min"},
@@ -666,6 +749,9 @@ let logEditMode = {};
 let activeKid = kids[0];
 let activeCategory = null;
 let categoryEditorKid = kids[0];
+let currentUser = null;
+let householdId = null;
+let householdData = null;
 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -698,6 +784,53 @@ function dayOptions(selected = todayIndex) {
 
 function makeId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function memberIdFromName(name = "Member") {
+  return name.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || makeId("member");
+}
+
+function memberLabel(memberId) {
+  return householdMembers.find(member => member.id === memberId)?.displayName || memberId;
+}
+
+function memberInitials(name = "") {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || "").join("") || "?";
+}
+
+function householdRef() {
+  if (!householdId) throw new Error("No household selected.");
+  return db.collection("households").doc(householdId);
+}
+
+function householdCollection(name) {
+  return householdRef().collection(name);
+}
+
+function trackerSettingsRef() {
+  return householdCollection("settings").doc("tracker");
+}
+
+function weekRef(weekKey = currentWeek) {
+  return householdCollection("weeks").doc(weekKey);
+}
+
+function showOnly(screenId) {
+  ["auth-screen", "household-screen", "app-shell"].forEach(id => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.style.display = id === screenId ? (id === "app-shell" ? "block" : "flex") : "none";
+  });
+}
+
+function setAuthMessage(message = "") {
+  const node = document.getElementById("auth-message");
+  if (node) node.textContent = message;
+}
+
+function setHouseholdMessage(message = "") {
+  const node = document.getElementById("household-message");
+  if (node) node.textContent = message;
 }
 
 function promptDay(currentDay) {
@@ -755,8 +888,102 @@ function setAllKidsCategories(list) {
   categoriesByKid = Object.fromEntries(kids.map(kid => [kid, cloneCategories(normalized)]));
 }
 
+function seedMembersFromNames(names = LEGACY_KIDS) {
+  return names.map((name, index) => ({
+    id:name,
+    displayName:name,
+    initials:memberInitials(name),
+    role:"child",
+    goal:0,
+    order:index,
+    archived:false
+  }));
+}
+
+async function loadUserHousehold() {
+  const userDoc = await db.collection("users").doc(currentUser.uid).get();
+  if (userDoc.exists && userDoc.data().activeHouseholdId) {
+    householdId = userDoc.data().activeHouseholdId;
+    const roleDoc = await householdRef().collection("userRoles").doc(currentUser.uid).get();
+    if (roleDoc.exists) return true;
+  }
+  return false;
+}
+
+async function createHousehold(name, options = {}) {
+  const householdDoc = db.collection("households").doc();
+  householdId = householdDoc.id;
+  const now = new Date();
+  const householdPayload = {
+    name:name.trim() || "My Household",
+    scoringMode:options.scoringMode || "money",
+    weeklyResetDay:Number(options.weeklyResetDay ?? 1),
+    createdBy:currentUser.uid,
+    createdAt:now,
+    updatedAt:now,
+    legacyMigrated:false
+  };
+  await householdDoc.set(householdPayload);
+  await householdDoc.collection("userRoles").doc(currentUser.uid).set({
+    role:"owner",
+    email:currentUser.email || "",
+    createdAt:now
+  });
+  await db.collection("users").doc(currentUser.uid).set({
+    activeHouseholdId:householdId,
+    createdAt:now,
+    updatedAt:now
+  }, {merge:true});
+  await Promise.all(seedMembersFromNames().map(member => householdDoc.collection("members").doc(member.id).set({...member, createdAt:now, updatedAt:now})));
+  await trackerSettingsRef().set({categories:cloneCategories(DEFAULT_CATEGORIES), categoriesByKid:{}, updatedAt:now}, {merge:true});
+  householdData = householdPayload;
+  return householdId;
+}
+
+async function createLegacyHouseholdForUser() {
+  await createHousehold(`${currentUser.email?.split("@")[0] || "Family"} Household`, {scoringMode:"money", weeklyResetDay:1});
+  await migrateLegacyData();
+}
+
+async function copyCollectionDocs(sourceCollectionRef, targetCollectionRef) {
+  const snap = await sourceCollectionRef.get();
+  await Promise.all(snap.docs.map(doc => targetCollectionRef.doc(doc.id).set(doc.data(), {merge:true})));
+}
+
+async function migrateLegacyData() {
+  try {
+    const legacySettings = await db.collection("settings").doc("tracker").get();
+    if (legacySettings.exists) await trackerSettingsRef().set({...legacySettings.data(), migratedAt:new Date()}, {merge:true});
+    const weeksSnap = await db.collection("weeks").get();
+    await Promise.all(weeksSnap.docs.map(async weekDoc => {
+      const targetWeek = weekRef(weekDoc.id);
+      await targetWeek.set(weekDoc.data(), {merge:true});
+      await Promise.all(["chores", "notes", "tasks", "logs", "notepads"].map(name => copyCollectionDocs(weekDoc.ref.collection(name), targetWeek.collection(name))));
+    }));
+    await householdRef().set({legacyMigrated:true, updatedAt:new Date()}, {merge:true});
+  } catch (error) {
+    console.warn("Legacy migration skipped or incomplete.", error);
+  }
+}
+
+async function loadHouseholdMembers() {
+  const snap = await householdCollection("members").orderBy("order", "asc").get();
+  householdMembers = snap.docs.map(doc => ({id:doc.id, ...doc.data()}));
+  if (!householdMembers.length) {
+    householdMembers = seedMembersFromNames();
+    await Promise.all(householdMembers.map(member => householdCollection("members").doc(member.id).set({...member, createdAt:new Date(), updatedAt:new Date()}, {merge:true})));
+  }
+  kids = householdMembers.filter(member => !member.archived).sort((a, b) => Number(a.order || 0) - Number(b.order || 0)).map(member => member.id);
+  if (!kids.length) {
+    const fallback = householdMembers[0] || seedMembersFromNames(["Member"])[0];
+    kids = [fallback.id];
+  }
+  if (!kids.includes(activeKid)) activeKid = kids[0];
+  if (!kids.includes(categoryEditorKid)) categoryEditorKid = kids[0];
+}
+
 async function loadCategories() {
-  const doc = await db.collection("settings").doc("tracker").get();
+  const doc = await trackerSettingsRef().get();
   const data = doc.exists ? doc.data() : {};
   if (data.categoriesByKid && typeof data.categoriesByKid === "object") {
     kids.forEach(kid => {
@@ -774,7 +1001,7 @@ async function loadCategories() {
 async function saveCategories() {
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
   categories = cloneCategories(categoriesByKid[kids[0]]);
-  await db.collection("settings").doc("tracker").set({
+  await trackerSettingsRef().set({
     categories:categoriesByKid[kids[0]],
     categoriesByKid
   }, {merge:true});
@@ -792,7 +1019,7 @@ function buildShell() {
     const tab = document.createElement("button");
     tab.className = `tab ${kid === activeKid ? "active" : ""}`;
     tab.dataset.kid = kid;
-    tab.innerHTML = `<span class="kid-name">${kid}</span><span class="rank-circle" id="rank-${kid}">$0</span>`;
+    tab.innerHTML = `<span class="kid-name">${escapeHtml(memberLabel(kid))}</span><span class="rank-circle" id="rank-${kid}">$0</span>`;
     tabs.appendChild(tab);
 
     const view = document.createElement("section");
@@ -855,8 +1082,8 @@ async function saveData(kid) {
       data[`${i}-${category.key}`] = category.kind === "number" ? input.value : input.checked;
     });
   });
-  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
-  await db.collection("weeks").doc(currentWeek).collection("chores").doc(kid).set(data);
+  await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await weekRef(currentWeek).collection("chores").doc(kid).set(data);
   updateTotals();
 }
 
@@ -867,7 +1094,7 @@ async function loadData(weekKey = currentWeek) {
   tasksCache = {};
   logsCache = {};
   await Promise.all(kids.map(async kid => {
-    const doc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
+    const doc = await weekRef(weekKey).collection("chores").doc(kid).get();
     const data = doc.exists ? doc.data() : {};
     days.forEach((day, i) => {
       categoriesForKid(kid).forEach(category => {
@@ -885,7 +1112,7 @@ async function loadData(weekKey = currentWeek) {
 
 async function loadWeeklyPanels() {
   await Promise.all(kids.map(async kid => {
-    const noteDocs = await Promise.all(days.map((day, i) => db.collection("weeks").doc(currentWeek).collection("notes").doc(noteKey(kid, i)).get()));
+    const noteDocs = await Promise.all(days.map((day, i) => weekRef(currentWeek).collection("notes").doc(noteKey(kid, i)).get()));
     noteDocs.forEach((doc, i) => {
       notesCache[noteKey(kid, i)] = doc.exists ? doc.data() : {};
     });
@@ -1100,7 +1327,7 @@ function weekInRange(weekKey, startValue, endValue) {
 }
 
 async function summaryWeekKeys(timeframe = "all", startValue = "", endValue = "") {
-  const snap = await db.collection("weeks").orderBy("timestamp", "desc").get();
+  const snap = await householdCollection("weeks").orderBy("timestamp", "desc").get();
   const keys = new Set([currentWeek]);
   snap.forEach(doc => {
     keys.add(doc.id);
@@ -1126,9 +1353,9 @@ async function fetchOverallSummaryRows(timeframe) {
   }));
   await Promise.all(weekKeys.flatMap(weekKey => rows.map(async row => {
       const [choresDoc, taskDoc, logDoc] = await Promise.all([
-        db.collection("weeks").doc(weekKey).collection("chores").doc(row.kid).get(),
-        db.collection("weeks").doc(weekKey).collection("tasks").doc(row.kid).get(),
-        db.collection("weeks").doc(weekKey).collection("logs").doc(row.kid).get()
+        weekRef(weekKey).collection("chores").doc(row.kid).get(),
+        weekRef(weekKey).collection("tasks").doc(row.kid).get(),
+        weekRef(weekKey).collection("logs").doc(row.kid).get()
       ]);
       row.score += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
 
@@ -1169,7 +1396,7 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
     const label = bucketLabel(weekKey, bucket);
     if (!buckets[label]) buckets[label] = {weeks:new Set(), values:{}};
     buckets[label].weeks.add(weekKey);
-    const choresDoc = await db.collection("weeks").doc(weekKey).collection("chores").doc(kid).get();
+    const choresDoc = await weekRef(weekKey).collection("chores").doc(kid).get();
     const data = choresDoc.exists ? choresDoc.data() : {};
     categoriesForKid(kid).forEach(category => {
       buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(kid, category, data);
@@ -1253,7 +1480,7 @@ async function refreshSummary() {
 }
 
 async function openSummary() {
-  document.getElementById("summary-person").innerHTML = kids.map(kid => `<option value="${kid}" ${kid === activeKid ? "selected" : ""}>${kid}</option>`).join("");
+  document.getElementById("summary-person").innerHTML = kids.map(kid => `<option value="${kid}" ${kid === activeKid ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
   syncSummaryControls();
   openModal("summary-modal");
   await refreshSummary();
@@ -1299,7 +1526,7 @@ function renderNoteIndicators() {
 }
 
 async function loadTasks(kid) {
-  const doc = await db.collection("weeks").doc(currentWeek).collection("tasks").doc(kid).get();
+  const doc = await weekRef(currentWeek).collection("tasks").doc(kid).get();
   const saved = doc.exists && Array.isArray(doc.data().items) ? doc.data().items : [];
   const legacy = [];
   days.forEach((day, i) => {
@@ -1312,8 +1539,8 @@ async function loadTasks(kid) {
 }
 
 async function saveTasks(kid) {
-  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
-  await db.collection("weeks").doc(currentWeek).collection("tasks").doc(kid).set({items:tasksCache[kid] || [], updatedAt:new Date()});
+  await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await weekRef(currentWeek).collection("tasks").doc(kid).set({items:tasksCache[kid] || [], updatedAt:new Date()});
 }
 
 function renderTaskList(kid) {
@@ -1377,7 +1604,7 @@ async function deleteTask(kid, id) {
 }
 
 async function loadLogs(kid) {
-  const doc = await db.collection("weeks").doc(currentWeek).collection("logs").doc(kid).get();
+  const doc = await weekRef(currentWeek).collection("logs").doc(kid).get();
   const saved = doc.exists && Array.isArray(doc.data().entries) ? doc.data().entries : [];
   const legacy = [];
   days.forEach((day, i) => {
@@ -1391,8 +1618,8 @@ async function loadLogs(kid) {
 }
 
 async function saveLogs(kid) {
-  await db.collection("weeks").doc(currentWeek).set({timestamp:new Date()}, {merge:true});
-  await db.collection("weeks").doc(currentWeek).collection("logs").doc(kid).set({entries:logsCache[kid] || [], updatedAt:new Date()});
+  await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
+  await weekRef(currentWeek).collection("logs").doc(kid).set({entries:logsCache[kid] || [], updatedAt:new Date()});
 }
 
 function renderLogList(kid) {
@@ -1469,7 +1696,7 @@ function openCategoryDetail(key, kid = activeKid) {
 async function populateWeekDropdown() {
   const select = document.getElementById("week-select");
   select.innerHTML = "";
-  const weeksSnap = await db.collection("weeks").get();
+  const weeksSnap = await householdCollection("weeks").get();
   const seen = new Set();
   weeksSnap.forEach(doc => {
     seen.add(doc.id);
@@ -1504,7 +1731,7 @@ async function addHistoricalWeek() {
     existing.value = currentWeek;
     return;
   }
-  await db.collection("weeks").doc(weekKey).set({timestamp:new Date(), historical:true}, {merge:true});
+  await weekRef(weekKey).set({timestamp:new Date(), historical:true}, {merge:true});
   await populateWeekDropdown();
   await loadData(weekKey);
 }
@@ -1518,16 +1745,80 @@ function renderCategoryEditor(kid = categoryEditorKid) {
 function openCategoryEditor(kid = activeKid) {
   categoryEditorKid = kid;
   const personSelect = document.getElementById("category-person");
-  personSelect.innerHTML = kids.map(name => `<option value="${name}" ${name === categoryEditorKid ? "selected" : ""}>${name}</option>`).join("");
+  personSelect.innerHTML = kids.map(name => `<option value="${name}" ${name === categoryEditorKid ? "selected" : ""}>${escapeHtml(memberLabel(name))}</option>`).join("");
   const importSelect = document.getElementById("category-import-person");
-  importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${name}</option>`).join("");
+  importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
   renderCategoryEditor(categoryEditorKid);
   openModal("category-modal");
 }
 
 function refreshImportOptions() {
   const importSelect = document.getElementById("category-import-person");
-  importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${name}</option>`).join("");
+  importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
+}
+
+function renderMemberEditor() {
+  const editor = document.getElementById("member-editor");
+  editor.innerHTML = "";
+  householdMembers.slice().sort((a, b) => Number(a.order || 0) - Number(b.order || 0)).forEach(addMemberRow);
+}
+
+function addMemberRow(member = {displayName:"New Member", initials:"", role:"child", goal:0, archived:false}) {
+  const editor = document.getElementById("member-editor");
+  const row = document.createElement("div");
+  row.className = "category-row";
+  row.dataset.key = member.id || "";
+  row.innerHTML = `
+    <input aria-label="Order" data-field="order" type="number" step="1" value="${Number(member.order || 0)}">
+    <input aria-label="Name" data-field="displayName" placeholder="Name" value="${escapeAttr(member.displayName || "")}">
+    <input aria-label="Initials" data-field="initials" placeholder="Initials" value="${escapeAttr(member.initials || "")}">
+    <select aria-label="Role" data-field="role">
+      <option value="child" ${member.role === "child" ? "selected" : ""}>Child</option>
+      <option value="member" ${member.role === "member" ? "selected" : ""}>Member</option>
+      <option value="admin" ${member.role === "admin" ? "selected" : ""}>Admin</option>
+    </select>
+    <input aria-label="Goal" data-field="goal" type="number" step="1" value="${Number(member.goal || 0)}">
+    <select aria-label="Status" data-field="archived">
+      <option value="false" ${member.archived ? "" : "selected"}>Active</option>
+      <option value="true" ${member.archived ? "selected" : ""}>Archived</option>
+    </select>
+    <button class="icon-btn remove-member" type="button" aria-label="Remove">×</button>
+  `;
+  editor.appendChild(row);
+}
+
+function readMemberEditor() {
+  return [...document.querySelectorAll("#member-editor .category-row")].map((row, index) => {
+    const displayName = row.querySelector('[data-field="displayName"]').value.trim() || `Member ${index + 1}`;
+    const id = row.dataset.key || memberIdFromName(displayName);
+    return {
+      id,
+      displayName,
+      initials:row.querySelector('[data-field="initials"]').value.trim() || memberInitials(displayName),
+      role:row.querySelector('[data-field="role"]').value,
+      goal:Number(row.querySelector('[data-field="goal"]').value || 0),
+      order:Number(row.querySelector('[data-field="order"]').value || index),
+      archived:row.querySelector('[data-field="archived"]').value === "true"
+    };
+  });
+}
+
+async function saveMembers() {
+  const editedMembers = readMemberEditor();
+  const existingIds = new Set(householdMembers.map(member => member.id));
+  const editedIds = new Set(editedMembers.map(member => member.id));
+  await Promise.all(editedMembers.map(member => householdCollection("members").doc(member.id).set({...member, updatedAt:new Date()}, {merge:true})));
+  await Promise.all([...existingIds].filter(id => !editedIds.has(id)).map(id => householdCollection("members").doc(id).delete()));
+  await loadHouseholdMembers();
+  categoriesByKid = Object.fromEntries(kids.map(kid => [kid, categoriesByKid[kid] || cloneCategories(DEFAULT_CATEGORIES)]));
+  buildShell();
+  await loadData(currentWeek);
+  closeModal("members-modal");
+}
+
+function openMemberEditor() {
+  renderMemberEditor();
+  openModal("members-modal");
 }
 
 function importCategoryConfig() {
@@ -1616,6 +1907,61 @@ function closeActionsMenu() {
   document.getElementById("actions-menu")?.classList.remove("open");
 }
 
+async function startHouseholdApp() {
+  showOnly("app-shell");
+  householdData = (await householdRef().get()).data() || {};
+  await loadHouseholdMembers();
+  await loadCategories();
+  buildShell();
+  await populateWeekDropdown();
+  await loadData(currentWeek);
+}
+
+async function handleSignedInUser(user) {
+  currentUser = user;
+  setAuthMessage("");
+  const hasHousehold = await loadUserHousehold();
+  if (hasHousehold) {
+    await startHouseholdApp();
+  } else {
+    showOnly("household-screen");
+  }
+}
+
+async function signInOrCreate(createAccount = false) {
+  const email = document.getElementById("auth-email").value.trim();
+  const password = document.getElementById("auth-password").value;
+  if (!email || !password) {
+    setAuthMessage("Enter an email and password.");
+    return;
+  }
+  setAuthMessage("Loading...");
+  try {
+    if (createAccount) await auth.createUserWithEmailAndPassword(email, password);
+    else await auth.signInWithEmailAndPassword(email, password);
+  } catch (error) {
+    setAuthMessage(error.message || "Sign in failed.");
+  }
+}
+
+async function createHouseholdFromSetup() {
+  const name = document.getElementById("household-name").value.trim();
+  const scoringMode = document.getElementById("household-scoring").value;
+  const weeklyResetDay = document.getElementById("household-reset-day").value;
+  if (!name) {
+    setHouseholdMessage("Name the household first.");
+    return;
+  }
+  setHouseholdMessage("Creating household...");
+  try {
+    await createHousehold(name, {scoringMode, weeklyResetDay});
+    await migrateLegacyData();
+    await startHouseholdApp();
+  } catch (error) {
+    setHouseholdMessage(error.message || "Could not create household.");
+  }
+}
+
 document.getElementById("more-actions").addEventListener("click", event => {
   event.stopPropagation();
   document.getElementById("actions-menu").classList.toggle("open");
@@ -1685,6 +2031,7 @@ document.body.addEventListener("click", async event => {
     }
   }
 
+  if (event.target.closest(".remove-member")) event.target.closest(".category-row").remove();
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
 });
 
@@ -1696,6 +2043,18 @@ document.getElementById("summary-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
 });
+document.getElementById("manage-members").addEventListener("click", () => {
+  closeActionsMenu();
+  openMemberEditor();
+});
+document.getElementById("sign-out").addEventListener("click", async () => {
+  closeActionsMenu();
+  await auth.signOut();
+});
+document.getElementById("auth-signin").addEventListener("click", () => signInOrCreate(false));
+document.getElementById("auth-create").addEventListener("click", () => signInOrCreate(true));
+document.getElementById("household-create").addEventListener("click", createHouseholdFromSetup);
+document.getElementById("household-signout").addEventListener("click", () => auth.signOut());
 document.getElementById("summary-refresh").addEventListener("click", refreshSummary);
 document.getElementById("summary-kind").addEventListener("change", async () => {
   syncSummaryControls();
@@ -1709,6 +2068,9 @@ document.getElementById("summary-bucket").addEventListener("change", refreshSumm
 document.getElementById("summary-mode").addEventListener("change", refreshSummary);
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
+document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
+document.getElementById("close-members").addEventListener("click", () => closeModal("members-modal"));
+document.getElementById("save-members").addEventListener("click", saveMembers);
 document.getElementById("import-categories").addEventListener("click", importCategoryConfig);
 document.getElementById("category-person").addEventListener("change", event => {
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
@@ -1725,7 +2087,7 @@ document.getElementById("edit-category-from-detail").addEventListener("click", (
 });
 document.getElementById("archive-week").addEventListener("click", async () => {
   closeActionsMenu();
-  await db.collection("weeks").doc(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});
+  await weekRef(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});
   await populateWeekDropdown();
 });
 document.getElementById("clear-week").addEventListener("click", async () => {
@@ -1736,7 +2098,7 @@ document.getElementById("clear-week").addEventListener("click", async () => {
     return;
   }
   for (const collectionName of ["chores", "notes", "notepads", "tasks", "logs"]) {
-    const snap = await db.collection("weeks").doc(currentWeek).collection(collectionName).get();
+    const snap = await weekRef(currentWeek).collection(collectionName).get();
     for (const doc of snap.docs) await doc.ref.delete();
   }
   await loadData(currentWeek);
@@ -1758,11 +2120,23 @@ document.body.addEventListener("input", event => {
   if (input) updateTotals();
 });
 
-window.onload = async () => {
-  await loadCategories();
-  buildShell();
-  await populateWeekDropdown();
-  await loadData(currentWeek);
+window.onload = () => {
+  showOnly("auth-screen");
+  auth.onAuthStateChanged(async user => {
+    try {
+      if (!user) {
+        currentUser = null;
+        householdId = null;
+        showOnly("auth-screen");
+        return;
+      }
+      await handleSignedInUser(user);
+    } catch (error) {
+      console.error(error);
+      setAuthMessage(error.message || "Could not load account.");
+      showOnly("auth-screen");
+    }
+  });
 };
 </script>
 </body>

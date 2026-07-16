@@ -364,11 +364,11 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:3px;
+  gap:4px;
 }
 .menu-button span {
-  width:14px;
-  height:1px;
+  width:17px;
+  height:2px;
   border-radius:999px;
   background:var(--ink);
   display:block;
@@ -406,6 +406,22 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 }
 .menu-item:hover { background:#f5f5f7; }
 .menu-item.danger { color:var(--red); }
+.screen-view { display:none; }
+.screen-view.active { display:block; }
+.screen-bar {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+}
+#screen-title { color:var(--muted); }
+#screen-content > .modal-content {
+  width:100%;
+  max-height:none;
+  box-shadow:none;
+  border:1px solid var(--line);
+  border-radius:14px;
+}
 .modal {
   display:none;
   position:fixed;
@@ -637,16 +653,23 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
       <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
-        <button class="menu-item" id="summary-open">Summary</button>
-        <button class="menu-item" id="sign-out">Sign Out</button>
+        <button class="menu-item" id="goal-folder">Goal Tracker ▾</button>
+        <div class="menu-section" id="goal-folder-items">
+          <button class="menu-item" id="tracker-open">Tracker</button>
+          <button class="menu-item" id="summary-open">Summary</button>
+          <button class="menu-item" id="tracker-settings-folder">Settings ▾</button>
+          <div class="menu-section" id="tracker-settings-folder-items">
+            <button class="menu-item" id="edit-categories">Tracker Configuration</button>
+            <button class="menu-item" id="archive-week">Archive</button>
+            <button class="menu-item danger" id="clear-week">Clear</button>
+          </div>
+        </div>
         <button class="menu-item" id="settings-folder">Settings ▾</button>
         <div class="menu-section" id="settings-folder-items">
-          <button class="menu-item" id="settings-open">Configuration</button>
+          <button class="menu-item" id="settings-open">Household</button>
           <button class="menu-item" id="manage-members">Members</button>
-          <button class="menu-item" id="edit-categories">Edit</button>
-          <button class="menu-item" id="archive-week">Archive</button>
-          <button class="menu-item danger" id="clear-week">Clear</button>
         </div>
+        <button class="menu-item" id="sign-out">Sign Out</button>
       </div>
       </div>
       <select id="week-select" aria-label="Week"></select>
@@ -654,6 +677,13 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
     <div class="tab-container" id="kid-tabs"></div>
   </div>
   <div id="kid-views"></div>
+  <div class="screen-view" id="screen-view">
+    <div class="screen-bar">
+      <button class="btn" id="screen-back">Back to Tracker</button>
+      <span id="screen-title"></span>
+    </div>
+    <div id="screen-content"></div>
+  </div>
 </div>
 
 <div class="modal" id="category-detail-modal">
@@ -672,8 +702,8 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
     <h3 class="modal-title">Categories</h3>
     <div class="modal-toolbar">
       <select id="category-person" aria-label="Person"></select>
-      <select id="category-import-person" aria-label="Import from"></select>
       <button class="btn" id="import-categories" type="button">Import</button>
+      <select id="category-import-person" aria-label="Import from"></select>
     </div>
     <div class="category-editor" id="category-editor"></div>
     <div class="modal-actions">
@@ -698,7 +728,7 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
 
 <div class="modal" id="settings-modal">
   <div class="modal-content">
-    <h3 class="modal-title">Configuration</h3>
+    <h3 class="modal-title">Household</h3>
     <div class="field">
       <label>Household Name</label>
       <input id="settings-household-name" type="text">
@@ -815,6 +845,7 @@ let householdData = null;
 let authLoadToken = 0;
 let canImportLegacy = false;
 let firstHouseholdSetup = false;
+let currentScreen = null;
 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -1501,7 +1532,7 @@ async function fetchDetailedSummary(kid, bucket, startValue, endValue) {
 
 function renderDetailedSummary(kid, detail, mode) {
   const categories = categoriesForKid(kid);
-  let head = `<tr><th>Item</th><th>Goal</th><th>Type</th><th>Period</th>`;
+  let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
   detail.labels.forEach(label => {
     head += `<th>${label}</th>`;
   });
@@ -1512,8 +1543,8 @@ function renderDetailedSummary(kid, detail, mode) {
     const groupClass = group && group !== previousGroup ? "group-start" : "";
     previousGroup = group;
     const goalType = category.goalType === "min" ? "Min" : "Max";
-    const goalPeriod = category.goalPeriod === "daily" ? "Daily" : "Weekly";
-    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${Number(category.goal || 0)}</td><td>${goalType}</td><td>${goalPeriod}</td>`;
+    const goalPeriod = category.goalPeriod === "daily" ? "D" : "W";
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalPeriod}</td><td>${goalType}</td><td>${Number(category.goal || 0).toFixed(0)}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
       const sum = bucket.values[category.key] || 0;
@@ -1521,7 +1552,7 @@ function renderDetailedSummary(kid, detail, mode) {
       const count = category.goalPeriod === "daily" ? bucket.values[`${category.key}__count`] || 1 : weeks;
       const value = category.goalPeriod === "daily" ? sum / count : sum;
       const cellClass = category.goalPeriod === "daily" ? goalClass(category, value, 1, true) : goalClass(category, value, count);
-      const text = category.goalPeriod === "daily" ? value.toFixed(1) : value.toFixed(0);
+      const text = value.toFixed(0);
       html += `<td class="${cellClass}">${text}</td>`;
     });
     html += `</tr>`;
@@ -1572,7 +1603,7 @@ async function refreshSummary() {
 async function openSummary() {
   document.getElementById("summary-person").innerHTML = kids.map(kid => `<option value="${kid}" ${kid === activeKid ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
   syncSummaryControls();
-  openModal("summary-modal");
+  openMainScreen("summary-modal", "Summary");
   await refreshSummary();
 }
 
@@ -1839,7 +1870,7 @@ function openCategoryEditor(kid = activeKid) {
   const importSelect = document.getElementById("category-import-person");
   importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
   renderCategoryEditor(categoryEditorKid);
-  openModal("category-modal");
+  openMainScreen("category-modal", "Tracker Configuration");
 }
 
 function refreshImportOptions() {
@@ -1908,14 +1939,14 @@ async function saveMembers() {
 
 function openMemberEditor() {
   renderMemberEditor();
-  openModal("members-modal");
+  openMainScreen("members-modal", "Members");
 }
 
 function openSettingsModal() {
   document.getElementById("settings-household-name").value = householdData?.name || "";
   document.getElementById("settings-household-scoring").value = householdData?.scoringMode || "money";
   document.getElementById("settings-household-reset-day").value = String(householdData?.weeklyResetDay ?? 1);
-  openModal("settings-modal");
+  openMainScreen("settings-modal", "Household");
 }
 
 async function saveHouseholdSettings() {
@@ -1998,7 +2029,43 @@ function openModal(id) {
 }
 
 function closeModal(id) {
+  if (currentScreen?.modalId === id) {
+    showTrackerScreen();
+    return;
+  }
   document.getElementById(id).style.display = "none";
+}
+
+function openMainScreen(modalId, title, backLabel = "Tracker") {
+  showTrackerScreen(false);
+  const modal = document.getElementById(modalId);
+  const content = modal?.querySelector(".modal-content");
+  if (!modal || !content) return;
+  if (currentScreen) restoreScreenModal();
+  currentScreen = {modalId, parent:modal, content};
+  modal.style.display = "none";
+  document.getElementById("screen-title").textContent = title;
+  document.getElementById("screen-back").textContent = `Back to ${backLabel}`;
+  document.getElementById("screen-content").appendChild(content);
+  document.getElementById("kid-views").style.display = "none";
+  document.getElementById("kid-tabs").style.display = "none";
+  document.getElementById("screen-view").classList.add("active");
+}
+
+function restoreScreenModal() {
+  if (!currentScreen) return;
+  currentScreen.parent.appendChild(currentScreen.content);
+  currentScreen.parent.style.display = "none";
+  currentScreen = null;
+}
+
+function showTrackerScreen(restore = true) {
+  if (restore) restoreScreenModal();
+  document.getElementById("screen-view")?.classList.remove("active");
+  const content = document.getElementById("screen-content");
+  if (content && !currentScreen) content.innerHTML = "";
+  document.getElementById("kid-views").style.display = "";
+  document.getElementById("kid-tabs").style.display = "";
 }
 
 function escapeHtml(text = "") {
@@ -2011,6 +2078,8 @@ function escapeAttr(text = "") {
 
 function closeActionsMenu() {
   document.getElementById("actions-menu")?.classList.remove("open");
+  document.getElementById("goal-folder-items")?.classList.remove("open");
+  document.getElementById("tracker-settings-folder-items")?.classList.remove("open");
   document.getElementById("settings-folder-items")?.classList.remove("open");
 }
 
@@ -2169,9 +2238,21 @@ document.getElementById("edit-categories").addEventListener("click", () => {
   closeActionsMenu();
   openCategoryEditor();
 });
+document.getElementById("tracker-open").addEventListener("click", () => {
+  closeActionsMenu();
+  showTrackerScreen();
+});
 document.getElementById("summary-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
+});
+document.getElementById("goal-folder").addEventListener("click", event => {
+  event.stopPropagation();
+  document.getElementById("goal-folder-items").classList.toggle("open");
+});
+document.getElementById("tracker-settings-folder").addEventListener("click", event => {
+  event.stopPropagation();
+  document.getElementById("tracker-settings-folder-items").classList.toggle("open");
 });
 document.getElementById("settings-folder").addEventListener("click", event => {
   event.stopPropagation();
@@ -2189,6 +2270,7 @@ document.getElementById("sign-out").addEventListener("click", async () => {
   closeActionsMenu();
   await confirmSignOut();
 });
+document.getElementById("screen-back").addEventListener("click", () => showTrackerScreen());
 document.getElementById("auth-signin").addEventListener("click", () => signInOrCreate(false));
 document.getElementById("auth-create").addEventListener("click", () => signInOrCreate(true));
 document.getElementById("household-create").addEventListener("click", createHouseholdFromSetup);

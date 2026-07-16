@@ -387,6 +387,13 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   z-index:10;
 }
 .overflow-menu.open { display:grid; gap:2px; }
+.menu-section {
+  display:none;
+  gap:2px;
+  padding-left:8px;
+  border-left:1px solid var(--line);
+}
+.menu-section.open { display:grid; }
 .menu-item {
   border:0;
   background:#fff;
@@ -440,6 +447,14 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   border-radius:16px;
   padding:16px;
 }
+.setup-check {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  margin:6px 0 2px;
+}
+.setup-check input[type="checkbox"] { flex:0 0 auto; }
 #category-modal .modal-content { width:min(1320px,98vw); }
 .category-editor { display:grid; gap:8px; min-width:1120px; }
 .category-row {
@@ -568,6 +583,10 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
       <label>Password</label>
       <input id="auth-password" type="password" autocomplete="current-password">
     </div>
+    <label class="setup-check">
+      <input id="auth-stay-signed-in" type="checkbox" checked>
+      <span>Stay signed in</span>
+    </label>
     <div class="modal-actions">
       <button class="btn" id="auth-create">Create Account</button>
       <button class="btn primary" id="auth-signin">Sign In</button>
@@ -600,6 +619,10 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
         <option value="6">Saturday</option>
       </select>
     </div>
+    <label class="setup-check" id="household-import-row" style="display:none">
+      <input id="household-import-legacy" type="checkbox">
+      <span>Import existing tracker data</span>
+    </label>
     <div class="modal-actions">
       <button class="btn" id="household-signout">Sign Out</button>
       <button class="btn primary" id="household-create">Create Household</button>
@@ -615,11 +638,15 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
         <button class="menu-item" id="summary-open">Summary</button>
-        <button class="menu-item" id="manage-members">Members</button>
         <button class="menu-item" id="sign-out">Sign Out</button>
-        <button class="menu-item" id="archive-week">Archive</button>
-        <button class="menu-item" id="edit-categories">Edit</button>
-        <button class="menu-item danger" id="clear-week">Clear</button>
+        <button class="menu-item" id="settings-folder">Settings ▾</button>
+        <div class="menu-section" id="settings-folder-items">
+          <button class="menu-item" id="settings-open">Configuration</button>
+          <button class="menu-item" id="manage-members">Members</button>
+          <button class="menu-item" id="edit-categories">Edit</button>
+          <button class="menu-item" id="archive-week">Archive</button>
+          <button class="menu-item danger" id="clear-week">Clear</button>
+        </div>
       </div>
       </div>
       <select id="week-select" aria-label="Week"></select>
@@ -665,6 +692,39 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
       <button class="btn" id="add-member">Add Member</button>
       <button class="btn" id="close-members">Close</button>
       <button class="btn primary" id="save-members">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="settings-modal">
+  <div class="modal-content">
+    <h3 class="modal-title">Configuration</h3>
+    <div class="field">
+      <label>Household Name</label>
+      <input id="settings-household-name" type="text">
+    </div>
+    <div class="field">
+      <label>Scoring</label>
+      <select id="settings-household-scoring">
+        <option value="money">Money</option>
+        <option value="points">Points</option>
+        <option value="percent">Percentages</option>
+        <option value="completion">Completion</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Weekly Reset Day</label>
+      <select id="settings-household-reset-day">
+        <option value="1">Monday</option>
+        <option value="0">Sunday</option>
+        <option value="6">Saturday</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="settings-members">Members</button>
+      <button class="btn" id="settings-categories">Edit</button>
+      <button class="btn" id="settings-close">Close</button>
+      <button class="btn primary" id="settings-save">Save</button>
     </div>
   </div>
 </div>
@@ -753,6 +813,8 @@ let currentUser = null;
 let householdId = null;
 let householdData = null;
 let authLoadToken = 0;
+let canImportLegacy = false;
+let firstHouseholdSetup = false;
 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -832,6 +894,22 @@ function setAuthMessage(message = "") {
 function setHouseholdMessage(message = "") {
   const node = document.getElementById("household-message");
   if (node) node.textContent = message;
+}
+
+async function refreshLegacyImportOption() {
+  canImportLegacy = false;
+  const row = document.getElementById("household-import-row");
+  const checkbox = document.getElementById("household-import-legacy");
+  if (row) row.style.display = "none";
+  if (checkbox) checkbox.checked = false;
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection("legacyImports").doc(currentUser.uid).get();
+    canImportLegacy = doc.exists && doc.data().enabled === true && doc.data().email === currentUser.email;
+  } catch (error) {
+    canImportLegacy = false;
+  }
+  if (row) row.style.display = canImportLegacy ? "flex" : "none";
 }
 
 function friendlyFirebaseError(error, fallback = "Something went wrong.") {
@@ -1833,6 +1911,22 @@ function openMemberEditor() {
   openModal("members-modal");
 }
 
+function openSettingsModal() {
+  document.getElementById("settings-household-name").value = householdData?.name || "";
+  document.getElementById("settings-household-scoring").value = householdData?.scoringMode || "money";
+  document.getElementById("settings-household-reset-day").value = String(householdData?.weeklyResetDay ?? 1);
+  openModal("settings-modal");
+}
+
+async function saveHouseholdSettings() {
+  const name = document.getElementById("settings-household-name").value.trim() || "My Household";
+  const scoringMode = document.getElementById("settings-household-scoring").value;
+  const weeklyResetDay = Number(document.getElementById("settings-household-reset-day").value);
+  await householdRef().set({name, scoringMode, weeklyResetDay, updatedAt:new Date()}, {merge:true});
+  householdData = {...(householdData || {}), name, scoringMode, weeklyResetDay};
+  closeModal("settings-modal");
+}
+
 function importCategoryConfig() {
   const importFrom = document.getElementById("category-import-person").value;
   if (!importFrom || importFrom === categoryEditorKid) return;
@@ -1917,6 +2011,7 @@ function escapeAttr(text = "") {
 
 function closeActionsMenu() {
   document.getElementById("actions-menu")?.classList.remove("open");
+  document.getElementById("settings-folder-items")?.classList.remove("open");
 }
 
 async function startHouseholdApp() {
@@ -1938,6 +2033,7 @@ async function handleSignedInUser(user) {
   if (hasHousehold) {
     await startHouseholdApp();
   } else {
+    await refreshLegacyImportOption();
     setHouseholdMessage("Create a household to continue.");
     showOnly("household-screen");
   }
@@ -1946,12 +2042,14 @@ async function handleSignedInUser(user) {
 async function signInOrCreate(createAccount = false) {
   const email = document.getElementById("auth-email").value.trim();
   const password = document.getElementById("auth-password").value;
+  const staySignedIn = document.getElementById("auth-stay-signed-in").checked;
   if (!email || !password) {
     setAuthMessage("Enter an email and password.");
     return;
   }
   setAuthMessage(createAccount ? "Creating account..." : "Signing in...");
   try {
+    await auth.setPersistence(staySignedIn ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
     const credential = createAccount
       ? await auth.createUserWithEmailAndPassword(email, password)
       : await auth.signInWithEmailAndPassword(email, password);
@@ -1961,19 +2059,34 @@ async function signInOrCreate(createAccount = false) {
   }
 }
 
+async function confirmSignOut() {
+  if (!confirm("Sign out of this household?")) return;
+  await auth.signOut();
+}
+
 async function createHouseholdFromSetup() {
   const name = document.getElementById("household-name").value.trim();
   const scoringMode = document.getElementById("household-scoring").value;
   const weeklyResetDay = document.getElementById("household-reset-day").value;
+  const importLegacy = document.getElementById("household-import-legacy").checked;
   if (!name) {
     setHouseholdMessage("Name the household first.");
     return;
   }
   setHouseholdMessage("Creating household...");
   try {
+    if (importLegacy && !canImportLegacy) {
+      setHouseholdMessage("This account is not approved to import existing tracker data.");
+      return;
+    }
+    firstHouseholdSetup = !importLegacy;
     await createHousehold(name, {scoringMode, weeklyResetDay});
-    await migrateLegacyData();
+    if (importLegacy) {
+      setHouseholdMessage("Importing existing tracker data...");
+      await migrateLegacyData();
+    }
     await startHouseholdApp();
+    if (firstHouseholdSetup) openMemberEditor();
   } catch (error) {
     setHouseholdMessage(error.message || "Could not create household.");
   }
@@ -2060,18 +2173,26 @@ document.getElementById("summary-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
 });
+document.getElementById("settings-folder").addEventListener("click", event => {
+  event.stopPropagation();
+  document.getElementById("settings-folder-items").classList.toggle("open");
+});
+document.getElementById("settings-open").addEventListener("click", () => {
+  closeActionsMenu();
+  openSettingsModal();
+});
 document.getElementById("manage-members").addEventListener("click", () => {
   closeActionsMenu();
   openMemberEditor();
 });
 document.getElementById("sign-out").addEventListener("click", async () => {
   closeActionsMenu();
-  await auth.signOut();
+  await confirmSignOut();
 });
 document.getElementById("auth-signin").addEventListener("click", () => signInOrCreate(false));
 document.getElementById("auth-create").addEventListener("click", () => signInOrCreate(true));
 document.getElementById("household-create").addEventListener("click", createHouseholdFromSetup);
-document.getElementById("household-signout").addEventListener("click", () => auth.signOut());
+document.getElementById("household-signout").addEventListener("click", confirmSignOut);
 document.getElementById("summary-refresh").addEventListener("click", refreshSummary);
 document.getElementById("summary-kind").addEventListener("change", async () => {
   syncSummaryControls();
@@ -2088,6 +2209,16 @@ document.getElementById("add-category").addEventListener("click", () => addCateg
 document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
 document.getElementById("close-members").addEventListener("click", () => closeModal("members-modal"));
 document.getElementById("save-members").addEventListener("click", saveMembers);
+document.getElementById("settings-close").addEventListener("click", () => closeModal("settings-modal"));
+document.getElementById("settings-save").addEventListener("click", saveHouseholdSettings);
+document.getElementById("settings-members").addEventListener("click", () => {
+  closeModal("settings-modal");
+  openMemberEditor();
+});
+document.getElementById("settings-categories").addEventListener("click", () => {
+  closeModal("settings-modal");
+  openCategoryEditor();
+});
 document.getElementById("import-categories").addEventListener("click", importCategoryConfig);
 document.getElementById("category-person").addEventListener("change", event => {
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);

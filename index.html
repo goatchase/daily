@@ -28,12 +28,12 @@ body {
   min-height:100vh;
   background:var(--bg);
   color:var(--ink);
-  font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;
+  font-family:"Source Sans Pro","Helvetica Neue",Arial,sans-serif;
   font-size:10pt;
   font-weight:400;
 }
 button, input, select, textarea {
-  font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;
+  font-family:"Source Sans Pro","Helvetica Neue",Arial,sans-serif;
   font-size:10pt;
   font-weight:400;
 }
@@ -365,11 +365,13 @@ input:focus, textarea:focus, select:focus { border-color:#c7c7cc; box-shadow:non
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:4px;
+  gap:3px;
+  line-height:0;
 }
 .menu-button span {
-  width:17px;
+  width:18px;
   height:2px;
+  flex:0 0 2px;
   border-radius:999px;
   background:var(--ink);
   display:block;
@@ -1503,17 +1505,27 @@ function formatSummaryMetric(value) {
 
 async function fetchOverallSummaryRows(bucket, count) {
   const weekKeys = await summaryWeekKeys(bucket, count);
-  const rows = kids.map(kid => ({kid, score:0, weeks:weekKeys.length || 1}));
+  const labels = [...new Set(weekKeys.map(weekKey => bucketLabel(weekKey, bucket)))].sort().reverse().slice(0, Math.max(Number(count || 12), 1));
+  const rows = kids.map(kid => ({kid, values:Object.fromEntries(labels.map(label => [label, 0]))}));
   await Promise.all(weekKeys.flatMap(weekKey => rows.map(async row => {
+    const label = bucketLabel(weekKey, bucket);
+    if (!labels.includes(label)) return;
     const choresDoc = await weekRef(weekKey).collection("chores").doc(row.kid).get();
-    row.score += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
+    row.values[label] += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
   })));
-  return rows;
+  return {labels, rows};
 }
 
-function renderOverallSummaryRows(rows) {
-  const head = `<tr><th>Person</th><th>Total</th></tr>`;
-  const body = rows.map(row => `<tr><td>${escapeHtml(memberLabel(row.kid))}</td><td>${formatSummaryMetric(row.score)}</td></tr>`).join("");
+function renderOverallSummaryRows(summary) {
+  let head = `<tr><th>Person</th>`;
+  summary.labels.forEach(label => { head += `<th>${label}</th>`; });
+  head += `</tr>`;
+  const body = summary.rows.map(row => {
+    let html = `<tr><td>${escapeHtml(memberLabel(row.kid))}</td>`;
+    summary.labels.forEach(label => { html += `<td>${formatSummaryMetric(row.values[label] || 0)}</td>`; });
+    html += `</tr>`;
+    return html;
+  }).join("");
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
@@ -1594,13 +1606,14 @@ async function refreshSummary() {
     content.innerHTML = detail.labels.length ? renderDetailedSummary(kid, detail) : `<div class="summary-empty">No data in this range.</div>`;
     return;
   }
-  const rows = await fetchOverallSummaryRows(bucket, count);
+  const summary = await fetchOverallSummaryRows(bucket, count);
   content.className = "";
-  content.innerHTML = renderOverallSummaryRows(rows);
+  content.innerHTML = summary.labels.length ? renderOverallSummaryRows(summary) : `<div class="summary-empty">No data in this range.</div>`;
 }
 
 async function openSummary() {
   document.getElementById("summary-person").innerHTML = kids.map(kid => `<option value="${kid}" ${kid === activeKid ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
+  document.getElementById("summary-kind").value = "overall";
   syncSummaryControls();
   openMainScreen("summary-modal", "Summary");
   await refreshSummary();

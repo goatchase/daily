@@ -663,6 +663,7 @@ input[type="checkbox"]::before { box-shadow:0 1px 2px rgba(60,64,67,.25); }
 .summary-goal-green { background:#e6f4ea; color:#137333; }
 .summary-goal-yellow { background:#fef7e0; color:#7f4d00; }
 .summary-goal-red { background:#fce8e6; color:#a50e0e; }
+.summary-goal-gray { background:#f1f3f4; color:#5f6368; }
 .auth-card { border:1px solid var(--soft-line); border-radius:24px; box-shadow:var(--shadow); }
 @media (min-width: 701px) {
   #kid-views { padding-top:0; }
@@ -693,6 +694,31 @@ th.current-day .day-head { color:var(--blue); }
 .goal-percent.summary-goal-blue { background:#e8f0fe; color:#174ea6; }
 .panel-add { background:#f1f3f4; color:#3c4043; }
 .top-controls select { color:var(--ink); }
+
+
+/* Layout fixes: name tabs and category quick edit */
+.tab-container { height:42px; overflow:visible; align-items:center; }
+.tab { height:38px; min-height:38px; padding:7px 10px; align-self:center; }
+.kid-name { line-height:1.2; }
+.rank-circle { height:24px; align-self:center; }
+.category-detail-form .field { margin:0; color:var(--muted); font-size:10pt; }
+.category-detail-form .field input,
+.category-detail-form .field select,
+.category-detail-form .field textarea { margin-top:4px; min-height:34px; border-radius:12px; }
+.category-detail-form textarea { min-height:132px; line-height:1.35; }
+.category-detail-meta { grid-template-columns:1fr 1fr; }
+.category-detail-meta .field:first-child { grid-column:1 / -1; }
+.goal-band-editor { display:grid; gap:7px; margin:10px 0; padding:10px; border:1px solid var(--soft-line); border-radius:16px; background:#fff; }
+.goal-band-title { color:var(--muted); font-weight:700; }
+.goal-band-row { display:grid; grid-template-columns:1fr 120px 34px; gap:8px; align-items:center; }
+.goal-band-row input, .goal-band-row select { min-height:32px; padding:5px 8px; }
+@media (max-width: 700px) {
+  .tab-container { height:42px; }
+  .tab { height:38px; min-height:38px; padding:6px 2px; }
+  .kid-name::first-letter { font-size:12pt; line-height:1.2; }
+  .rank-circle { height:20px; min-width:24px; }
+  .category-detail-meta { grid-template-columns:1fr; }
+}
 
 </style>
 </head>
@@ -823,6 +849,7 @@ th.current-day .day-head { color:var(--blue); }
       <select id="category-import-person" aria-label="Import from"></select>
     </div>
     <div class="category-editor" id="category-editor"></div>
+    <div class="goal-band-editor"><div class="goal-band-title">Goal Colors</div><div id="goal-band-editor"></div><button class="btn" id="add-goal-band" type="button">Add Color</button></div>
     <div class="modal-actions">
       <button class="btn" id="add-category">Add Row</button>
       <button class="btn" id="close-categories">Close</button>
@@ -952,6 +979,12 @@ let activeKid = kids[0];
 let activeCategory = null;
 let activeCategoryKid = null;
 let categoryEditorKid = kids[0];
+let goalBands = [
+  {threshold:150, color:"blue"},
+  {threshold:100, color:"green"},
+  {threshold:50, color:"yellow"},
+  {threshold:0, color:"red"}
+];
 let currentUser = null;
 let householdId = null;
 let householdData = null;
@@ -1169,7 +1202,7 @@ async function createHousehold(name, options = {}) {
     updatedAt:now
   }, {merge:true});
   await Promise.all(seedMembersFromNames().map(member => householdDoc.collection("members").doc(member.id).set({...member, createdAt:now, updatedAt:now})));
-  await trackerSettingsRef().set({categories:cloneCategories(DEFAULT_CATEGORIES), categoriesByKid:{}, updatedAt:now}, {merge:true});
+  await trackerSettingsRef().set({categories:cloneCategories(DEFAULT_CATEGORIES), categoriesByKid:{}, goalBands, updatedAt:now}, {merge:true});
   householdData = householdPayload;
   return householdId;
 }
@@ -1219,6 +1252,7 @@ async function loadHouseholdMembers() {
 async function loadCategories() {
   const doc = await trackerSettingsRef().get();
   const data = doc.exists ? doc.data() : {};
+  if (Array.isArray(data.goalBands) && data.goalBands.length) goalBands = data.goalBands.map(normalizeGoalBand);
   if (data.categoriesByKid && typeof data.categoriesByKid === "object") {
     kids.forEach(kid => {
       const saved = Array.isArray(data.categoriesByKid[kid]) && data.categoriesByKid[kid].length ? data.categoriesByKid[kid] : data.categories;
@@ -1233,15 +1267,28 @@ async function loadCategories() {
 }
 
 async function saveCategories() {
+  goalBands = readGoalBandEditor();
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
   categories = cloneCategories(categoriesByKid[kids[0]]);
   await trackerSettingsRef().set({
     categories:categoriesByKid[kids[0]],
-    categoriesByKid
+    categoriesByKid,
+    goalBands:readGoalBandEditor()
   }, {merge:true});
   buildShell();
   await loadData(currentWeek);
   closeModal("category-modal");
+}
+
+
+async function saveCategoriesForKid(kid, updatedCategories) {
+  categoriesByKid[kid] = updatedCategories.map(normalizeCategory);
+  categories = cloneCategories(categoriesByKid[kids[0]] || categoriesByKid[kid]);
+  await trackerSettingsRef().set({
+    categories:categoriesByKid[kids[0]] || categoriesByKid[kid],
+    categoriesByKid,
+    goalBands
+  }, {merge:true});
 }
 
 function buildShell() {
@@ -1652,22 +1699,50 @@ function renderDetailedSummary(kid, detail) {
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
-function goalClass(category, value, count = 1, valueIsNormalized = false) {
+
+function normalizeGoalBand(band = {}) {
+  const color = ["blue", "green", "yellow", "red", "gray"].includes(band.color) ? band.color : "green";
+  return {threshold:Number(band.threshold || 0), color};
+}
+
+function goalBandPercent(category, value, count = 1, valueIsNormalized = false) {
   const goal = Number(category.goal || 0);
   const comparisonValue = valueIsNormalized ? Number(value || 0) : goalComparisonValue(category, value, count);
-  if (!Number.isFinite(goal) || goal < 0) return "";
-  if (category.goalType === "min") {
-    if (goal === 0) return comparisonValue > 0 ? "summary-goal-blue" : "summary-goal-green";
-    if (comparisonValue >= goal * 1.5) return "summary-goal-blue";
-    if (comparisonValue >= goal) return "summary-goal-green";
-    if (comparisonValue >= goal * .5) return "summary-goal-yellow";
-    return "summary-goal-red";
+  if (!Number.isFinite(goal) || goal <= 0) return comparisonValue > 0 ? 150 : 100;
+  if (category.goalType === "max") {
+    if (comparisonValue <= 0) return 150;
+    return Math.round((goal / comparisonValue) * 100);
   }
-  if (goal === 0) return comparisonValue <= 0 ? "summary-goal-green" : "summary-goal-red";
-  if (comparisonValue <= goal * .5) return "summary-goal-blue";
-  if (comparisonValue <= goal) return "summary-goal-green";
-  if (comparisonValue <= goal * 1.5) return "summary-goal-yellow";
-  return "summary-goal-red";
+  return Math.round((comparisonValue / goal) * 100);
+}
+
+function goalBandClass(category, value, count = 1, valueIsNormalized = false) {
+  const percent = goalBandPercent(category, value, count, valueIsNormalized);
+  const sorted = goalBands.map(normalizeGoalBand).sort((a, b) => Number(b.threshold) - Number(a.threshold));
+  const match = sorted.find(band => percent >= Number(band.threshold));
+  return `summary-goal-${match?.color || "green"}`;
+}
+
+function renderGoalBandEditor() {
+  const editor = document.getElementById("goal-band-editor");
+  if (!editor) return;
+  editor.innerHTML = goalBands.map((band, index) => {
+    const normalized = normalizeGoalBand(band);
+    return `<div class="goal-band-row" data-goal-band-row><input type="number" min="0" step="1" data-field="threshold" aria-label="Percent threshold" value="${Number(normalized.threshold)}" placeholder="Percent"><select data-field="color" aria-label="Color"><option value="blue" ${normalized.color === "blue" ? "selected" : ""}>Blue</option><option value="green" ${normalized.color === "green" ? "selected" : ""}>Green</option><option value="yellow" ${normalized.color === "yellow" ? "selected" : ""}>Yellow</option><option value="red" ${normalized.color === "red" ? "selected" : ""}>Red</option><option value="gray" ${normalized.color === "gray" ? "selected" : ""}>Gray</option></select><button class="icon-btn remove-goal-band" type="button" aria-label="Delete color">x</button></div>`;
+  }).join("");
+}
+
+function readGoalBandEditor() {
+  const rows = [...document.querySelectorAll("#goal-band-editor [data-goal-band-row]")];
+  const bands = rows.map(row => normalizeGoalBand({
+    threshold:row.querySelector('[data-field="threshold"]').value,
+    color:row.querySelector('[data-field="color"]').value
+  })).sort((a, b) => Number(b.threshold) - Number(a.threshold));
+  return bands.length ? bands : [{threshold:100, color:"green"}, {threshold:0, color:"red"}];
+}
+
+function goalClass(category, value, count = 1, valueIsNormalized = false) {
+  return goalBandClass(category, value, count, valueIsNormalized);
 }
 
 async function refreshSummary() {
@@ -1983,6 +2058,7 @@ function openCategoryEditor(kid = activeKid) {
   const importSelect = document.getElementById("category-import-person");
   importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
   renderCategoryEditor(categoryEditorKid);
+  renderGoalBandEditor();
   openMainScreen("category-modal", "Tracker Configuration");
 }
 
@@ -2342,6 +2418,7 @@ document.body.addEventListener("click", async event => {
 
   if (event.target.closest(".remove-member")) event.target.closest(".category-row").remove();
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
+  if (event.target.closest(".remove-goal-band")) event.target.closest("[data-goal-band-row]").remove();
 });
 
 let draggedCategoryRow = null;
@@ -2418,6 +2495,7 @@ document.getElementById("summary-bucket").addEventListener("change", refreshSumm
 document.getElementById("summary-count").addEventListener("change", refreshSummary);
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
+document.getElementById("add-goal-band").addEventListener("click", () => { goalBands = readGoalBandEditor(); goalBands.push({threshold:0, color:"green"}); renderGoalBandEditor(); });
 document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
 document.getElementById("close-members").addEventListener("click", () => closeModal("members-modal"));
 document.getElementById("save-members").addEventListener("click", saveMembers);

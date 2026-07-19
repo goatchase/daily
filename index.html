@@ -720,6 +720,58 @@ th.current-day .day-head { color:var(--blue); }
   .category-detail-meta { grid-template-columns:1fr; }
 }
 
+
+/* Compact goal color settings */
+.goal-band-editor { gap:6px; padding:8px 10px; }
+.goal-band-head { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--muted); font-weight:700; }
+#goal-band-editor { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:6px; }
+.goal-band-row { grid-template-columns:64px 1fr 28px; gap:5px; }
+.goal-band-row input, .goal-band-row select { min-height:28px; padding:3px 7px; }
+.goal-band-row .icon-btn { width:28px; height:28px; min-height:28px; }
+
+
+/* Tracker configuration layout */
+.category-config-content { width:min(1360px,98vw); }
+.category-config-layout { display:grid; grid-template-columns:176px minmax(0,1fr); gap:12px; align-items:start; }
+.category-side { display:grid; gap:8px; align-content:start; position:sticky; top:0; }
+.config-nav { border:0; border-radius:999px; min-height:32px; padding:6px 10px; text-align:left; background:#fff; color:var(--ink); cursor:pointer; }
+.config-nav.active, .config-nav:hover { background:#f1f3f4; }
+.side-field, .import-bubble { display:grid; gap:5px; padding:9px; border:1px solid var(--soft-line); border-radius:16px; background:#fff; color:var(--muted); font-weight:700; }
+.side-field select, .import-bubble select { min-height:30px; padding:5px 26px 5px 8px; }
+.import-bubble .btn { min-height:30px; padding:5px 9px; }
+.category-config-main { min-width:0; overflow:hidden; }
+.category-screen { display:none; }
+.category-screen.active { display:block; }
+#category-editor.category-editor { min-width:980px; max-height:70vh; }
+#category-editor .category-header,
+#category-editor .category-row { grid-template-columns:28px 94px minmax(120px,150px) 82px 82px 68px 58px 58px 64px 68px 74px 30px; gap:5px; }
+#category-editor .category-row { padding:5px 0; }
+#category-editor .category-row input,
+#category-editor .category-row select { min-height:28px; padding:4px 6px; }
+#category-editor .category-row input[type="number"] { min-width:52px; }
+#category-editor .category-row textarea { min-height:28px; max-height:34px; padding:4px 6px; resize:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#category-editor .category-header { padding-bottom:5px; }
+@media (max-width: 800px) {
+  .category-config-layout { grid-template-columns:1fr; }
+  .category-side { position:static; grid-template-columns:1fr 1fr; }
+  .side-field, .import-bubble { grid-column:1 / -1; }
+  #category-editor.category-editor { min-width:0; }
+  #category-editor .category-header { display:none; }
+  #category-editor .category-row { grid-template-columns:1fr; gap:6px; }
+  #category-editor .category-row textarea { white-space:normal; max-height:none; min-height:42px; resize:vertical; }
+}
+
+
+/* Summary configuration */
+.summary-config-editor { display:grid; gap:8px; padding:10px; border:1px solid var(--soft-line); border-radius:16px; background:#fff; }
+.summary-config-title { color:var(--muted); font-weight:700; }
+#summary-config-editor { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px; }
+.summary-config-item { display:flex; align-items:center; gap:8px; min-height:30px; padding:5px 8px; border:1px solid var(--soft-line); border-radius:999px; background:#fff; }
+.summary-config-item input[type="checkbox"] { width:32px; height:18px; flex:0 0 auto; }
+.summary-config-item input[type="checkbox"]::before { width:14px; height:14px; }
+.summary-config-item input[type="checkbox"]:checked::before { transform:translateX(14px); }
+.summary-config-name { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
 </style>
 </head>
 <body>
@@ -841,15 +893,32 @@ th.current-day .day-head { color:var(--blue); }
 </div>
 
 <div class="modal" id="category-modal">
-  <div class="modal-content">
-    <h3 class="modal-title">Categories</h3>
-    <div class="modal-toolbar">
-      <select id="category-person" aria-label="Person"></select>
-      <button class="btn" id="import-categories" type="button">Import</button>
-      <select id="category-import-person" aria-label="Import from"></select>
+  <div class="modal-content category-config-content">
+    <h3 class="modal-title">Tracker Configuration</h3>
+    <div class="category-config-layout">
+      <aside class="category-side">
+        <button class="config-nav active" id="category-view-categories" type="button">Categories</button>
+        <button class="config-nav" id="category-view-colors" type="button">Colors</button>
+        <button class="config-nav" id="category-view-summary" type="button">Summary</button>
+        <label class="side-field">Person<select id="category-person" aria-label="Person"></select></label>
+        <div class="import-bubble">
+          <span>Import From</span>
+          <select id="category-import-person" aria-label="Import from"></select>
+          <button class="btn" id="import-categories" type="button">Import</button>
+        </div>
+      </aside>
+      <section class="category-config-main">
+        <div class="category-screen active" id="category-screen-categories">
+          <div class="category-editor" id="category-editor"></div>
+        </div>
+        <div class="category-screen" id="category-screen-colors">
+          <div class="goal-band-editor"><div class="goal-band-head"><span>Goal Colors</span><button class="panel-add" id="add-goal-band" type="button" aria-label="Add color">+</button></div><div id="goal-band-editor"></div></div>
+        </div>
+        <div class="category-screen" id="category-screen-summary">
+          <div class="summary-config-editor"><div class="summary-config-title">Show In Summary</div><div id="summary-config-editor"></div></div>
+        </div>
+      </section>
     </div>
-    <div class="category-editor" id="category-editor"></div>
-    <div class="goal-band-editor"><div class="goal-band-title">Goal Colors</div><div id="goal-band-editor"></div><button class="btn" id="add-goal-band" type="button">Add Color</button></div>
     <div class="modal-actions">
       <button class="btn" id="add-category">Add Row</button>
       <button class="btn" id="close-categories">Close</button>
@@ -1134,6 +1203,7 @@ function normalizeCategory(category, index) {
     goalType:category.goalType === "max" ? "max" : "min",
     goalPeriod:category.goalPeriod === "daily" ? "daily" : "weekly",
     showProgress:category.showProgress === true || category.showTarget === true || category.showWeekly === true,
+    showSummary:category.showSummary !== false,
     formula:(category.formula || "").trim()
   };
 }
@@ -1267,6 +1337,7 @@ async function loadCategories() {
 }
 
 async function saveCategories() {
+  applySummaryConfigEditor();
   goalBands = readGoalBandEditor();
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
   categories = cloneCategories(categoriesByKid[kids[0]]);
@@ -1636,7 +1707,7 @@ async function fetchOverallSummaryRows(bucket, count) {
     const label = bucketLabel(weekKey, bucket);
     if (!labels.includes(label)) return;
     const choresDoc = await weekRef(weekKey).collection("chores").doc(row.kid).get();
-    row.values[label] += scoreDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
+    row.values[label] += scoreSummaryDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
   })));
   return {labels, rows};
 }
@@ -1672,7 +1743,7 @@ async function fetchDetailedSummary(kid, bucket, count) {
 }
 
 function renderDetailedSummary(kid, detail) {
-  const categories = categoriesForKid(kid);
+  const categories = summaryCategoriesForKid(kid);
   let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
   detail.labels.forEach(label => { head += `<th>${label}</th>`; });
   head += `</tr>`;
@@ -2045,6 +2116,49 @@ async function addHistoricalWeek() {
   await loadData(weekKey);
 }
 
+
+
+function summaryCategoriesForKid(kid) {
+  return categoriesForKid(kid).filter(category => category.showSummary !== false);
+}
+
+function renderSummaryConfigEditor(kid = categoryEditorKid) {
+  const editor = document.getElementById("summary-config-editor");
+  if (!editor) return;
+  editor.innerHTML = categoriesForKid(kid).map(category => {
+    const checked = category.showSummary === false ? "" : "checked";
+    return `<label class="summary-config-item"><input type="checkbox" data-summary-category="${category.key}" ${checked}><span class="summary-config-name">${escapeHtml(category.label)}</span></label>`;
+  }).join("");
+}
+
+function applySummaryConfigEditor(kid = categoryEditorKid) {
+  document.querySelectorAll("#summary-config-editor [data-summary-category]").forEach(input => {
+    const row = document.querySelector(`#category-editor .category-row[data-key="${input.dataset.summaryCategory}"]`);
+    if (row) row.dataset.showSummary = input.checked ? "true" : "false";
+  });
+}
+
+function scoreSummaryDataForKid(kid, data = {}) {
+  let total = 0;
+  days.forEach((day, i) => {
+    summaryCategoriesForKid(kid).forEach(category => {
+      total += categoryDayValue(kid, category, i, data) * category.amount;
+    });
+  });
+  return total;
+}
+
+function showCategoryConfigScreen(screen) {
+  document.getElementById("category-screen-categories")?.classList.toggle("active", screen === "categories");
+  document.getElementById("category-screen-colors")?.classList.toggle("active", screen === "colors");
+  document.getElementById("category-screen-summary")?.classList.toggle("active", screen === "summary");
+  document.getElementById("category-view-categories")?.classList.toggle("active", screen === "categories");
+  document.getElementById("category-view-colors")?.classList.toggle("active", screen === "colors");
+  document.getElementById("category-view-summary")?.classList.toggle("active", screen === "summary");
+  if (screen === "summary") renderSummaryConfigEditor();
+  document.getElementById("add-category")?.style.setProperty("display", screen === "categories" ? "" : "none");
+}
+
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
   editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Total</span><span></span></div>`;
@@ -2059,6 +2173,8 @@ function openCategoryEditor(kid = activeKid) {
   importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
   renderCategoryEditor(categoryEditorKid);
   renderGoalBandEditor();
+  renderSummaryConfigEditor(categoryEditorKid);
+  showCategoryConfigScreen("categories");
   openMainScreen("category-modal", "Tracker Configuration");
 }
 
@@ -2153,6 +2269,7 @@ function importCategoryConfig() {
   if (!confirm(`Import ${importFrom}'s configuration for ${categoryEditorKid}? This will not change any tracker data.`)) return;
   categoriesByKid[categoryEditorKid] = cloneCategories(categoriesForKid(importFrom));
   renderCategoryEditor(categoryEditorKid);
+  renderSummaryConfigEditor(categoryEditorKid);
 }
 
 function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", goalPeriod:"weekly", showProgress:false, formula:""}) {
@@ -2160,6 +2277,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   const row = document.createElement("div");
   row.className = "category-row";
   row.dataset.key = category.key || "";
+  row.dataset.showSummary = category.showSummary === false ? "false" : "true";
   const showProgress = category.showProgress === true || category.showTarget === true || category.showWeekly === true;
   row.innerHTML = `
     <span class="drag-handle" draggable="true" aria-label="Drag row">☰</span>
@@ -2205,6 +2323,7 @@ function readCategoryEditor() {
       goalType:row.querySelector('[data-field="goalType"]').value,
       goalPeriod:row.querySelector('[data-field="goalPeriod"]').value,
       showProgress:row.querySelector('[data-field="showProgress"]').value === "true",
+      showSummary:row.dataset.showSummary !== "false",
       formula:row.querySelector('[data-field="formula"]').value.trim()
     };
   });
@@ -2494,6 +2613,9 @@ document.getElementById("summary-person").addEventListener("change", refreshSumm
 document.getElementById("summary-bucket").addEventListener("change", refreshSummary);
 document.getElementById("summary-count").addEventListener("change", refreshSummary);
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
+document.getElementById("category-view-categories").addEventListener("click", () => showCategoryConfigScreen("categories"));
+document.getElementById("category-view-colors").addEventListener("click", () => showCategoryConfigScreen("colors"));
+document.getElementById("category-view-summary").addEventListener("click", () => showCategoryConfigScreen("summary"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
 document.getElementById("add-goal-band").addEventListener("click", () => { goalBands = readGoalBandEditor(); goalBands.push({threshold:0, color:"green"}); renderGoalBandEditor(); });
 document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
@@ -2548,6 +2670,8 @@ document.getElementById("week-select").addEventListener("change", async event =>
 document.body.addEventListener("change", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) saveData(input.dataset.kid);
+  const summaryToggle = event.target.closest("[data-summary-category]");
+  if (summaryToggle) applySummaryConfigEditor();
 });
 
 document.body.addEventListener("input", event => {

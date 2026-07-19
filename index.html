@@ -457,6 +457,7 @@ input:focus, textarea:focus, select:focus { border-color:#9aa0a6; box-shadow:0 0
   margin-bottom:10px;
 }
 #screen-title { color:var(--muted); }
+#screen-title:empty { display:none; }
 #screen-content > .modal-content {
   width:100%;
   max-height:none;
@@ -650,9 +651,9 @@ input:focus, textarea:focus, select:focus { border-color:#9aa0a6; box-shadow:0 0
 
 /* Google/Apple polish layer */
 #kid-views { background:#fff; }
-.menu-button { border:0; background:transparent; color:var(--muted); }
+.menu-button { border:0; background:transparent; color:var(--muted); gap:4px; justify-content:center; }
 .menu-button:hover { background:#f1f3f4; }
-.menu-button span { background:#3c4043; }
+.menu-button span { background:#3c4043; display:block; flex:0 0 auto; height:2px; margin:0; transform:none; }
 .day-head { border-radius:999px; }
 th.current-day .day-head { color:#fff; }
 .category-label:hover { color:var(--ink); text-decoration:underline; text-decoration-color:#dadce0; text-underline-offset:2px; }
@@ -724,8 +725,8 @@ th.current-day .day-head { color:var(--blue); }
 /* Compact goal color settings */
 .goal-band-editor { gap:6px; padding:8px 10px; }
 .goal-band-head { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--muted); font-weight:700; }
-#goal-band-editor { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:6px; }
-.goal-band-row { grid-template-columns:64px 1fr 28px; gap:5px; }
+#goal-band-editor { display:grid; grid-template-columns:1fr; gap:6px; max-width:360px; }
+.goal-band-row { grid-template-columns:82px 1fr 28px; gap:5px; }
 .goal-band-row input, .goal-band-row select { min-height:28px; padding:3px 7px; }
 .goal-band-row .icon-btn { width:28px; height:28px; min-height:28px; }
 
@@ -742,14 +743,18 @@ th.current-day .day-head { color:var(--blue); }
 .category-config-main { min-width:0; overflow:hidden; }
 .category-screen { display:none; }
 .category-screen.active { display:block; }
-#category-editor.category-editor { min-width:980px; max-height:70vh; }
+#category-editor.category-editor { min-width:1100px; max-height:70vh; }
 #category-editor .category-header,
-#category-editor .category-row { grid-template-columns:28px 94px minmax(120px,150px) 82px 82px 68px 58px 58px 64px 68px 74px 30px; gap:5px; }
+#category-editor .category-row { grid-template-columns:28px 94px minmax(112px,140px) 82px 82px 66px 56px 58px 62px 66px 82px 82px 30px; gap:5px; }
 #category-editor .category-row { padding:5px 0; }
+#category-editor .category-row input,
+#category-editor .category-row select,
+#category-editor .category-row textarea { border-radius:8px; }
 #category-editor .category-row input,
 #category-editor .category-row select { min-height:28px; padding:4px 6px; }
 #category-editor .category-row input[type="number"] { min-width:52px; }
-#category-editor .category-row textarea { min-height:28px; max-height:34px; padding:4px 6px; resize:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#category-editor .category-row textarea { min-height:28px; max-height:28px; padding:4px 6px; resize:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#category-editor .category-row textarea:focus { min-height:84px; max-height:120px; white-space:normal; resize:vertical; position:relative; z-index:4; box-shadow:0 2px 10px rgba(60,64,67,.16); }
 #category-editor .category-header { padding-bottom:5px; }
 @media (max-width: 800px) {
   .category-config-layout { grid-template-columns:1fr; }
@@ -899,7 +904,6 @@ th.current-day .day-head { color:var(--blue); }
       <aside class="category-side">
         <button class="config-nav active" id="category-view-categories" type="button">Categories</button>
         <button class="config-nav" id="category-view-colors" type="button">Colors</button>
-        <button class="config-nav" id="category-view-summary" type="button">Summary</button>
         <label class="side-field">Person<select id="category-person" aria-label="Person"></select></label>
         <div class="import-bubble">
           <span>Import From</span>
@@ -913,9 +917,6 @@ th.current-day .day-head { color:var(--blue); }
         </div>
         <div class="category-screen" id="category-screen-colors">
           <div class="goal-band-editor"><div class="goal-band-head"><span>Goal Colors</span><button class="panel-add" id="add-goal-band" type="button" aria-label="Add color">+</button></div><div id="goal-band-editor"></div></div>
-        </div>
-        <div class="category-screen" id="category-screen-summary">
-          <div class="summary-config-editor"><div class="summary-config-title">Show In Summary</div><div id="summary-config-editor"></div></div>
         </div>
       </section>
     </div>
@@ -1337,7 +1338,6 @@ async function loadCategories() {
 }
 
 async function saveCategories() {
-  applySummaryConfigEditor();
   goalBands = readGoalBandEditor();
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
   categories = cloneCategories(categoriesByKid[kids[0]]);
@@ -1702,12 +1702,13 @@ function formatSummaryMetric(value) {
 async function fetchOverallSummaryRows(bucket, count) {
   const weekKeys = await summaryWeekKeys(bucket, count);
   const labels = [...new Set(weekKeys.map(weekKey => bucketLabel(weekKey, bucket)))].sort().reverse().slice(0, Math.max(Number(count || 12), 1));
-  const rows = kids.map(kid => ({kid, values:Object.fromEntries(labels.map(label => [label, 0]))}));
+  const rows = kids.map(kid => ({kid, values:Object.fromEntries(labels.map(label => [label, null]))}));
   await Promise.all(weekKeys.flatMap(weekKey => rows.map(async row => {
     const label = bucketLabel(weekKey, bucket);
     if (!labels.includes(label)) return;
     const choresDoc = await weekRef(weekKey).collection("chores").doc(row.kid).get();
-    row.values[label] += scoreSummaryDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
+    const score = scoreSummaryDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
+    if (score !== null) row.values[label] = (row.values[label] || 0) + score;
   })));
   return {labels, rows};
 }
@@ -1718,7 +1719,7 @@ function renderOverallSummaryRows(summary) {
   head += `</tr>`;
   const body = summary.rows.map(row => {
     let html = `<tr><td>${escapeHtml(memberLabel(row.kid))}</td>`;
-    summary.labels.forEach(label => { html += `<td>${formatSummaryMetric(row.values[label] || 0)}</td>`; });
+    summary.labels.forEach(label => { html += row.values[label] === null ? `<td></td>` : `<td>${formatSummaryMetric(row.values[label])}</td>`; });
     html += `</tr>`;
     return html;
   }).join("");
@@ -1757,9 +1758,14 @@ function renderDetailedSummary(kid, detail) {
     let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalPeriod}</td><td>${goalType}</td><td>${Number(category.goal || 0).toFixed(0)}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
+      const entryCount = bucket.values[`${category.key}__count`] || 0;
+      if (entryCount === 0) {
+        html += `<td></td>`;
+        return;
+      }
       const sum = bucket.values[category.key] || 0;
       const weeks = Math.max(bucket.weeks.size, 1);
-      const count = category.goalPeriod === "daily" ? bucket.values[`${category.key}__count`] || 1 : weeks;
+      const count = category.goalPeriod === "daily" ? entryCount : weeks;
       const value = category.goalPeriod === "daily" ? sum / count : sum;
       const cellClass = category.goalPeriod === "daily" ? goalClass(category, value, 1, true) : goalClass(category, value, count);
       html += `<td class="${cellClass}">${value.toFixed(0)}</td>`;
@@ -2122,46 +2128,30 @@ function summaryCategoriesForKid(kid) {
   return categoriesForKid(kid).filter(category => category.showSummary !== false);
 }
 
-function renderSummaryConfigEditor(kid = categoryEditorKid) {
-  const editor = document.getElementById("summary-config-editor");
-  if (!editor) return;
-  editor.innerHTML = categoriesForKid(kid).map(category => {
-    const checked = category.showSummary === false ? "" : "checked";
-    return `<label class="summary-config-item"><input type="checkbox" data-summary-category="${category.key}" ${checked}><span class="summary-config-name">${escapeHtml(category.label)}</span></label>`;
-  }).join("");
-}
-
-function applySummaryConfigEditor(kid = categoryEditorKid) {
-  document.querySelectorAll("#summary-config-editor [data-summary-category]").forEach(input => {
-    const row = document.querySelector(`#category-editor .category-row[data-key="${input.dataset.summaryCategory}"]`);
-    if (row) row.dataset.showSummary = input.checked ? "true" : "false";
-  });
-}
-
 function scoreSummaryDataForKid(kid, data = {}) {
   let total = 0;
+  let entries = 0;
   days.forEach((day, i) => {
     summaryCategoriesForKid(kid).forEach(category => {
+      if (!categoryDayHasEntry(kid, category, i, data)) return;
+      entries += 1;
       total += categoryDayValue(kid, category, i, data) * category.amount;
     });
   });
-  return total;
+  return entries ? total : null;
 }
 
 function showCategoryConfigScreen(screen) {
   document.getElementById("category-screen-categories")?.classList.toggle("active", screen === "categories");
   document.getElementById("category-screen-colors")?.classList.toggle("active", screen === "colors");
-  document.getElementById("category-screen-summary")?.classList.toggle("active", screen === "summary");
   document.getElementById("category-view-categories")?.classList.toggle("active", screen === "categories");
   document.getElementById("category-view-colors")?.classList.toggle("active", screen === "colors");
-  document.getElementById("category-view-summary")?.classList.toggle("active", screen === "summary");
-  if (screen === "summary") renderSummaryConfigEditor();
   document.getElementById("add-category")?.style.setProperty("display", screen === "categories" ? "" : "none");
 }
 
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
-  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Total</span><span></span></div>`;
+  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Show in tracker</span><span>Show in summary</span><span></span></div>`;
   categoriesForKid(kid).forEach(addCategoryRow);
 }
 
@@ -2173,9 +2163,8 @@ function openCategoryEditor(kid = activeKid) {
   importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
   renderCategoryEditor(categoryEditorKid);
   renderGoalBandEditor();
-  renderSummaryConfigEditor(categoryEditorKid);
   showCategoryConfigScreen("categories");
-  openMainScreen("category-modal", "Tracker Configuration");
+  openMainScreen("category-modal", "");
 }
 
 function refreshImportOptions() {
@@ -2269,10 +2258,9 @@ function importCategoryConfig() {
   if (!confirm(`Import ${importFrom}'s configuration for ${categoryEditorKid}? This will not change any tracker data.`)) return;
   categoriesByKid[categoryEditorKid] = cloneCategories(categoriesForKid(importFrom));
   renderCategoryEditor(categoryEditorKid);
-  renderSummaryConfigEditor(categoryEditorKid);
 }
 
-function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", goalPeriod:"weekly", showProgress:false, formula:""}) {
+function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", goalPeriod:"weekly", showProgress:false, showSummary:true, formula:""}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
   row.className = "category-row";
@@ -2300,9 +2288,13 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
       <option value="weekly" ${category.goalPeriod === "daily" ? "" : "selected"}>Weekly</option>
       <option value="daily" ${category.goalPeriod === "daily" ? "selected" : ""}>Daily</option>
     </select>
-    <select aria-label="Show weekly target" data-field="showProgress">
+    <select aria-label="Show in tracker" data-field="showProgress">
       <option value="false" ${showProgress ? "" : "selected"}>Hide</option>
       <option value="true" ${showProgress ? "selected" : ""}>Show</option>
+    </select>
+    <select aria-label="Show in summary" data-field="showSummary">
+      <option value="false" ${category.showSummary === false ? "selected" : ""}>Hide</option>
+      <option value="true" ${category.showSummary === false ? "" : "selected"}>Show</option>
     </select>
     <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
@@ -2323,7 +2315,7 @@ function readCategoryEditor() {
       goalType:row.querySelector('[data-field="goalType"]').value,
       goalPeriod:row.querySelector('[data-field="goalPeriod"]').value,
       showProgress:row.querySelector('[data-field="showProgress"]').value === "true",
-      showSummary:row.dataset.showSummary !== "false",
+      showSummary:row.querySelector('[data-field="showSummary"]').value === "true",
       formula:row.querySelector('[data-field="formula"]').value.trim()
     };
   });
@@ -2349,7 +2341,9 @@ function openMainScreen(modalId, title, backLabel = "Tracker") {
   if (currentScreen) restoreScreenModal();
   currentScreen = {modalId, parent:modal, content};
   modal.style.display = "none";
-  document.getElementById("screen-title").textContent = title;
+  const titleNode = document.getElementById("screen-title");
+  titleNode.textContent = title || "";
+  titleNode.style.display = title ? "" : "none";
   document.getElementById("screen-back").textContent = `Back to ${backLabel}`;
   document.getElementById("screen-content").appendChild(content);
   document.getElementById("kid-views").style.display = "none";
@@ -2575,17 +2569,24 @@ document.getElementById("summary-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
 });
+function toggleMenuSection(id, closeIds = []) {
+  const section = document.getElementById(id);
+  if (!section) return;
+  const shouldOpen = !section.classList.contains("open");
+  closeIds.forEach(closeId => document.getElementById(closeId)?.classList.remove("open"));
+  section.classList.toggle("open", shouldOpen);
+}
 document.getElementById("goal-folder").addEventListener("click", event => {
   event.stopPropagation();
-  document.getElementById("goal-folder-items").classList.toggle("open");
+  toggleMenuSection("goal-folder-items", ["settings-folder-items"]);
 });
 document.getElementById("tracker-settings-folder").addEventListener("click", event => {
   event.stopPropagation();
-  document.getElementById("tracker-settings-folder-items").classList.toggle("open");
+  toggleMenuSection("tracker-settings-folder-items", ["settings-folder-items"]);
 });
 document.getElementById("settings-folder").addEventListener("click", event => {
   event.stopPropagation();
-  document.getElementById("settings-folder-items").classList.toggle("open");
+  toggleMenuSection("settings-folder-items", ["goal-folder-items", "tracker-settings-folder-items"]);
 });
 document.getElementById("settings-open").addEventListener("click", () => {
   closeActionsMenu();
@@ -2615,7 +2616,6 @@ document.getElementById("summary-count").addEventListener("change", refreshSumma
 document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("category-view-categories").addEventListener("click", () => showCategoryConfigScreen("categories"));
 document.getElementById("category-view-colors").addEventListener("click", () => showCategoryConfigScreen("colors"));
-document.getElementById("category-view-summary").addEventListener("click", () => showCategoryConfigScreen("summary"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
 document.getElementById("add-goal-band").addEventListener("click", () => { goalBands = readGoalBandEditor(); goalBands.push({threshold:0, color:"green"}); renderGoalBandEditor(); });
 document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
@@ -2670,8 +2670,6 @@ document.getElementById("week-select").addEventListener("change", async event =>
 document.body.addEventListener("change", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) saveData(input.dataset.kid);
-  const summaryToggle = event.target.closest("[data-summary-category]");
-  if (summaryToggle) applySummaryConfigEditor();
 });
 
 document.body.addEventListener("input", event => {

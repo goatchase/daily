@@ -1269,6 +1269,40 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   #category-editor .category-row textarea { resize:vertical !important; max-height:none !important; }
 }
 
+
+/* Targeted correction: plain tracker days, tighter config text columns, summary group lines */
+.tracker-workspace .day-head,
+.tracker-workspace th.current-day .day-head {
+  display:inline !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  min-width:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:inherit !important;
+  line-height:1 !important;
+}
+.tracker-workspace th.current-day {
+  background:#fff !important;
+  color:var(--blue) !important;
+  border-radius:0 !important;
+}
+#category-editor .category-header,
+#category-editor .category-row {
+  grid-template-columns:22px minmax(28px,.28fr) minmax(72px,.74fr) minmax(28px,.28fr) minmax(34px,.30fr) 70px 60px 60px 64px 66px 84px 84px 28px !important;
+}
+.summary-table tbody tr.group-start > td {
+  border-top:2px solid #d7dbe0 !important;
+}
+.summary-table tbody tr.group-start:first-child > td {
+  border-top:0 !important;
+}
+
 </style>
 </head>
 <body>

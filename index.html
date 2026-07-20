@@ -1303,6 +1303,101 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   border-top:0 !important;
 }
 
+
+/* Household consolidation and compact summary/menu polish */
+.menu-button {
+  display:grid !important;
+  grid-template-rows:2px 2px 2px;
+  align-content:center !important;
+  justify-content:center !important;
+  row-gap:4px !important;
+}
+.menu-button span {
+  width:18px !important;
+  height:2px !important;
+  min-height:2px !important;
+  max-height:2px !important;
+  flex:none !important;
+  margin:0 !important;
+  border-radius:2px !important;
+}
+#settings-folder,
+#settings-folder-items,
+#manage-members { display:none !important; }
+@media (min-width: 900px) {
+  .tracker-workspace { padding-left:6px !important; }
+}
+.household-content {
+  width:min(700px, calc(100vw - 32px)) !important;
+  max-width:700px !important;
+  overflow:hidden !important;
+}
+.household-layout {
+  display:grid;
+  grid-template-columns:132px minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+}
+.household-side { display:grid; gap:8px; align-content:start; }
+.household-main { min-width:0; }
+.household-screen { display:none; }
+.household-screen.active { display:grid; gap:8px; }
+.settings-row {
+  display:grid;
+  grid-template-columns:108px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  min-height:38px;
+  color:var(--muted);
+  font-weight:700;
+}
+.settings-row input,
+.settings-row select {
+  min-height:34px;
+  height:34px;
+  border-radius:10px !important;
+  padding:5px 10px;
+  color:var(--ink);
+  font-weight:400;
+}
+.household-actions { justify-content:flex-end; }
+#member-editor.category-editor { max-height:56vh; overflow:auto !important; }
+#member-editor .category-row {
+  grid-template-columns:44px minmax(92px,1fr) 66px 82px 62px 84px 28px !important;
+  gap:5px !important;
+  padding:5px 0;
+}
+#member-editor .category-row input,
+#member-editor .category-row select {
+  min-height:30px;
+  height:30px;
+  padding:4px 6px;
+}
+.summary-table-wrap { border-radius:12px !important; }
+.summary-table th:first-child,
+.summary-table td:first-child {
+  width:104px !important;
+  min-width:104px !important;
+  max-width:104px !important;
+}
+.summary-table td,
+.summary-table th {
+  width:76px !important;
+  min-width:76px !important;
+  max-width:76px !important;
+  border-right:1px solid #eef0f2 !important;
+}
+.summary-table td:last-child,
+.summary-table th:last-child { border-right:0 !important; }
+.summary-table tbody tr.group-start > td { border-top:2px solid #d7dbe0 !important; }
+@media (max-width: 800px) {
+  .household-content { width:calc(100vw - 16px) !important; }
+  .household-layout { grid-template-columns:1fr; }
+  .household-side { grid-template-columns:1fr 1fr; }
+  .settings-row { grid-template-columns:1fr; gap:4px; }
+  #member-editor .category-row { grid-template-columns:1fr !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1379,11 +1474,7 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
           <button class="menu-item" id="archive-week">Archive</button>
           <button class="menu-item danger" id="clear-week">Clear</button>
         </div>
-        <button class="menu-item" id="settings-folder">Settings ▾</button>
-        <div class="menu-section" id="settings-folder-items">
-          <button class="menu-item" id="settings-open">Household</button>
-          <button class="menu-item" id="manage-members">Members</button>
-        </div>
+        <button class="menu-item" id="settings-open">Household</button>
         <button class="menu-item" id="sign-out">Sign Out</button>
       </div>
       </div>
@@ -1451,46 +1542,47 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   </div>
 </div>
 
-<div class="modal" id="members-modal">
-  <div class="modal-content">
-    <h3 class="modal-title">Members</h3>
-    <div class="category-editor" id="member-editor"></div>
-    <div class="modal-actions">
-      <button class="btn" id="add-member">Add Member</button>
-      <button class="btn" id="close-members">Close</button>
-      <button class="btn primary" id="save-members">Save</button>
-    </div>
-  </div>
-</div>
-
 <div class="modal" id="settings-modal">
-  <div class="modal-content">
+  <div class="modal-content household-content">
     <h3 class="modal-title">Household</h3>
-    <div class="field">
-      <label>Household Name</label>
-      <input id="settings-household-name" type="text">
+    <div class="household-layout">
+      <div class="household-side">
+        <button class="config-nav active" id="household-view-household">Household</button>
+        <button class="config-nav" id="household-view-members">Members</button>
+      </div>
+      <div class="household-main">
+        <section class="household-screen active" id="household-screen-household">
+          <label class="settings-row">
+            <span>Household</span>
+            <input id="settings-household-name" type="text">
+          </label>
+          <label class="settings-row">
+            <span>Scoring</span>
+            <select id="settings-household-scoring">
+              <option value="money">Money</option>
+              <option value="points">Points</option>
+              <option value="percent">Percentages</option>
+              <option value="completion">Completion</option>
+            </select>
+          </label>
+          <label class="settings-row">
+            <span>Reset Day</span>
+            <select id="settings-household-reset-day">
+              <option value="1">Monday</option>
+              <option value="0">Sunday</option>
+              <option value="6">Saturday</option>
+            </select>
+          </label>
+        </section>
+        <section class="household-screen" id="household-screen-members">
+          <div class="category-editor" id="member-editor"></div>
+        </section>
+      </div>
     </div>
-    <div class="field">
-      <label>Scoring</label>
-      <select id="settings-household-scoring">
-        <option value="money">Money</option>
-        <option value="points">Points</option>
-        <option value="percent">Percentages</option>
-        <option value="completion">Completion</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Weekly Reset Day</label>
-      <select id="settings-household-reset-day">
-        <option value="1">Monday</option>
-        <option value="0">Sunday</option>
-        <option value="6">Saturday</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" id="settings-members">Members</button>
-      <button class="btn" id="settings-categories">Edit</button>
+    <div class="modal-actions household-actions">
+      <button class="btn" id="add-member">Add Member</button>
       <button class="btn" id="settings-close">Close</button>
+      <button class="btn primary" id="save-members">Save</button>
       <button class="btn primary" id="settings-save">Save</button>
     </div>
   </div>
@@ -2777,18 +2869,33 @@ async function saveMembers() {
   await trackerSettingsRef().set({categories:cloneCategories(categories), categoriesByKid, goalBands, updatedAt:new Date()}, {merge:true});
   buildShell();
   await loadData(currentWeek);
-  closeModal("members-modal");
+  closeModal("settings-modal");
+}
+
+function showHouseholdScreen(screen = "household") {
+  const isHousehold = screen === "household";
+  document.getElementById("household-screen-household")?.classList.toggle("active", isHousehold);
+  document.getElementById("household-screen-members")?.classList.toggle("active", !isHousehold);
+  document.getElementById("household-view-household")?.classList.toggle("active", isHousehold);
+  document.getElementById("household-view-members")?.classList.toggle("active", !isHousehold);
+  const addMember = document.getElementById("add-member");
+  const saveMembersButton = document.getElementById("save-members");
+  const saveSettingsButton = document.getElementById("settings-save");
+  if (addMember) addMember.style.display = isHousehold ? "none" : "";
+  if (saveMembersButton) saveMembersButton.style.display = isHousehold ? "none" : "";
+  if (saveSettingsButton) saveSettingsButton.style.display = isHousehold ? "" : "none";
 }
 
 function openMemberEditor() {
-  renderMemberEditor();
-  openMainScreen("members-modal", "Members");
+  openSettingsModal("members");
 }
 
-function openSettingsModal() {
+function openSettingsModal(screen = "household") {
   document.getElementById("settings-household-name").value = householdData?.name || "";
   document.getElementById("settings-household-scoring").value = householdData?.scoringMode || "money";
   document.getElementById("settings-household-reset-day").value = String(householdData?.weeklyResetDay ?? 1);
+  renderMemberEditor();
+  showHouseholdScreen(screen);
   openMainScreen("settings-modal", "Household");
 }
 
@@ -2928,7 +3035,6 @@ function closeActionsMenu() {
   document.getElementById("actions-menu")?.classList.remove("open");
   document.getElementById("goal-folder-items")?.classList.remove("open");
   document.getElementById("tracker-settings-folder-items")?.classList.remove("open");
-  document.getElementById("settings-folder-items")?.classList.remove("open");
 }
 
 async function startHouseholdApp() {
@@ -3127,19 +3233,11 @@ function toggleMenuSection(id, closeIds = []) {
 }
 document.getElementById("goal-folder").addEventListener("click", event => {
   event.stopPropagation();
-  toggleMenuSection("goal-folder-items", ["settings-folder-items"]);
-});
-document.getElementById("settings-folder").addEventListener("click", event => {
-  event.stopPropagation();
-  toggleMenuSection("settings-folder-items", ["goal-folder-items", "tracker-settings-folder-items"]);
+  toggleMenuSection("goal-folder-items", []);
 });
 document.getElementById("settings-open").addEventListener("click", () => {
   closeActionsMenu();
   openSettingsModal();
-});
-document.getElementById("manage-members").addEventListener("click", () => {
-  closeActionsMenu();
-  openMemberEditor();
 });
 document.getElementById("sign-out").addEventListener("click", async () => {
   closeActionsMenu();
@@ -3164,18 +3262,11 @@ document.getElementById("category-view-colors").addEventListener("click", () => 
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());
 document.getElementById("add-goal-band").addEventListener("click", () => { goalBands = readGoalBandEditor(); goalBands.push({threshold:0, color:"green"}); renderGoalBandEditor(); });
 document.getElementById("add-member").addEventListener("click", () => addMemberRow({order:document.querySelectorAll("#member-editor .category-row").length, role:"child"}));
-document.getElementById("close-members").addEventListener("click", () => closeModal("members-modal"));
 document.getElementById("save-members").addEventListener("click", saveMembers);
 document.getElementById("settings-close").addEventListener("click", () => closeModal("settings-modal"));
 document.getElementById("settings-save").addEventListener("click", saveHouseholdSettings);
-document.getElementById("settings-members").addEventListener("click", () => {
-  closeModal("settings-modal");
-  openMemberEditor();
-});
-document.getElementById("settings-categories").addEventListener("click", () => {
-  closeModal("settings-modal");
-  openCategoryEditor();
-});
+document.getElementById("household-view-household").addEventListener("click", () => showHouseholdScreen("household"));
+document.getElementById("household-view-members").addEventListener("click", () => showHouseholdScreen("members"));
 document.getElementById("import-categories").addEventListener("click", importCategoryConfig);
 document.getElementById("category-person").addEventListener("change", event => {
   categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);

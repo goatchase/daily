@@ -553,9 +553,9 @@ input:focus, textarea:focus, select:focus { border-color:#9aa0a6; box-shadow:0 0
 .category-detail-form textarea { min-height:108px; padding:8px; resize:vertical; }
 .category-detail-meta { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
 .summary-table-wrap { overflow-x:auto; border:1px solid var(--soft-line); border-radius:18px; background:#fff; }
-.summary-table { min-width:640px; }
-.summary-table th:first-child, .summary-table td:first-child { width:90px; }
-.summary-table td, .summary-table th { padding:6px 8px; }
+.summary-table { width:max-content; min-width:0; table-layout:fixed; }
+.summary-table th:first-child, .summary-table td:first-child { width:116px; min-width:116px; max-width:116px; }
+.summary-table td, .summary-table th { width:84px; min-width:84px; max-width:84px; padding:6px 8px; white-space:nowrap; }
 .summary-empty { color:var(--muted); padding:12px; }
 .summary-goal-blue { background:#9fd0ff; color:#003b73; }
 .summary-goal-green { background:#a7e8bd; color:#0b4f24; }
@@ -1445,7 +1445,11 @@ async function saveData(kid) {
       if (category.kind === "calculated") return;
       const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
       if (!input) return;
-      data[`${i}-${category.key}`] = category.kind === "number" ? input.value : input.checked;
+      if (category.kind === "number") {
+        if (input.value !== "") data[`${i}-${category.key}`] = input.value;
+      } else {
+        data[`${i}-${category.key}`] = input.checked;
+      }
     });
   });
   await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
@@ -1544,10 +1548,15 @@ function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new S
       if (other.key === category.key) return false;
       return formulaReferencesCategory(category.formula, other);
     });
-    const dependencies = referenced.length ? referenced : categoriesForKid(kid).filter(other => other.key !== category.key);
-    return dependencies.some(other => categoryDayHasEntry(kid, other, dayIndex, data, nextStack));
+    const dependencies = referenced.length ? referenced : [];
+    return dependencies.length > 0 && dependencies.every(other => categoryDayHasEntry(kid, other, dayIndex, data, nextStack));
   }
-  if (data) return Object.prototype.hasOwnProperty.call(data, `${dayIndex}-${category.key}`);
+  if (data) {
+    const dataKey = `${dayIndex}-${category.key}`;
+    if (!Object.prototype.hasOwnProperty.call(data, dataKey)) return false;
+    if (category.kind === "number") return data[dataKey] !== "" && data[dataKey] !== null && data[dataKey] !== undefined;
+    return true;
+  }
   const input = document.querySelector(`[data-kid="${kid}"][data-day="${dayIndex}"][data-type="${category.key}"]`);
   if (!input) return false;
   return category.kind === "number" ? input.value !== "" : true;
@@ -1562,6 +1571,7 @@ function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()
   const labelValues = {};
   categoriesForKid(kid).forEach(other => {
     if (other.key === category.key) return;
+    if (formulaReferencesCategory(formula, other) && !categoryDayHasEntry(kid, other, dayIndex, data, nextStack)) return;
     const value = categoryDayValue(kid, other, dayIndex, data, nextStack);
     formulaAliases(other).forEach(alias => { scope[alias] = value; });
     [other.key, other.label].filter(Boolean).forEach(name => {
@@ -1612,11 +1622,12 @@ function updateTotals() {
           const calcNode = document.getElementById(`${kid}-calc-${category.key}-${i}`);
           if (calcNode) calcNode.textContent = categoryDayHasEntry(kid, category, i) ? formatRawValue(raw) : "";
         }
-        weeklyRaw[category.key] = (weeklyRaw[category.key] || 0) + raw;
-        if (category.goalPeriod === "daily" && categoryDayHasEntry(kid, category, i)) {
+        const hasEntry = categoryDayHasEntry(kid, category, i);
+        if (hasEntry) {
+          weeklyRaw[category.key] = (weeklyRaw[category.key] || 0) + raw;
           weeklyCounts[category.key] = (weeklyCounts[category.key] || 0) + 1;
+          dayTotal += raw * category.amount;
         }
-        dayTotal += raw * category.amount;
       });
       kidTotal += dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent = dollars(dayTotal);
@@ -1624,7 +1635,7 @@ function updateTotals() {
     categoriesForKid(kid).forEach(category => {
       const weekNode = document.getElementById(`${kid}-week-${category.key}`);
       if (weekNode) {
-        if (category.showProgress) {
+        if (category.showProgress && (weeklyCounts[category.key] || 0) > 0) {
           const value = weeklyRaw[category.key] || 0;
           const count = category.goalPeriod === "daily" ? weeklyCounts[category.key] || 1 : 1;
           weekNode.innerHTML = `<span class="goal-percent ${goalClass(category, value, count)}">${goalPercent(category, value, count)}%</span>`;
@@ -1650,7 +1661,7 @@ function scoreDataForKid(kid, data = {}) {
 function categoryRawValue(kid, category, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
-    total += categoryDayValue(kid, category, i, data);
+    if (categoryDayHasEntry(kid, category, i, data)) total += categoryDayValue(kid, category, i, data);
   });
   return total;
 }

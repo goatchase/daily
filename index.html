@@ -1398,6 +1398,74 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   #member-editor .category-row { grid-template-columns:1fr !important; }
 }
 
+
+/* Final fit pass: unframed members, fitted configuration, and gradient name metrics */
+.rank-circle {
+  border:1px solid #d9dee3 !important;
+  box-shadow:none !important;
+  transition:background .18s ease, border-color .18s ease, color .18s ease;
+}
+.household-content { overflow:visible !important; }
+#household-screen-members { overflow:visible !important; }
+#member-editor.category-editor {
+  width:100% !important;
+  min-width:0 !important;
+  max-height:none !important;
+  overflow:visible !important;
+  border:0 !important;
+  background:transparent !important;
+}
+#member-editor .category-row {
+  grid-template-columns:34px minmax(96px,1fr) 52px 72px 50px 62px 24px !important;
+  gap:5px !important;
+  border-bottom:1px solid #edf0f2 !important;
+}
+#member-editor .category-row input,
+#member-editor .category-row select {
+  border:1px solid #dfe3e7 !important;
+  background:#fff !important;
+  border-radius:8px !important;
+  box-shadow:none !important;
+}
+#category-editor.category-editor {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  overflow:visible !important;
+}
+#category-editor .category-header,
+#category-editor .category-row {
+  grid-template-columns:24px 62px 86px 58px 58px 50px 44px 44px 46px 52px 58px 58px 24px !important;
+  gap:4px !important;
+}
+#category-editor .category-header span {
+  font-size:9pt !important;
+  line-height:1.05 !important;
+  white-space:normal !important;
+}
+#category-editor .category-row textarea {
+  min-height:28px !important;
+  max-height:28px !important;
+  resize:vertical !important;
+  white-space:nowrap !important;
+}
+#category-editor .category-row textarea:focus {
+  min-height:76px !important;
+  max-height:120px !important;
+  white-space:normal !important;
+}
+#category-editor .category-row input,
+#category-editor .category-row select,
+#category-editor .category-row textarea {
+  padding-left:5px !important;
+  padding-right:5px !important;
+}
+@media (max-width: 800px) {
+  #member-editor .category-row,
+  #category-editor .category-header,
+  #category-editor .category-row { grid-template-columns:1fr !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1863,6 +1931,24 @@ async function loadUserHousehold() {
   return false;
 }
 
+async function currentHouseholdRole() {
+  if (!currentUser || !householdId) return "";
+  try {
+    const roleDoc = await householdRef().collection("userRoles").doc(currentUser.uid).get();
+    return roleDoc.exists ? (roleDoc.data().role || "") : "";
+  } catch (error) {
+    console.error("Household role lookup failed", error);
+    return "";
+  }
+}
+
+async function requireHouseholdAdmin(action = "change household configuration") {
+  const role = await currentHouseholdRole();
+  if (["owner", "admin"].includes(role)) return true;
+  alert(`Only household owners or admins can ${action}. Check this account's userRoles/${currentUser?.uid || "uid"} document for the selected household.`);
+  return false;
+}
+
 async function createHousehold(name, options = {}) {
   const householdDoc = db.collection("households").doc();
   householdId = householdDoc.id;
@@ -1953,6 +2039,7 @@ async function loadCategories() {
 }
 
 async function saveCategories() {
+  if (!(await requireHouseholdAdmin("change tracker configuration"))) return;
   try {
     goalBands = readGoalBandEditor();
     const editedCategories = readCategoryEditor().map(normalizeCategory);
@@ -1975,6 +2062,7 @@ async function saveCategories() {
 
 
 async function saveCategoriesForKid(kid, updatedCategories) {
+  if (!(await requireHouseholdAdmin("change tracker configuration"))) return;
   categoriesByKid[kid] = updatedCategories.map(normalizeCategory);
   categories = cloneCategories(categoriesByKid[kid]);
   try {
@@ -2225,6 +2313,7 @@ function goalComparisonValue(category, value, count = 1) {
 }
 
 function updateTotals() {
+  const totalsByKid = {};
   kids.forEach(kid => {
     let kidTotal = 0;
     const weeklyRaw = {};
@@ -2247,6 +2336,7 @@ function updateTotals() {
       kidTotal += dayTotal;
       document.getElementById(`${kid}-total-${i}`).textContent = dollars(dayTotal);
     });
+    totalsByKid[kid] = kidTotal;
     categoriesForKid(kid).forEach(category => {
       const weekNode = document.getElementById(`${kid}-week-${category.key}`);
       if (weekNode) {
@@ -2259,7 +2349,26 @@ function updateTotals() {
         }
       }
     });
-    document.getElementById(`rank-${kid}`).textContent = dollars(kidTotal);
+  });
+  updateNameMetricColors(totalsByKid);
+}
+
+function updateNameMetricColors(totalsByKid = {}) {
+  const values = kids.map(kid => Number(totalsByKid[kid] || 0));
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min;
+  kids.forEach(kid => {
+    const node = document.getElementById(`rank-${kid}`);
+    if (!node) return;
+    const value = Number(totalsByKid[kid] || 0);
+    const ratio = range > 0 ? (value - min) / range : .65;
+    const hue = Math.round(4 + ratio * 126);
+    const lightness = Math.round(90 - ratio * 12);
+    node.textContent = dollars(value);
+    node.style.background = `linear-gradient(135deg, hsl(${hue} 72% ${lightness}%), hsl(${hue} 68% ${Math.max(lightness - 8, 70)}%))`;
+    node.style.color = ratio > .55 ? "#0b3d20" : "#6f160f";
+    node.style.borderColor = `hsl(${hue} 58% 72%)`;
   });
 }
 
@@ -2791,7 +2900,7 @@ function showCategoryConfigScreen(screen) {
 
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
-  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Show in tracker</span><span>Show in summary</span><span></span></div>`;
+  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Tracker</span><span>Summary</span><span></span></div>`;
   categoriesForKid(kid).forEach(addCategoryRow);
 }
 
@@ -2859,6 +2968,7 @@ function readMemberEditor() {
 }
 
 async function saveMembers() {
+  if (!(await requireHouseholdAdmin("change household members"))) return;
   const editedMembers = readMemberEditor();
   const existingIds = new Set(householdMembers.map(member => member.id));
   const editedIds = new Set(editedMembers.map(member => member.id));
@@ -2900,6 +3010,7 @@ function openSettingsModal(screen = "household") {
 }
 
 async function saveHouseholdSettings() {
+  if (!(await requireHouseholdAdmin("change household settings"))) return;
   const name = document.getElementById("settings-household-name").value.trim() || "My Household";
   const scoringMode = document.getElementById("settings-household-scoring").value;
   const weeklyResetDay = Number(document.getElementById("settings-household-reset-day").value);

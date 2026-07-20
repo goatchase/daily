@@ -1152,6 +1152,123 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   #category-editor .category-row { grid-template-columns:1fr !important; }
 }
 
+
+/* Final cleanup: plain day headers, square tracker table, balanced panels/config/forms */
+.day-head {
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  line-height:1.1 !important;
+  display:inline-flex;
+}
+.tracker-workspace th.current-day,
+.tracker-workspace th.current-day .day-head {
+  color:var(--blue) !important;
+  background:#fff !important;
+}
+.tracker-card {
+  border-radius:0 !important;
+  overflow:visible !important;
+}
+.tracker-workspace tbody tr.total-row > td {
+  box-shadow:inset 0 1px 0 #d7dbe0 !important;
+  border-bottom:0 !important;
+}
+.work-grid .panel-head > span {
+  font-weight:700;
+  color:var(--ink);
+}
+@media (min-width: 900px) {
+  .tracker-workspace {
+    grid-template-columns:minmax(620px, 820px) minmax(340px, 460px) !important;
+    justify-content:center !important;
+  }
+  .work-grid { width:100%; max-width:460px; }
+}
+@media (min-width: 1200px) {
+  .tracker-workspace {
+    grid-template-columns:minmax(660px, 840px) minmax(380px, 500px) !important;
+  }
+  .work-grid { max-width:500px; }
+}
+#category-editor .category-header,
+#category-editor .category-row {
+  grid-template-columns:22px minmax(36px,.38fr) minmax(66px,.62fr) minmax(34px,.34fr) minmax(42px,.38fr) 68px 58px 58px 62px 64px 82px 82px 28px !important;
+  gap:4px !important;
+}
+#category-editor .category-row textarea {
+  min-height:30px !important;
+  max-height:58px !important;
+  resize:both !important;
+  overflow:auto !important;
+  white-space:normal !important;
+}
+#category-editor .category-row textarea:focus {
+  min-height:76px !important;
+  max-height:180px !important;
+}
+.goal-band-editor {
+  width:max-content !important;
+  max-width:min(320px, 100%) !important;
+  padding:8px !important;
+}
+.goal-band-head {
+  justify-content:start !important;
+  gap:8px !important;
+}
+#goal-band-editor {
+  max-width:300px !important;
+}
+.goal-band-row {
+  grid-template-columns:74px 118px 28px !important;
+}
+#members-modal .modal-content,
+#settings-modal .modal-content {
+  width:min(760px, calc(100vw - 28px));
+  max-width:760px;
+  overflow:hidden;
+}
+#member-editor.category-editor {
+  min-width:0 !important;
+  width:100%;
+  max-height:68vh;
+  overflow:auto;
+}
+#member-editor .category-row {
+  grid-template-columns:54px minmax(120px,1fr) 80px 100px 78px 104px 30px !important;
+  gap:6px !important;
+  align-items:center;
+}
+#member-editor .category-row input,
+#member-editor .category-row select {
+  min-width:0;
+  width:100%;
+  border-radius:8px;
+}
+#settings-modal .field,
+#settings-modal .setup-field {
+  min-width:0;
+}
+#settings-modal input,
+#settings-modal select {
+  width:100%;
+  min-width:0;
+  border-radius:8px;
+}
+#settings-modal .modal-actions,
+#members-modal .modal-actions,
+#category-modal .modal-actions {
+  flex-wrap:wrap;
+}
+@media (max-width: 800px) {
+  #member-editor .category-row { grid-template-columns:1fr !important; }
+  #category-editor .category-header,
+  #category-editor .category-row { grid-template-columns:1fr !important; }
+  #category-editor .category-row textarea { resize:vertical !important; max-height:none !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1224,7 +1341,7 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
         <div class="menu-section" id="goal-folder-items">
           <button class="menu-item" id="tracker-open">Tracker</button>
           <button class="menu-item" id="summary-open">Summary</button>
-          <button class="menu-item" id="edit-categories">Tracker Configuration</button>
+          <button class="menu-item" id="edit-categories">Configuration</button>
           <button class="menu-item" id="archive-week">Archive</button>
           <button class="menu-item danger" id="clear-week">Clear</button>
         </div>
@@ -2561,7 +2678,7 @@ function openCategoryEditor(kid = activeKid) {
   renderCategoryEditor(categoryEditorKid);
   renderGoalBandEditor();
   showCategoryConfigScreen("categories");
-  openMainScreen("category-modal", "Tracker Configuration");
+  openMainScreen("category-modal", "Configuration");
 }
 
 function refreshImportOptions() {

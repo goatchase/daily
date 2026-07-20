@@ -1338,28 +1338,42 @@ async function loadCategories() {
 }
 
 async function saveCategories() {
-  goalBands = readGoalBandEditor();
-  categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
-  categories = cloneCategories(categoriesByKid[kids[0]]);
-  await trackerSettingsRef().set({
-    categories:categoriesByKid[kids[0]],
-    categoriesByKid,
-    goalBands:readGoalBandEditor()
-  }, {merge:true});
-  buildShell();
-  await loadData(currentWeek);
-  closeModal("category-modal");
+  try {
+    goalBands = readGoalBandEditor();
+    const editedCategories = readCategoryEditor().map(normalizeCategory);
+    categoriesByKid[categoryEditorKid] = editedCategories;
+    categories = cloneCategories(editedCategories);
+    await trackerSettingsRef().set({
+      categories:cloneCategories(editedCategories),
+      categoriesByKid,
+      goalBands,
+      updatedAt:new Date()
+    }, {merge:true});
+    buildShell();
+    await loadData(currentWeek);
+    closeModal("category-modal");
+  } catch (error) {
+    console.error("Tracker configuration save failed", error);
+    alert("Tracker configuration did not save. Make sure this account is an owner or admin for the household, then try again.");
+  }
 }
 
 
 async function saveCategoriesForKid(kid, updatedCategories) {
   categoriesByKid[kid] = updatedCategories.map(normalizeCategory);
-  categories = cloneCategories(categoriesByKid[kids[0]] || categoriesByKid[kid]);
-  await trackerSettingsRef().set({
-    categories:categoriesByKid[kids[0]] || categoriesByKid[kid],
-    categoriesByKid,
-    goalBands
-  }, {merge:true});
+  categories = cloneCategories(categoriesByKid[kid]);
+  try {
+    await trackerSettingsRef().set({
+      categories:cloneCategories(categoriesByKid[kid]),
+      categoriesByKid,
+      goalBands,
+      updatedAt:new Date()
+    }, {merge:true});
+  } catch (error) {
+    console.error("Category detail save failed", error);
+    alert("Category changes did not save. Make sure this account is an owner or admin for the household, then try again.");
+    throw error;
+  }
 }
 
 function buildShell() {
@@ -2225,7 +2239,8 @@ async function saveMembers() {
   await Promise.all(editedMembers.map(member => householdCollection("members").doc(member.id).set({...member, updatedAt:new Date()}, {merge:true})));
   await Promise.all([...existingIds].filter(id => !editedIds.has(id)).map(id => householdCollection("members").doc(id).delete()));
   await loadHouseholdMembers();
-  categoriesByKid = Object.fromEntries(kids.map(kid => [kid, categoriesByKid[kid] || cloneCategories(DEFAULT_CATEGORIES)]));
+  categoriesByKid = Object.fromEntries(kids.map(kid => [kid, categoriesByKid[kid] || cloneCategories(categories)]));
+  await trackerSettingsRef().set({categories:cloneCategories(categories), categoriesByKid, goalBands, updatedAt:new Date()}, {merge:true});
   buildShell();
   await loadData(currentWeek);
   closeModal("members-modal");

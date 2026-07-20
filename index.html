@@ -1055,6 +1055,103 @@ th.current-day .day-head { color:var(--blue); }
   #category-editor .category-row textarea { white-space:normal; max-height:none; min-height:44px; resize:vertical; }
 }
 
+
+/* Final visual cleanup: consistent tracker, softer lines, white workspace, flatter goal menu */
+body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important; }
+.tracker-card, .panel {
+  background:#fff !important;
+  border-color:#e6e8eb !important;
+  border-radius:14px !important;
+}
+.tracker-card { overflow:visible !important; }
+.tracker-workspace {
+  align-items:start;
+  gap:12px !important;
+}
+.tracker-workspace table {
+  width:100%;
+  table-layout:fixed;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+.tracker-workspace th,
+.tracker-workspace td {
+  box-sizing:border-box;
+  border-bottom:1px solid #eef0f2 !important;
+  height:31px;
+  padding:3px 2px;
+}
+.tracker-workspace th:first-child,
+.tracker-workspace td:first-child { width:132px; }
+.tracker-workspace th:not(:first-child),
+.tracker-workspace td:not(:first-child) { width:46px; }
+.tracker-workspace .goal-progress-cell { width:54px !important; }
+.tracker-workspace thead th {
+  height:34px;
+  padding-top:5px;
+  padding-bottom:5px;
+  box-shadow:inset 0 -1px 0 #d7dbe0 !important;
+  border-bottom:0 !important;
+}
+.day-head {
+  min-height:24px;
+  height:24px;
+  padding:0 6px;
+  line-height:24px;
+  overflow:visible;
+}
+.tracker-workspace tbody tr.group-start > td {
+  box-shadow:inset 0 1px 0 #d7dbe0 !important;
+  border-top:0 !important;
+}
+.tracker-workspace tbody tr.group-start:first-child > td { box-shadow:none !important; }
+.tracker-workspace tbody tr.total-row > td {
+  box-shadow:inset 0 1px 0 #cfd4d9, inset 0 -1px 0 #cfd4d9 !important;
+  border-top:0 !important;
+  border-bottom:0 !important;
+  font-weight:700;
+}
+.tracker-workspace tbody tr.total-row + tr > td { border-top:1px solid #cfd4d9 !important; }
+@media (min-width: 900px) {
+  #app-shell.site-container { grid-template-columns:168px minmax(0,1fr); }
+  .top-bar { background:#fff !important; }
+  .top-controls { grid-template-columns:36px minmax(112px,1fr); }
+  .top-controls select {
+    min-width:112px;
+    font-size:10pt;
+    padding-left:9px;
+    padding-right:22px;
+  }
+  .tracker-workspace {
+    grid-template-columns:minmax(680px, 900px) minmax(280px, 350px) !important;
+    padding:10px 12px !important;
+  }
+  #kid-tabs .tab { width:100%; }
+}
+.category-config-main { overflow-x:hidden !important; }
+#category-editor.category-editor { width:100% !important; max-width:100%; overflow:visible !important; }
+#category-editor .category-header,
+#category-editor .category-row {
+  grid-template-columns:22px minmax(56px,.62fr) minmax(76px,.78fr) minmax(54px,.55fr) minmax(66px,.66fr) 62px 56px 56px 60px 62px 78px 78px 28px !important;
+  gap:4px !important;
+}
+#category-editor .category-row input,
+#category-editor .category-row select,
+#category-editor .category-row textarea { min-height:29px; }
+#category-editor .category-row textarea { max-height:29px; }
+#category-editor .category-row textarea:focus { min-height:98px; max-height:150px; }
+#tracker-settings-folder,
+#tracker-settings-folder-items { display:none !important; }
+@media (max-width: 899px) {
+  .tracker-workspace th:not(:first-child),
+  .tracker-workspace td:not(:first-child) { width:auto; }
+  .tracker-card { overflow:hidden !important; }
+}
+@media (max-width: 800px) {
+  #category-editor .category-header,
+  #category-editor .category-row { grid-template-columns:1fr !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1127,12 +1224,9 @@ th.current-day .day-head { color:var(--blue); }
         <div class="menu-section" id="goal-folder-items">
           <button class="menu-item" id="tracker-open">Tracker</button>
           <button class="menu-item" id="summary-open">Summary</button>
-          <button class="menu-item" id="tracker-settings-folder">Settings ▾</button>
-          <div class="menu-section" id="tracker-settings-folder-items">
-            <button class="menu-item" id="edit-categories">Tracker Configuration</button>
-            <button class="menu-item" id="archive-week">Archive</button>
-            <button class="menu-item danger" id="clear-week">Clear</button>
-          </div>
+          <button class="menu-item" id="edit-categories">Tracker Configuration</button>
+          <button class="menu-item" id="archive-week">Archive</button>
+          <button class="menu-item danger" id="clear-week">Clear</button>
         </div>
         <button class="menu-item" id="settings-folder">Settings ▾</button>
         <div class="menu-section" id="settings-folder-items">
@@ -2883,10 +2977,6 @@ function toggleMenuSection(id, closeIds = []) {
 document.getElementById("goal-folder").addEventListener("click", event => {
   event.stopPropagation();
   toggleMenuSection("goal-folder-items", ["settings-folder-items"]);
-});
-document.getElementById("tracker-settings-folder").addEventListener("click", event => {
-  event.stopPropagation();
-  toggleMenuSection("tracker-settings-folder-items", ["settings-folder-items"]);
 });
 document.getElementById("settings-folder").addEventListener("click", event => {
   event.stopPropagation();

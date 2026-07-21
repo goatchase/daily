@@ -2513,6 +2513,92 @@ body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans
   }
 }
 
+
+/* Hide desktop rail separator while preserving spacing */
+@media (min-width: 900px) {
+  #app-shell.site-container::before { background:transparent !important; }
+}
+
+
+/* Tasks consistency: compact one-line rows and left add action */
+.family-tasks-head {
+  justify-content:flex-start !important;
+  gap:8px !important;
+}
+.family-tasks-head #family-task-toggle-form {
+  order:-1 !important;
+  flex:0 0 auto !important;
+}
+.family-tasks-head h3 {
+  font-weight:400 !important;
+}
+.family-filter-pill {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:6px !important;
+  font-weight:400 !important;
+}
+.filter-count {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#f1f3f4;
+  color:#5f6368;
+  font-size:8.5pt;
+}
+.family-filter-pill.active .filter-count { background:#fff; color:#174ea6; }
+.family-task-row {
+  grid-template-columns:22px minmax(72px,.72fr) minmax(130px,1.08fr) 74px 64px 76px 58px !important;
+  align-items:center !important;
+  padding:6px 0 !important;
+  gap:6px !important;
+}
+.family-task-title,
+.family-task-project,
+.family-task-meta,
+.family-task-status,
+.family-task-note-line {
+  font-weight:400 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.family-task-status {
+  max-width:76px !important;
+}
+.family-task-notes {
+  grid-column:2 / -1 !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  display:none !important;
+}
+.family-task-row:focus-within .family-task-notes,
+.family-task-row:hover .family-task-notes {
+  display:grid !important;
+}
+.family-task-note-add {
+  grid-template-columns:minmax(0,220px) auto !important;
+}
+.family-task-note-line {
+  max-width:420px !important;
+}
+.family-task-check {
+  margin-top:0 !important;
+}
+@media (max-width:760px) {
+  .family-task-row { grid-template-columns:18px minmax(54px,.75fr) minmax(86px,1fr) 48px !important; }
+  .family-task-row .family-task-meta,
+  .family-task-row .family-task-status { font-size:8pt !important; }
+  .family-task-actions { grid-column:4 !important; grid-row:1 !important; }
+  .family-task-title { grid-column:3 !important; grid-row:1 !important; }
+  .family-task-project { grid-column:2 !important; grid-row:1 !important; }
+  .family-task-notes { grid-column:2 / -1 !important; }
+}
+
 </style>
 </head>
 <body>
@@ -4228,8 +4314,10 @@ async function loadFamilyTasks() {
 function renderTaskFilters() {
   const people = document.getElementById("family-task-people");
   const statuses = document.getElementById("family-task-statuses");
+  const openCounts = Object.fromEntries(kids.map(kid => [kid, familyTasksCache.filter(task => !task.completed && task.who === kid).length]));
+  const totalOpen = familyTasksCache.filter(task => !task.completed).length;
   if (people) {
-    people.innerHTML = `<button class="family-filter-pill ${familyTaskPersonFilter === "all" ? "active" : ""}" data-family-task-person="all">All</button>` + kids.map(kid => `<button class="family-filter-pill ${familyTaskPersonFilter === kid ? "active" : ""}" data-family-task-person="${escapeAttr(kid)}">${escapeHtml(memberLabel(kid))}</button>`).join("");
+    people.innerHTML = `<button class="family-filter-pill ${familyTaskPersonFilter === "all" ? "active" : ""}" data-family-task-person="all"><span>All</span><span class="filter-count">${totalOpen}</span></button>` + kids.map(kid => `<button class="family-filter-pill ${familyTaskPersonFilter === kid ? "active" : ""}" data-family-task-person="${escapeAttr(kid)}"><span>${escapeHtml(memberLabel(kid))}</span><span class="filter-count">${openCounts[kid] || 0}</span></button>`).join("");
   }
   if (statuses) {
     statuses.innerHTML = `<button class="family-filter-pill ${familyTaskStatusFilter === "all" ? "active" : ""}" data-family-task-status="all">All</button>` + FAMILY_TASK_STATUSES.map(status => `<button class="family-filter-pill ${familyTaskStatusFilter === status ? "active" : ""}" data-family-task-status="${status}">${statusLabel(status)}</button>`).join("");

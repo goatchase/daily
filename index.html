@@ -3013,6 +3013,41 @@ body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans
   }
 }
 
+
+/* Tasks flat table headers and no-wrap rows */
+.family-task-project-group,
+.family-task-status-group { display:contents !important; }
+.family-task-project-head,
+.family-task-status-head { display:none !important; }
+.family-task-header {
+  color:#5f6368 !important;
+  font-size:8.5pt !important;
+  border-bottom:1px solid #dfe3e7 !important;
+}
+.family-task-header > * {
+  font-weight:700 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.family-task-row {
+  grid-template-columns:22px 24ch minmax(220px,100ch) 78px 70px 74px 58px !important;
+  grid-auto-rows:minmax(28px, auto) !important;
+  align-items:center !important;
+}
+.family-task-row > *:not(.family-task-notes) {
+  min-width:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.family-task-notes { display:none !important; }
+.family-task-row:hover .family-task-notes,
+.family-task-row:focus-within .family-task-notes { display:grid !important; }
+@media (max-width:760px) {
+  .family-task-header { display:none !important; }
+}
+
 </style>
 </head>
 <body>
@@ -4767,21 +4802,17 @@ function renderFamilyTaskList() {
     const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
     return `<div class="family-task-row ${task.completed ? "complete" : ""}" data-family-task-row="${task.id}">${completeAction}<div class="family-task-project">${escapeHtml(task.project || "No project")}</div><div class="family-task-title">${escapeHtml(task.title || "Untitled task")}</div><div class="family-task-meta">${escapeHtml(memberLabel(task.who || ""))}</div><div class="family-task-meta">${escapeHtml(dateRange)}</div><span class="family-task-status">${statusLabel(task.status)}</span><div class="family-task-actions"><button class="mini-action" data-edit-family-task="${task.id}" aria-label="Edit task">✎</button><button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div><div class="family-task-notes">${noteHtml}<div class="family-task-note-add"><input type="text" placeholder="Add note" aria-label="Add note" data-family-task-note-input="${task.id}"><button class="btn" data-add-family-task-note="${task.id}">Add</button></div></div></div>`;
   };
-  const groupedHtml = tasks => {
-    const projects = [...new Set(tasks.map(task => task.project?.trim() || "No project"))].sort((a, b) => a.localeCompare(b));
-    return projects.map(project => {
-      const projectTasks = tasks.filter(task => (task.project?.trim() || "No project") === project);
-      const statusHtml = FAMILY_TASK_STATUSES.map(status => {
-        const statusTasks = projectTasks.filter(task => (task.status || "now") === status);
-        if (!statusTasks.length) return "";
-        return `<div class="family-task-status-group"><div class="family-task-status-head">${statusLabel(status)}</div>${statusTasks.map(renderRow).join("")}</div>`;
-      }).join("");
-      return `<section class="family-task-project-group"><div class="family-task-project-head">${escapeHtml(project)}</div>${statusHtml}</section>`;
-    }).join("");
-  };
+  const taskHeader = `<div class="family-task-row family-task-header"><span></span><div>Project</div><div>Task</div><div>Who</div><div>Date</div><div>Status</div><div></div></div>`;
+  const sortTasks = tasks => tasks.slice().sort((a, b) => {
+    const projectCompare = String(a.project || "").localeCompare(String(b.project || ""));
+    if (projectCompare) return projectCompare;
+    const statusCompare = FAMILY_TASK_STATUSES.indexOf(a.status || "now") - FAMILY_TASK_STATUSES.indexOf(b.status || "now");
+    if (statusCompare) return statusCompare;
+    return String(a.endDate || "9999").localeCompare(String(b.endDate || "9999"));
+  });
   const active = visibleFamilyTasks(false);
   const completed = visibleFamilyTasks(true);
-  activeList.innerHTML = active.length ? groupedHtml(active) : `<div class="empty-state">All tasks complete. Nice work.</div>`;
+  activeList.innerHTML = active.length ? taskHeader + sortTasks(active).map(renderRow).join("") : `<div class="empty-state">All tasks complete. Nice work.</div>`;
   completedList.innerHTML = completed.length ? completed.map(renderRow).join("") : `<div class="empty-state">No completed tasks yet.</div>`;
   if (completedCount) completedCount.textContent = String(completed.length);
 }
@@ -4791,7 +4822,7 @@ function resetFamilyTaskForm() {
   document.getElementById("family-task-title").value = "";
   document.getElementById("family-task-who").innerHTML = taskPeopleOptions(familyTaskPersonFilter !== "all" ? familyTaskPersonFilter : kids[0]);
   document.getElementById("family-task-status").innerHTML = taskStatusOptions(familyTaskStatusFilter !== "all" ? familyTaskStatusFilter : "now");
-  document.getElementById("family-task-end").value = "";
+  document.getElementById("family-task-end").value = new Date().toISOString().slice(0, 10);
   document.getElementById("family-task-note").value = "";
 }
 

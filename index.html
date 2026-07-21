@@ -1939,6 +1939,287 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   .family-task-notes { grid-column:2 / 4; }
 }
 
+
+/* Final configuration table: summary-style scroll with frozen header and item column */
+#screen-content > .category-config-content {
+  width:min(1180px, calc(100vw - 20px)) !important;
+  max-width:1180px !important;
+  padding:0 !important;
+  overflow:visible !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#screen-content > .category-config-content .modal-title { display:none !important; }
+.category-config-layout {
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+  align-items:start !important;
+}
+.category-side {
+  position:static !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  gap:6px !important;
+  padding:0 !important;
+  width:100% !important;
+}
+.category-side .config-nav,
+.category-side .side-field,
+.category-side .import-bubble {
+  flex:0 0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  min-height:30px !important;
+  height:30px !important;
+  margin:0 !important;
+  padding:0 9px !important;
+  border:1px solid #edf0f2 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#3c4043 !important;
+  font-weight:700 !important;
+  white-space:nowrap !important;
+}
+.category-side .config-nav.active,
+.category-side .config-nav:hover { background:#e8f0fe !important; color:#174ea6 !important; }
+.category-side .side-field select,
+.category-side .import-bubble select {
+  width:auto !important;
+  min-width:88px !important;
+  height:24px !important;
+  min-height:24px !important;
+  padding:1px 22px 1px 6px !important;
+  border:0 !important;
+  background-color:transparent !important;
+}
+.category-side .import-bubble .btn {
+  min-height:24px !important;
+  height:24px !important;
+  padding:1px 8px !important;
+  border-radius:999px !important;
+}
+.category-config-main {
+  width:100% !important;
+  min-width:0 !important;
+  overflow:visible !important;
+  padding:0 !important;
+}
+.category-screen.active { display:block !important; }
+#category-editor.category-editor {
+  --cfg-pin:24px;
+  --cfg-wide:14ch;
+  --cfg-narrow:12ch;
+  display:grid !important;
+  grid-auto-rows:auto !important;
+  gap:0 !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  max-height:68vh !important;
+  overflow:auto !important;
+  border:1px solid #edf0f2 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  overscroll-behavior:contain !important;
+}
+#category-editor .category-header,
+#category-editor .category-row {
+  display:grid !important;
+  grid-template-columns:var(--cfg-pin) repeat(4, var(--cfg-wide)) repeat(7, var(--cfg-narrow)) var(--cfg-pin) !important;
+  gap:0 !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  align-items:stretch !important;
+  padding:0 !important;
+  background:#fff !important;
+}
+#category-editor .category-header {
+  position:sticky !important;
+  top:0 !important;
+  z-index:8 !important;
+  border-bottom:1px solid #dfe3e7 !important;
+}
+#category-editor .category-row {
+  border-bottom:1px solid #edf0f2 !important;
+}
+#category-editor .category-header span,
+#category-editor .category-row > * {
+  box-sizing:border-box !important;
+  width:100% !important;
+  min-width:0 !important;
+  border-radius:0 !important;
+  border:0 !important;
+  border-right:1px solid #edf0f2 !important;
+  background:#fff !important;
+}
+#category-editor .category-header span {
+  display:flex !important;
+  align-items:center !important;
+  min-height:30px !important;
+  padding:4px 5px !important;
+  color:#5f6368 !important;
+  font-size:8.5pt !important;
+  font-weight:700 !important;
+  line-height:1.05 !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+}
+#category-editor .category-row input,
+#category-editor .category-row select,
+#category-editor .category-row textarea {
+  height:30px !important;
+  min-height:30px !important;
+  max-height:30px !important;
+  padding:4px 5px !important;
+  color:#202124 !important;
+  font-size:8.5pt !important;
+  line-height:1.1 !important;
+  box-shadow:none !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#category-editor .category-row textarea {
+  resize:vertical !important;
+  white-space:nowrap !important;
+}
+#category-editor .category-row textarea:focus {
+  position:relative !important;
+  z-index:12 !important;
+  min-height:96px !important;
+  height:auto !important;
+  max-height:180px !important;
+  white-space:normal !important;
+  border:1px solid #dfe3e7 !important;
+  box-shadow:0 2px 8px rgba(60,64,67,.14) !important;
+}
+#category-editor .move-handle,
+#category-editor .icon-btn {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:30px !important;
+  min-height:30px !important;
+  max-height:30px !important;
+  padding:0 !important;
+}
+#category-editor .category-header > :nth-child(1),
+#category-editor .category-row > :nth-child(1) {
+  position:sticky !important;
+  left:0 !important;
+  z-index:6 !important;
+  background:#fff !important;
+  box-shadow:1px 0 0 #dfe3e7 !important;
+}
+#category-editor .category-header > :nth-child(2),
+#category-editor .category-row > :nth-child(2) {
+  position:sticky !important;
+  left:var(--cfg-pin) !important;
+  z-index:6 !important;
+  background:#fff !important;
+  box-shadow:1px 0 0 #dfe3e7 !important;
+}
+#category-editor .category-header > :nth-child(1),
+#category-editor .category-header > :nth-child(2) { z-index:10 !important; }
+#category-editor .category-row > :last-child,
+#category-editor .category-header > :last-child { border-right:0 !important; }
+@media (max-width: 760px) {
+  #screen-content > .category-config-content {
+    width:calc(100vw - 8px) !important;
+    max-width:calc(100vw - 8px) !important;
+  }
+  .category-side {
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:5px !important;
+  }
+  .category-side .config-nav,
+  .category-side .side-field,
+  .category-side .import-bubble {
+    width:100% !important;
+    justify-content:center !important;
+    padding:0 6px !important;
+    font-size:8.5pt !important;
+  }
+  .category-side .side-field,
+  .category-side .import-bubble { grid-column:1 / -1 !important; }
+  #category-editor.category-editor {
+    --cfg-pin:22px;
+    --cfg-wide:14ch;
+    --cfg-narrow:12ch;
+    max-height:64vh !important;
+  }
+  #category-editor .category-header span,
+  #category-editor .category-row input,
+  #category-editor .category-row select,
+  #category-editor .category-row textarea {
+    font-size:7.75pt !important;
+    padding-left:4px !important;
+    padding-right:4px !important;
+  }
+}
+
+
+/* Tasks page fit and shared color polish */
+body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans-serif !important; }
+.rank-circle.summary-goal-blue,
+.rank-circle.summary-goal-green,
+.rank-circle.summary-goal-yellow,
+.rank-circle.summary-goal-orange,
+.rank-circle.summary-goal-red,
+.rank-circle.summary-goal-gray {
+  box-shadow:none !important;
+  border-color:transparent !important;
+}
+.tab.active .rank-circle.summary-goal-blue,
+.tab.active .rank-circle.summary-goal-green,
+.tab.active .rank-circle.summary-goal-yellow,
+.tab.active .rank-circle.summary-goal-orange,
+.tab.active .rank-circle.summary-goal-red,
+.tab.active .rank-circle.summary-goal-gray { outline:0 !important; }
+#screen-content > .family-tasks-content {
+  width:calc(100vw - 20px) !important;
+  max-width:1280px !important;
+  margin:0 auto !important;
+}
+.family-tasks-app {
+  grid-template-columns:150px minmax(0,1fr) !important;
+  gap:14px !important;
+}
+.family-tasks-card {
+  width:100% !important;
+  min-height:calc(100vh - 150px) !important;
+  border-color:#edf0f2 !important;
+  box-shadow:none !important;
+}
+.family-task-form {
+  grid-template-columns:minmax(96px,.85fr) minmax(180px,1.5fr) 110px 124px 104px minmax(140px,1fr) auto !important;
+}
+.family-task-form input,
+.family-task-form select,
+.family-task-note-add input {
+  border:1px solid #dfe3e7 !important;
+  background:#fff !important;
+  box-shadow:none !important;
+  color:#202124 !important;
+}
+.family-task-row {
+  grid-template-columns:24px minmax(110px,.8fr) minmax(190px,1.55fr) 92px 86px 82px 74px !important;
+}
+.family-task-create { display:none !important; }
+@media (max-width: 760px) {
+  #screen-content > .family-tasks-content { width:calc(100vw - 8px) !important; }
+  .family-tasks-app { grid-template-columns:70px minmax(0,1fr) !important; gap:7px !important; }
+  .family-task-form { grid-template-columns:1fr 1fr !important; }
+  .family-task-form #family-task-title,
+  .family-task-form #family-task-note { grid-column:1 / -1; }
+}
+
 </style>
 </head>
 <body>
@@ -2038,7 +2319,6 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   <div class="modal-content family-tasks-content">
     <div class="family-tasks-app">
       <aside class="family-tasks-side">
-        <button class="family-task-create" id="family-task-show-form" type="button"><span>+</span><span>Add task</span></button>
         <div class="family-filter-block">
           <div class="family-filter-title">People</div>
           <div class="family-filter-list" id="family-task-people"></div>
@@ -2058,7 +2338,6 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
             <input id="family-task-project" type="text" placeholder="Project" aria-label="Project">
             <input id="family-task-title" type="text" placeholder="Task" aria-label="Task">
             <select id="family-task-who" aria-label="Who"></select>
-            <input id="family-task-start" type="date" aria-label="Start date">
             <input id="family-task-end" type="date" aria-label="End date">
             <select id="family-task-status" aria-label="Status"></select>
             <input id="family-task-note" type="text" placeholder="Note" aria-label="Note">
@@ -2871,20 +3150,18 @@ function updateTotals() {
 
 function updateNameMetricColors(totalsByKid = {}) {
   const values = kids.map(kid => Number(totalsByKid[kid] || 0));
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min;
+  const min = values.length ? Math.min(...values) : 0;
+  const max = values.length ? Math.max(...values) : 0;
   kids.forEach(kid => {
     const node = document.getElementById(`rank-${kid}`);
     if (!node) return;
     const value = Number(totalsByKid[kid] || 0);
-    const ratio = range > 0 ? (value - min) / range : .65;
-    const hue = Math.round(4 + ratio * 126);
-    const lightness = Math.round(90 - ratio * 12);
     node.textContent = dollars(value);
-    node.style.background = `linear-gradient(135deg, hsl(${hue} 72% ${lightness}%), hsl(${hue} 68% ${Math.max(lightness - 8, 70)}%))`;
-    node.style.color = ratio > .55 ? "#0b3d20" : "#6f160f";
-    node.style.borderColor = `hsl(${hue} 58% 72%)`;
+    node.classList.remove("summary-goal-blue", "summary-goal-green", "summary-goal-yellow", "summary-goal-orange", "summary-goal-red", "summary-goal-gray");
+    node.classList.add(overallSummaryClass(value, min, max));
+    node.style.background = "";
+    node.style.color = "";
+    node.style.borderColor = "";
   });
 }
 
@@ -3684,7 +3961,7 @@ function renderFamilyTaskList() {
   const renderRow = task => {
     const notes = Array.isArray(task.notes) ? task.notes : [];
     const noteHtml = notes.slice().reverse().map(note => `<div class="family-task-note-line">${escapeHtml(note.text || "")}</div>`).join("");
-    const dateRange = [taskDateLabel(task.startDate), taskDateLabel(task.endDate)].filter(Boolean).join(" - ");
+    const dateRange = taskDateLabel(task.endDate);
     const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
     return `<div class="family-task-row ${task.completed ? "complete" : ""}" data-family-task-row="${task.id}">${completeAction}<div class="family-task-project">${escapeHtml(task.project || "No project")}</div><div class="family-task-title">${escapeHtml(task.title || "Untitled task")}</div><div class="family-task-meta">${escapeHtml(memberLabel(task.who || ""))}</div><div class="family-task-meta">${escapeHtml(dateRange)}</div><span class="family-task-status">${statusLabel(task.status)}</span><div class="family-task-actions"><button class="mini-action" data-edit-family-task="${task.id}" aria-label="Edit task">✎</button><button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div><div class="family-task-notes">${noteHtml}<div class="family-task-note-add"><input type="text" placeholder="Add note" aria-label="Add note" data-family-task-note-input="${task.id}"><button class="btn" data-add-family-task-note="${task.id}">Add</button></div></div></div>`;
   };
@@ -3700,7 +3977,6 @@ function resetFamilyTaskForm() {
   document.getElementById("family-task-title").value = "";
   document.getElementById("family-task-who").innerHTML = taskPeopleOptions(familyTaskPersonFilter !== "all" ? familyTaskPersonFilter : kids[0]);
   document.getElementById("family-task-status").innerHTML = taskStatusOptions(familyTaskStatusFilter !== "all" ? familyTaskStatusFilter : "now");
-  document.getElementById("family-task-start").value = "";
   document.getElementById("family-task-end").value = "";
   document.getElementById("family-task-note").value = "";
 }
@@ -3724,7 +4000,10 @@ async function openFamilyTasks() {
 
 async function addFamilyTask() {
   const title = document.getElementById("family-task-title").value.trim();
-  if (!title) return;
+  if (!title) {
+    alert("Add a task name first.");
+    return;
+  }
   const now = new Date();
   const doc = taskCollectionRef().doc();
   const note = document.getElementById("family-task-note").value.trim();
@@ -3732,7 +4011,6 @@ async function addFamilyTask() {
     project:document.getElementById("family-task-project").value.trim(),
     title,
     who:document.getElementById("family-task-who").value || kids[0],
-    startDate:document.getElementById("family-task-start").value,
     endDate:document.getElementById("family-task-end").value,
     status:document.getElementById("family-task-status").value || "now",
     completed:false,
@@ -3740,10 +4018,15 @@ async function addFamilyTask() {
     createdAt:now,
     updatedAt:now
   };
-  await doc.set(task);
-  familyTasksCache.push({id:doc.id, ...task});
-  toggleFamilyTaskForm(false);
-  renderFamilyTaskList();
+  try {
+    await doc.set(task);
+    familyTasksCache.push({id:doc.id, ...task});
+    toggleFamilyTaskForm(false);
+    renderFamilyTaskList();
+  } catch (error) {
+    console.error("Task save failed", error);
+    alert("Task did not save. Make sure Firestore rules include households/{householdId}/tasks and this account belongs to the household.");
+  }
 }
 
 async function completeFamilyTask(id, completed = true) {
@@ -4068,7 +4351,6 @@ document.getElementById("tasks-open").addEventListener("click", async () => {
   await openFamilyTasks();
 });
 document.getElementById("family-task-toggle-form").addEventListener("click", () => toggleFamilyTaskForm());
-document.getElementById("family-task-show-form").addEventListener("click", () => toggleFamilyTaskForm(true));
 document.getElementById("family-task-save").addEventListener("click", addFamilyTask);
 
 function toggleMenuSection(id, closeIds = []) {

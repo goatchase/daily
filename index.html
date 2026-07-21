@@ -1679,6 +1679,134 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
   .summary-table tbody tr.group-start > td { border-top:2px solid #d7dbe0 !important; }
 }
 
+
+/* Configuration table reset and summary color tightening */
+.summary-goal-blue { background:#8fc7ff !important; color:#073763 !important; }
+.summary-goal-green { background:#8ee3a8 !important; color:#073f1d !important; }
+.summary-goal-yellow { background:#ffe066 !important; color:#4d3900 !important; }
+.summary-goal-orange { background:#ffbd6b !important; color:#663600 !important; }
+.summary-goal-red { background:#ff8f86 !important; color:#680f09 !important; }
+.summary-goal-gray { background:#e8eaed !important; color:#3c4043 !important; }
+.summary-table th:first-child,
+.summary-table td:first-child { width:92px !important; min-width:92px !important; max-width:92px !important; }
+.summary-table td,
+.summary-table th { width:64px !important; min-width:64px !important; max-width:64px !important; padding:5px 6px !important; }
+.summary-modal .modal-actions,
+#summary-modal .modal-actions { display:none !important; }
+#category-editor.category-editor {
+  display:grid !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  overflow:visible !important;
+  gap:0 !important;
+  border:1px solid #edf0f2 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+}
+#category-editor .category-header,
+#category-editor .category-row {
+  display:grid !important;
+  grid-template-columns:20px minmax(44px,.78fr) minmax(58px,1.08fr) minmax(40px,.62fr) minmax(44px,.70fr) 44px 38px 38px 42px 46px 48px 48px 22px !important;
+  gap:0 !important;
+  align-items:center !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#category-editor .category-header {
+  position:sticky !important;
+  top:0 !important;
+  z-index:3 !important;
+  background:#fff !important;
+  border-bottom:1px solid #dfe3e7 !important;
+}
+#category-editor .category-row {
+  padding:0 !important;
+  border-bottom:1px solid #edf0f2 !important;
+  background:#fff !important;
+}
+#category-editor .category-header span,
+#category-editor .category-row > * {
+  min-width:0 !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  border-radius:0 !important;
+}
+#category-editor .category-header span {
+  padding:5px 3px !important;
+  font-size:8.5pt !important;
+  line-height:1.05 !important;
+  color:#5f6368 !important;
+  font-weight:700 !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+}
+#category-editor .category-row input,
+#category-editor .category-row select,
+#category-editor .category-row textarea {
+  height:28px !important;
+  min-height:28px !important;
+  max-height:28px !important;
+  padding:3px 4px !important;
+  border:0 !important;
+  border-right:1px solid #edf0f2 !important;
+  background:#fff !important;
+  font-size:8.5pt !important;
+  box-shadow:none !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#category-editor .category-row textarea {
+  resize:vertical !important;
+  white-space:nowrap !important;
+}
+#category-editor .category-row textarea:focus {
+  min-height:70px !important;
+  height:auto !important;
+  max-height:120px !important;
+  white-space:normal !important;
+  border:1px solid #dfe3e7 !important;
+  box-shadow:0 2px 8px rgba(60,64,67,.14) !important;
+  z-index:5 !important;
+}
+#category-editor .move-handle,
+#category-editor .icon-btn { min-width:0 !important; width:100% !important; height:28px !important; min-height:28px !important; border-radius:0 !important; }
+@media (max-width: 760px) {
+  .category-config-content { width:calc(100vw - 10px) !important; padding:8px !important; }
+  .category-config-layout { grid-template-columns:1fr !important; gap:8px !important; }
+  .category-side { display:grid !important; grid-template-columns:1fr 1fr; position:static !important; }
+  #category-editor.category-editor { max-height:66vh !important; overflow:auto !important; }
+  #category-editor .category-header { display:grid !important; }
+  #category-editor .category-header,
+  #category-editor .category-row {
+    grid-template-columns:16px minmax(34px,.9fr) minmax(52px,1.25fr) minmax(32px,.72fr) minmax(36px,.75fr) 34px 30px 30px 32px 36px 38px 38px 18px !important;
+  }
+  #category-editor .category-row > * { grid-column:auto !important; grid-row:auto !important; }
+  #category-editor .category-header span,
+  #category-editor .category-row input,
+  #category-editor .category-row select,
+  #category-editor .category-row textarea {
+    font-size:7.5pt !important;
+    padding-left:2px !important;
+    padding-right:2px !important;
+  }
+  #category-editor .category-row input,
+  #category-editor .category-row select,
+  #category-editor .category-row textarea,
+  #category-editor .move-handle,
+  #category-editor .icon-btn { height:26px !important; min-height:26px !important; max-height:26px !important; }
+  .summary-table th:first-child,
+  .summary-table td:first-child { width:78px !important; min-width:78px !important; max-width:78px !important; }
+  .summary-table th,
+  .summary-table td { width:56px !important; min-width:56px !important; max-width:56px !important; padding:4px 5px !important; }
+  .summary-table td.summary-goal-blue,
+  .summary-table td.summary-goal-green,
+  .summary-table td.summary-goal-yellow,
+  .summary-table td.summary-goal-orange,
+  .summary-table td.summary-goal-red,
+  .summary-table td.summary-goal-gray { background-clip:padding-box !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1893,9 +2021,6 @@ body, #kid-views, .tracker-workspace, .table-scroll { background:#fff !important
       <button class="btn summary-refresh" id="summary-refresh" aria-label="Refresh">↻</button>
     </div>
     <div id="summary-content" class="summary-empty">Choose a summary.</div>
-    <div class="modal-actions">
-      <button class="btn primary" id="summary-close">Close</button>
-    </div>
   </div>
 </div>
 
@@ -2675,13 +2800,30 @@ async function fetchOverallSummaryRows(bucket, count) {
   return {labels, rows};
 }
 
+function overallSummaryClass(value, min, max) {
+  const number = Number(value || 0);
+  if (!Number.isFinite(number)) return "";
+  const range = max - min;
+  const ratio = range > 0 ? (number - min) / range : .65;
+  if (ratio >= .75) return "summary-goal-green";
+  if (ratio >= .5) return "summary-goal-yellow";
+  if (ratio >= .25) return "summary-goal-orange";
+  return "summary-goal-red";
+}
+
 function renderOverallSummaryRows(summary) {
   let head = `<tr><th>Person</th>`;
   summary.labels.forEach(label => { head += `<th>${label}</th>`; });
   head += `</tr>`;
+  const values = summary.rows.flatMap(row => summary.labels.map(label => row.values[label])).filter(value => value !== null && Number.isFinite(Number(value)));
+  const min = values.length ? Math.min(...values.map(Number)) : 0;
+  const max = values.length ? Math.max(...values.map(Number)) : 0;
   const body = summary.rows.map(row => {
     let html = `<tr><td>${escapeHtml(memberLabel(row.kid))}</td>`;
-    summary.labels.forEach(label => { html += row.values[label] === null ? `<td></td>` : `<td>${formatSummaryMetric(row.values[label])}</td>`; });
+    summary.labels.forEach(label => {
+      const value = row.values[label];
+      html += value === null ? `<td></td>` : `<td class="${overallSummaryClass(value, min, max)}">${formatSummaryMetric(value)}</td>`;
+    });
     html += `</tr>`;
     return html;
   }).join("");
@@ -3580,7 +3722,6 @@ document.getElementById("summary-kind").addEventListener("change", async () => {
 document.getElementById("summary-person").addEventListener("change", refreshSummary);
 document.getElementById("summary-bucket").addEventListener("change", refreshSummary);
 document.getElementById("summary-count").addEventListener("change", refreshSummary);
-document.getElementById("summary-close").addEventListener("click", () => closeModal("summary-modal"));
 document.getElementById("category-view-categories").addEventListener("click", () => showCategoryConfigScreen("categories"));
 document.getElementById("category-view-colors").addEventListener("click", () => showCategoryConfigScreen("colors"));
 document.getElementById("add-category").addEventListener("click", () => addCategoryRow());

@@ -2838,6 +2838,19 @@ body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans
   }
 }
 
+
+/* Restore visible subpage left controls while keeping hamburger menu on top */
+@media (min-width:900px) {
+  #screen-content .summary-controls,
+  #screen-content .category-side,
+  #screen-content .family-tasks-side {
+    z-index:820 !important;
+  }
+  .top-bar { z-index:700 !important; }
+  .menu-wrap { z-index:1300 !important; }
+  .overflow-menu { z-index:1600 !important; }
+}
+
 </style>
 </head>
 <body>

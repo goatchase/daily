@@ -2438,6 +2438,81 @@ body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans
   #category-editor .category-row textarea { font-size:7.75pt !important; }
 }
 
+
+/* Final desktop rail separator: menu rail, gap, divider, gap, content */
+@media (min-width: 900px) {
+  #app-shell.site-container {
+    grid-template-columns:156px 8px 1px 8px minmax(0,1fr) !important;
+    column-gap:0 !important;
+  }
+  #app-shell.site-container::before {
+    content:"";
+    grid-column:3;
+    grid-row:1;
+    display:block;
+    width:1px;
+    min-height:100vh;
+    background:#edf0f2;
+  }
+  .top-bar {
+    grid-column:1 !important;
+    grid-row:1 !important;
+    border-right:0 !important;
+    padding-right:0 !important;
+  }
+  #kid-views,
+  #screen-view {
+    grid-column:5 !important;
+    grid-row:1 !important;
+    padding-left:0 !important;
+    padding-top:8px !important;
+  }
+  #screen-content .summary-controls,
+  #screen-content .category-side {
+    left:10px !important;
+    width:136px !important;
+  }
+  #screen-content > .modal-content:has(.summary-controls),
+  #screen-content > .family-tasks-content,
+  #screen-content > .category-config-content {
+    width:calc(100vw - 174px) !important;
+    max-width:none !important;
+    margin-left:0 !important;
+  }
+}
+
+
+/* Put Tasks filters in the shared left rail on desktop */
+@media (min-width: 900px) {
+  #screen-content .family-tasks-side {
+    position:fixed !important;
+    left:10px !important;
+    top:58px !important;
+    width:136px !important;
+    z-index:20 !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+    background:transparent !important;
+  }
+  #screen-content .family-tasks-side .family-filter-pill {
+    width:100% !important;
+    min-height:30px !important;
+    border-radius:999px !important;
+    padding:4px 9px !important;
+  }
+  #screen-content .family-tasks-side .family-filter-title {
+    padding:0 8px !important;
+  }
+  #screen-content .family-tasks-app {
+    display:block !important;
+    width:100% !important;
+  }
+  #screen-content .family-tasks-main {
+    width:100% !important;
+  }
+}
+
 </style>
 </head>
 <body>

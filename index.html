@@ -2637,6 +2637,61 @@ body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans
   .family-task-row { grid-template-columns:18px minmax(54px,24ch) minmax(96px,1fr) 48px !important; max-width:none !important; }
 }
 
+
+/* Tasks add form containment and automatic grouping */
+.family-task-form {
+  grid-template-columns:24ch minmax(220px,1fr) 104px 116px 94px minmax(130px,180px) auto !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+}
+.family-task-form input,
+.family-task-form select { min-width:0 !important; }
+.family-task-form #family-task-note {
+  grid-column:1 / -2 !important;
+}
+.family-task-form #family-task-save {
+  grid-column:-2 / -1 !important;
+  align-self:stretch !important;
+}
+.family-task-project-group {
+  display:grid;
+  gap:0;
+  margin-top:8px;
+}
+.family-task-project-head {
+  min-height:28px;
+  display:flex;
+  align-items:center;
+  color:#202124;
+  border-bottom:1px solid #dfe3e7;
+  font-weight:400;
+}
+.family-task-status-group { display:grid; gap:0; }
+.family-task-status-head {
+  min-height:24px;
+  display:flex;
+  align-items:center;
+  color:#5f6368;
+  font-size:9pt;
+  border-bottom:1px solid #edf0f2;
+  padding-left:22px;
+}
+@media (max-width:760px) {
+  .family-task-form { grid-template-columns:1fr 1fr !important; overflow:visible !important; }
+  .family-task-form #family-task-note,
+  .family-task-form #family-task-save { grid-column:1 / -1 !important; }
+}
+
+
+/* Keep main menu above left-side page filters */
+.menu-wrap { z-index:80 !important; }
+.overflow-menu { z-index:100 !important; }
+@media (min-width:900px) {
+  #screen-content .summary-controls,
+  #screen-content .category-side,
+  #screen-content .family-tasks-side { z-index:20 !important; }
+}
+
 </style>
 </head>
 <body>
@@ -4391,9 +4446,21 @@ function renderFamilyTaskList() {
     const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
     return `<div class="family-task-row ${task.completed ? "complete" : ""}" data-family-task-row="${task.id}">${completeAction}<div class="family-task-project">${escapeHtml(task.project || "No project")}</div><div class="family-task-title">${escapeHtml(task.title || "Untitled task")}</div><div class="family-task-meta">${escapeHtml(memberLabel(task.who || ""))}</div><div class="family-task-meta">${escapeHtml(dateRange)}</div><span class="family-task-status">${statusLabel(task.status)}</span><div class="family-task-actions"><button class="mini-action" data-edit-family-task="${task.id}" aria-label="Edit task">✎</button><button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div><div class="family-task-notes">${noteHtml}<div class="family-task-note-add"><input type="text" placeholder="Add note" aria-label="Add note" data-family-task-note-input="${task.id}"><button class="btn" data-add-family-task-note="${task.id}">Add</button></div></div></div>`;
   };
+  const groupedHtml = tasks => {
+    const projects = [...new Set(tasks.map(task => task.project?.trim() || "No project"))].sort((a, b) => a.localeCompare(b));
+    return projects.map(project => {
+      const projectTasks = tasks.filter(task => (task.project?.trim() || "No project") === project);
+      const statusHtml = FAMILY_TASK_STATUSES.map(status => {
+        const statusTasks = projectTasks.filter(task => (task.status || "now") === status);
+        if (!statusTasks.length) return "";
+        return `<div class="family-task-status-group"><div class="family-task-status-head">${statusLabel(status)}</div>${statusTasks.map(renderRow).join("")}</div>`;
+      }).join("");
+      return `<section class="family-task-project-group"><div class="family-task-project-head">${escapeHtml(project)}</div>${statusHtml}</section>`;
+    }).join("");
+  };
   const active = visibleFamilyTasks(false);
   const completed = visibleFamilyTasks(true);
-  activeList.innerHTML = active.length ? active.map(renderRow).join("") : `<div class="empty-state">All tasks complete. Nice work.</div>`;
+  activeList.innerHTML = active.length ? groupedHtml(active) : `<div class="empty-state">All tasks complete. Nice work.</div>`;
   completedList.innerHTML = completed.length ? completed.map(renderRow).join("") : `<div class="empty-state">No completed tasks yet.</div>`;
   if (completedCount) completedCount.textContent = String(completed.length);
 }

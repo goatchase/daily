@@ -3048,6 +3048,294 @@ body { font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans
   .family-task-header { display:none !important; }
 }
 
+
+/* Tasks editable grid polish */
+.family-tasks-card {
+  border:1px solid #edf0f2 !important;
+}
+.family-task-list {
+  border:1px solid #edf0f2 !important;
+  border-bottom:0 !important;
+  background:#fff !important;
+}
+.family-task-row {
+  grid-template-columns:22px 24ch minmax(220px,100ch) 78px 112px 86px 58px !important;
+  gap:0 !important;
+  padding:0 !important;
+  border-bottom:1px solid #edf0f2 !important;
+  max-width:none !important;
+}
+.family-task-row > *:not(.family-task-notes) {
+  min-height:30px !important;
+  height:30px !important;
+  border-right:1px solid #edf0f2 !important;
+  border-radius:0 !important;
+  padding:4px 6px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+  font:inherit !important;
+  color:#202124 !important;
+  align-self:stretch !important;
+}
+.family-task-header > * {
+  display:flex !important;
+  align-items:center !important;
+  color:#5f6368 !important;
+  font-weight:700 !important;
+  background:#fff !important;
+}
+.family-task-cell {
+  border-top:0 !important;
+  border-left:0 !important;
+  border-bottom:0 !important;
+  outline:0 !important;
+}
+.family-task-cell:focus {
+  background:#f8fbff !important;
+  box-shadow:inset 0 0 0 1px #d2e3fc !important;
+}
+.family-task-status,
+.family-task-status.status-now { background:#d2e3fc !important; color:#174ea6 !important; }
+.family-task-status.status-next { background:#8ee3a8 !important; color:#073f1d !important; }
+.family-task-status.status-soon { background:#ffe066 !important; color:#4d3900 !important; }
+.family-task-status.status-waiting { background:#ffbd6b !important; color:#663600 !important; }
+.family-task-status.status-parked { background:#e8eaed !important; color:#3c4043 !important; }
+.family-task-actions {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:2px !important;
+}
+.note-indicator {
+  width:22px !important;
+  height:22px !important;
+  min-height:22px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:transparent !important;
+  color:#5f6368 !important;
+  opacity:.65 !important;
+  padding:0 !important;
+  cursor:pointer !important;
+}
+.note-indicator.empty { opacity:.18 !important; }
+.family-task-notes,
+.family-task-row:hover .family-task-notes,
+.family-task-row:focus-within .family-task-notes {
+  display:none !important;
+}
+@media (max-width:760px) {
+  .family-task-row { grid-template-columns:18px minmax(58px,24ch) minmax(96px,1fr) 52px !important; }
+}
+
+
+/* Final shared rail and Tasks table pass */
+#kid-tabs .tab,
+#screen-content .summary-controls label,
+#screen-content .summary-controls select,
+#screen-content .summary-controls input,
+#screen-content .summary-controls button,
+#screen-content .category-side .config-nav,
+#screen-content .category-side .side-field,
+#screen-content .category-side .import-bubble,
+#screen-content .category-side select,
+#screen-content .category-side .btn,
+#screen-content .family-tasks-side .family-filter-title,
+#screen-content .family-tasks-side .family-filter-pill,
+#screen-content .family-tasks-side .filter-count {
+  font-family:"Google Sans", "Product Sans", "Source Sans Pro", Arial, sans-serif !important;
+  font-size:10pt !important;
+  line-height:1.15 !important;
+}
+#kid-tabs .tab,
+#screen-content .summary-controls button,
+#screen-content .category-side .config-nav,
+#screen-content .family-tasks-side .family-filter-pill {
+  min-height:32px !important;
+  height:32px !important;
+  padding:5px 9px !important;
+  font-weight:400 !important;
+}
+#screen-content .family-tasks-side .family-filter-title,
+#screen-content .category-side .config-nav {
+  font-weight:700 !important;
+}
+.family-task-list {
+  max-width:980px !important;
+  border:1px solid #edf0f2 !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+}
+.family-task-row {
+  grid-template-columns:22px minmax(12ch,24ch) minmax(180px,100ch) 78px 112px 86px 58px !important;
+  gap:0 !important;
+  padding:0 !important;
+  border-bottom:1px solid #edf0f2 !important;
+}
+.family-task-row > *:not(.family-task-notes) {
+  display:flex !important;
+  align-items:center !important;
+  border-right:1px solid #edf0f2 !important;
+}
+.family-task-row > *:not(.family-task-notes):last-child {
+  border-right:0 !important;
+}
+.family-task-header > * {
+  justify-content:flex-start !important;
+}
+.family-task-cell {
+  width:100% !important;
+  min-width:0 !important;
+}
+.family-task-status.status-now { background:#d2e3fc !important; color:#174ea6 !important; }
+.family-task-status.status-next { background:#c6efce !important; color:#0b6623 !important; }
+.family-task-status.status-soon { background:#ffe066 !important; color:#4d3900 !important; }
+.family-task-status.status-waiting { background:#ffbd6b !important; color:#663600 !important; }
+.family-task-status.status-parked { background:#e8eaed !important; color:#3c4043 !important; }
+.family-task-notes,
+.family-task-row:hover .family-task-notes,
+.family-task-row:focus-within .family-task-notes {
+  display:none !important;
+}
+
+
+/* Google-style shared page shell */
+:root {
+  --google-font:"Google Sans Text", "Google Sans", Roboto, Arial, sans-serif;
+}
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family:var(--google-font) !important;
+}
+body {
+  background:#f8fafd !important;
+  color:#202124 !important;
+}
+@media (min-width:900px) {
+  #kid-tabs.tab-container,
+  #screen-content .summary-controls,
+  #screen-content .category-side,
+  #screen-content .family-tasks-side,
+  #screen-content .household-side {
+    position:fixed !important;
+    left:10px !important;
+    top:58px !important;
+    width:136px !important;
+    z-index:820 !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:6px !important;
+    align-content:start !important;
+    padding:0 !important;
+    margin:0 !important;
+    background:transparent !important;
+  }
+  #kid-tabs .tab,
+  #screen-content .summary-controls select,
+  #screen-content .summary-controls input,
+  #screen-content .summary-controls button,
+  #screen-content .category-side .config-nav,
+  #screen-content .category-side .side-field,
+  #screen-content .category-side .import-bubble,
+  #screen-content .category-side select,
+  #screen-content .category-side .btn,
+  #screen-content .family-tasks-side .family-filter-pill,
+  #screen-content .household-side .config-nav {
+    box-sizing:border-box !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:32px !important;
+    height:32px !important;
+    border:0 !important;
+    border-radius:999px !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    color:#3c4043 !important;
+    font-family:var(--google-font) !important;
+    font-size:10pt !important;
+    font-weight:400 !important;
+    line-height:1.15 !important;
+    padding:5px 10px !important;
+    text-align:left !important;
+  }
+  #kid-tabs .tab.active,
+  #screen-content .summary-controls button.active,
+  #screen-content .category-side .config-nav.active,
+  #screen-content .family-tasks-side .family-filter-pill.active,
+  #screen-content .household-side .config-nav.active {
+    background:#d3e3fd !important;
+    color:#041e49 !important;
+  }
+  #screen-content .family-filter-title,
+  #screen-content .category-side .side-field > span,
+  #screen-content .category-side .import-bubble > span {
+    color:#3c4043 !important;
+    font-family:var(--google-font) !important;
+    font-size:10pt !important;
+    font-weight:500 !important;
+    line-height:1.15 !important;
+    padding:10px 10px 2px !important;
+  }
+  #screen-content .category-side .side-field,
+  #screen-content .category-side .import-bubble {
+    height:auto !important;
+    min-height:32px !important;
+    border-radius:12px !important;
+    background:#fff !important;
+    border:1px solid #edf0f2 !important;
+    display:grid !important;
+    gap:5px !important;
+  }
+  #screen-content > .household-content,
+  #screen-content > .category-config-content,
+  #screen-content > .family-tasks-content,
+  #screen-content > .modal-content,
+  #screen-content > .modal-content:has(.summary-controls) {
+    margin-left:0 !important;
+    justify-self:start !important;
+  }
+  #screen-content > .household-content,
+  #screen-content > .category-config-content,
+  #screen-content > .family-tasks-content,
+  #screen-content > .modal-content:has(.summary-controls) {
+    width:calc(100vw - 174px) !important;
+    max-width:none !important;
+  }
+}
+.family-tasks-card,
+.summary-table-wrap,
+#category-editor.category-editor,
+.household-card,
+.members-card,
+.settings-card {
+  background:#fff !important;
+  border:1px solid #edf0f2 !important;
+  box-shadow:none !important;
+}
+.family-tasks-head h3,
+.modal-title,
+.summary-title {
+  font-family:var(--google-font) !important;
+  font-size:12pt !important;
+  font-weight:400 !important;
+  color:#202124 !important;
+}
+.family-task-list {
+  border:1px solid #edf0f2 !important;
+  border-radius:12px !important;
+}
+.family-task-row {
+  grid-template-columns:22px minmax(100px,24ch) minmax(220px,100ch) 78px 112px 86px 58px !important;
+}
+.family-task-header > * {
+  color:#5f6368 !important;
+  font-weight:500 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4797,10 +5085,10 @@ function renderFamilyTaskList() {
   if (!activeList || !completedList) return;
   const renderRow = task => {
     const notes = Array.isArray(task.notes) ? task.notes : [];
-    const noteHtml = notes.slice().reverse().map(note => `<div class="family-task-note-line">${escapeHtml(note.text || "")}</div>`).join("");
-    const dateRange = taskDateLabel(task.endDate);
     const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
-    return `<div class="family-task-row ${task.completed ? "complete" : ""}" data-family-task-row="${task.id}">${completeAction}<div class="family-task-project">${escapeHtml(task.project || "No project")}</div><div class="family-task-title">${escapeHtml(task.title || "Untitled task")}</div><div class="family-task-meta">${escapeHtml(memberLabel(task.who || ""))}</div><div class="family-task-meta">${escapeHtml(dateRange)}</div><span class="family-task-status">${statusLabel(task.status)}</span><div class="family-task-actions"><button class="mini-action" data-edit-family-task="${task.id}" aria-label="Edit task">✎</button><button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div><div class="family-task-notes">${noteHtml}<div class="family-task-note-add"><input type="text" placeholder="Add note" aria-label="Add note" data-family-task-note-input="${task.id}"><button class="btn" data-add-family-task-note="${task.id}">Add</button></div></div></div>`;
+    const noteTitle = escapeAttr(notes.map(note => note.text || "").filter(Boolean).join(" | "));
+    const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">□</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">□</button>`;
+    return `<div class="family-task-row ${task.completed ? "complete" : ""}" data-family-task-row="${task.id}">${completeAction}<input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"><select class="family-task-cell family-task-who" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select><input class="family-task-cell family-task-date" type="date" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(task.endDate || "")}"><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></div>`;
   };
   const taskHeader = `<div class="family-task-row family-task-header"><span></span><div>Project</div><div>Task</div><div>Who</div><div>Date</div><div>Status</div><div></div></div>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
@@ -4894,20 +5182,30 @@ async function addFamilyTaskNote(id) {
   renderFamilyTaskList();
 }
 
-async function editFamilyTask(id) {
-  const task = familyTasksCache.find(item => item.id === id);
-  if (!task) return;
-  const title = prompt("Task:", task.title || "");
-  if (title === null || !title.trim()) return;
-  const project = prompt("Project:", task.project || "");
-  if (project === null) return;
-  const status = prompt("Status: now, next, soon, parked, waiting", task.status || "now");
-  if (status === null) return;
-  const normalizedStatus = FAMILY_TASK_STATUSES.includes(status.trim().toLowerCase()) ? status.trim().toLowerCase() : task.status || "now";
-  const patch = {title:title.trim(), project:project.trim(), status:normalizedStatus, updatedAt:new Date()};
+async function updateFamilyTaskField(id, field, value) {
+  const allowed = new Set(["project", "title", "who", "endDate", "status"]);
+  if (!allowed.has(field)) return;
+  const normalized = field === "status" && !FAMILY_TASK_STATUSES.includes(value) ? "now" : value;
+  const patch = {[field]:normalized, updatedAt:new Date()};
   await taskCollectionRef().doc(id).set(patch, {merge:true});
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, ...patch} : item);
   renderFamilyTaskList();
+}
+
+async function promptFamilyTaskNote(id) {
+  const task = familyTasksCache.find(item => item.id === id);
+  if (!task) return;
+  const existing = Array.isArray(task.notes) ? task.notes.map(note => note.text || "").filter(Boolean).join("\\n") : "";
+  const text = prompt(existing ? "Task notes:" : "Add note:", existing);
+  if (text === null) return;
+  const notes = text.trim() ? [{id:makeId("note"), text:text.trim(), createdAt:new Date().toISOString()}] : [];
+  await taskCollectionRef().doc(id).set({notes, updatedAt:new Date()}, {merge:true});
+  familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, notes} : item);
+  renderFamilyTaskList();
+}
+
+async function editFamilyTask(id) {
+  await promptFamilyTaskNote(id);
 }
 
 async function deleteFamilyTask(id) {
@@ -5137,6 +5435,9 @@ document.body.addEventListener("click", async event => {
   const editFamilyButton = event.target.closest("[data-edit-family-task]");
   if (editFamilyButton) await editFamilyTask(editFamilyButton.dataset.editFamilyTask);
 
+  const notePromptButton = event.target.closest("[data-family-task-note-prompt]");
+  if (notePromptButton) await promptFamilyTaskNote(notePromptButton.dataset.familyTaskNotePrompt);
+
   const deleteFamilyButton = event.target.closest("[data-delete-family-task]");
   if (deleteFamilyButton) await deleteFamilyTask(deleteFamilyButton.dataset.deleteFamilyTask);
 
@@ -5154,6 +5455,12 @@ document.body.addEventListener("click", async event => {
   if (event.target.closest(".remove-member")) event.target.closest(".category-row").remove();
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
   if (event.target.closest(".remove-goal-band")) event.target.closest("[data-goal-band-row]").remove();
+});
+
+
+document.body.addEventListener("change", async event => {
+  const field = event.target.closest("[data-family-task-field]");
+  if (field) await updateFamilyTaskField(field.dataset.taskId, field.dataset.familyTaskField, field.value.trim ? field.value.trim() : field.value);
 });
 
 let draggedCategoryRow = null;

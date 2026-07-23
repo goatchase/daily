@@ -3573,6 +3573,120 @@ body.subpage-active #screen-content > :not(:first-child) {
   font-family:var(--app-font) !important;
 }
 
+
+/* Final configuration and font cleanup */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap');
+:root { --app-font:"Source Sans 3", "Source Sans Pro", Helvetica, "Helvetica Neue", Arial, sans-serif; }
+html, body, button, input, select, textarea, table {
+  font-family:var(--app-font) !important;
+  letter-spacing:0 !important;
+}
+#category-detail-modal {
+  background:transparent !important;
+  pointer-events:none !important;
+}
+#category-detail-modal .modal-content {
+  pointer-events:auto !important;
+  border:1px solid #d0d7de !important;
+  box-shadow:0 10px 30px rgba(60,64,67,.16) !important;
+}
+.category-label:focus,
+.category-label:active {
+  background:transparent !important;
+  box-shadow:none !important;
+  color:var(--ink) !important;
+}
+#week-select,
+.top-controls select {
+  border-color:#d0d7de !important;
+}
+#screen-content > .category-config-content,
+#category-editor.category-editor {
+  border-color:#d0d7de !important;
+}
+#category-editor.category-editor {
+  border-width:1px !important;
+}
+#category-editor .category-header,
+#category-editor .category-row {
+  grid-template-columns:46px 112px 112px 112px 112px 86px 86px 86px 86px 86px 86px 86px !important;
+}
+#category-editor .category-row > :last-child,
+#category-editor .category-header > :last-child {
+  border-right:0 !important;
+}
+#category-editor .row-tools {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:2px !important;
+  height:30px !important;
+  min-height:30px !important;
+  border-right:1px solid #edf0f2 !important;
+  background:#fff !important;
+}
+#category-editor .row-tools .drag-handle,
+#category-editor .row-tools .remove-category {
+  width:20px !important;
+  min-width:20px !important;
+  height:24px !important;
+  min-height:24px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#category-editor .category-row textarea,
+#category-editor .category-row textarea:focus {
+  resize:none !important;
+  min-height:30px !important;
+  height:30px !important;
+  max-height:30px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  box-shadow:none !important;
+  position:static !important;
+  z-index:auto !important;
+  text-align:center !important;
+}
+#screen-content .category-side .config-nav,
+#screen-content .category-side .side-field,
+#screen-content .category-side .import-bubble,
+#screen-content .category-side .side-field > span,
+#screen-content .category-side .import-bubble > span {
+  font-weight:700 !important;
+}
+#screen-content .category-side .side-field,
+#screen-content .category-side .import-bubble {
+  margin-left:0 !important;
+  padding-left:9px !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+.top-bar,
+.menu-wrap {
+  z-index:30000 !important;
+  overflow:visible !important;
+}
+.overflow-menu,
+.overflow-menu.open,
+.menu-section.open {
+  z-index:40000 !important;
+}
+body.subpage-active #screen-content .summary-controls,
+body.subpage-active #screen-content .category-side,
+body.subpage-active #screen-content .family-tasks-side,
+body.subpage-active #screen-content .household-side {
+  z-index:100 !important;
+}
+@media (max-width:760px) {
+  #category-editor .category-header,
+  #category-editor .category-row { grid-template-columns:1fr !important; }
+}
+
 </style>
 </head>
 <body>
@@ -5198,7 +5312,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   row.dataset.showSummary = category.showSummary === false ? "false" : "true";
   const showProgress = category.showProgress === true || category.showTarget === true || category.showWeekly === true;
   row.innerHTML = `
-    <span class="drag-handle" draggable="true" aria-label="Drag row">☰</span>
+    <div class="row-tools"><span class="drag-handle" draggable="true" aria-label="Drag row">☰</span><button class="icon-btn remove-category" type="button" aria-label="Remove">x</button></div>
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
     <textarea aria-label="Notes" data-field="details" placeholder="Tap notes">${escapeHtml(category.details || "")}</textarea>
     <input aria-label="Group" data-field="group" placeholder="Group" value="${escapeAttr(category.group || "")}">
@@ -5226,7 +5340,6 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
       <option value="false" ${category.showSummary === false ? "selected" : ""}>Hide</option>
       <option value="true" ${category.showSummary === false ? "" : "selected"}>Show</option>
     </select>
-    <button class="icon-btn remove-category" type="button" aria-label="Remove">x</button>
   `;
   editor.appendChild(row);
 }
@@ -5852,6 +5965,17 @@ window.onload = () => {
     }
   });
 };
+
+// Open compact configuration notes in a prompt instead of resizing the table row.
+document.body.addEventListener("click", event => {
+  const notes = event.target.closest('#category-editor textarea[data-field="details"]');
+  if (!notes) return;
+  event.preventDefault();
+  notes.blur();
+  const next = prompt("Category notes:", notes.value || "");
+  if (next !== null) notes.value = next;
+});
+
 </script>
 </body>
 </html>

@@ -3528,6 +3528,51 @@ body.subpage-active .mini-action.delete {
   padding:0 !important;
 }
 
+
+/* Final override: one active left rail and cleaner app font */
+:root { --app-font: Roboto, "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; }
+html, body, button, input, select, textarea, table {
+  font-family:var(--app-font) !important;
+  letter-spacing:0 !important;
+}
+body.subpage-active #kid-tabs,
+body.subpage-active #kid-views {
+  display:none !important;
+  visibility:hidden !important;
+}
+body:not(.subpage-active) #screen-view,
+body:not(.subpage-active) #screen-content {
+  display:none !important;
+}
+body.subpage-active #screen-content > :not(:first-child) {
+  display:none !important;
+}
+@media (min-width:900px) {
+  body.subpage-active #screen-content .summary-controls,
+  body.subpage-active #screen-content .category-side,
+  body.subpage-active #screen-content .family-tasks-side,
+  body.subpage-active #screen-content .household-side {
+    display:grid !important;
+    position:fixed !important;
+    left:8px !important;
+    top:60px !important;
+    width:150px !important;
+    z-index:900 !important;
+  }
+}
+.family-filter-title,
+.config-nav,
+.family-filter-pill,
+.summary-controls select,
+.summary-controls input,
+.summary-controls button,
+.tab,
+.top-controls select,
+.screen-bar .btn,
+#screen-title {
+  font-family:var(--app-font) !important;
+}
+
 </style>
 </head>
 <body>
@@ -5431,7 +5476,8 @@ function openMainScreen(modalId, title, backLabel = "Tracker") {
   titleNode.textContent = title || "";
   titleNode.style.display = title ? "" : "none";
   document.getElementById("screen-back").textContent = `Back to ${backLabel}`;
-  document.getElementById("screen-content").appendChild(content);
+  document.getElementById("screen-content").replaceChildren(content);
+  document.body.classList.add("subpage-active");
   document.getElementById("kid-views").style.display = "none";
   document.getElementById("kid-tabs").style.display = "none";
   document.getElementById("screen-view").classList.add("active");
@@ -5446,6 +5492,7 @@ function restoreScreenModal() {
 
 function showTrackerScreen(restore = true) {
   if (restore) restoreScreenModal();
+  document.body.classList.remove("subpage-active");
   document.getElementById("screen-view")?.classList.remove("active");
   const content = document.getElementById("screen-content");
   if (content && !currentScreen) content.innerHTML = "";

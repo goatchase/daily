@@ -2602,13 +2602,28 @@ tbody tr.total-row > td:first-child {
       min-height:28px !important;
       padding:3px 6px !important;
       gap:4px !important;
-    }
-    #kid-tabs .kid-name {
-      min-width:auto !important;
-    }
-    #kid-tabs .rank-circle {
-      display:inline-flex !important;
-      flex:0 0 auto !important;
+      }
+      #kid-tabs .kid-name {
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        font-size:0 !important;
+        min-width:auto !important;
+        width:12px !important;
+      }
+      #kid-tabs .kid-name::first-letter {
+        font-size:0 !important;
+      }
+      #kid-tabs .kid-name::before {
+        content:attr(data-initial) !important;
+        font-family:var(--font) !important;
+        font-size:10pt !important;
+        font-weight:500 !important;
+        line-height:18px !important;
+      }
+      #kid-tabs .rank-circle {
+        display:inline-flex !important;
+        flex:0 0 auto !important;
       min-width:24px !important;
       height:18px !important;
       padding:0 5px !important;
@@ -2618,24 +2633,40 @@ tbody tr.total-row > td:first-child {
 
     body.subpage-active #subpage-rail {
       display:flex !important;
-      align-items:flex-start !important;
-      gap:8px !important;
-      max-height:118px !important;
-      overflow-x:auto !important;
-      overflow-y:hidden !important;
-      padding:6px 8px !important;
-    }
+        align-items:flex-start !important;
+        gap:8px !important;
+        max-height:112px !important;
+        overflow-x:auto !important;
+        overflow-y:auto !important;
+        padding:6px 8px !important;
+      }
     body.subpage-active #subpage-rail .family-filter-block {
       flex:0 0 138px !important;
       width:138px !important;
       padding:4px !important;
       gap:2px !important;
-    }
-    body.subpage-active #subpage-rail .family-filter-title {
-      padding:2px 6px !important;
-      font-size:8.5pt !important;
-    }
-    body.subpage-active #subpage-rail .family-filter-pill {
+      }
+      body.subpage-active #subpage-rail .family-filter-title {
+        align-items:center !important;
+        cursor:pointer !important;
+        display:flex !important;
+        justify-content:space-between !important;
+        padding:2px 6px !important;
+        font-size:8.5pt !important;
+      }
+      body.subpage-active #subpage-rail .family-filter-title::after {
+        color:#5f6368 !important;
+        content:"+" !important;
+        font-size:10pt !important;
+        font-weight:400 !important;
+      }
+      body.subpage-active #subpage-rail .family-filter-block.filter-open .family-filter-title::after {
+        content:"-" !important;
+      }
+      body.subpage-active #subpage-rail .family-filter-block:not(.filter-open) > :not(.family-filter-title) {
+        display:none !important;
+      }
+      body.subpage-active #subpage-rail .family-filter-pill {
       height:26px !important;
       min-height:26px !important;
       padding:3px 7px !important;
@@ -3425,7 +3456,7 @@ function buildShell() {
     const tab = document.createElement("button");
     tab.className = `tab ${kid === activeKid ? "active" : ""}`;
     tab.dataset.kid = kid;
-    tab.innerHTML = `<span class="kid-name">${escapeHtml(memberLabel(kid))}</span><span class="rank-circle" id="rank-${kid}">$0</span>`;
+    tab.innerHTML = `<span class="kid-name" data-initial="${escapeHtml(memberLabel(kid).slice(0, 1))}">${escapeHtml(memberLabel(kid))}</span><span class="rank-circle" id="rank-${kid}">$0</span>`;
     tabs.appendChild(tab);
 
     const view = document.createElement("section");
@@ -5522,6 +5553,18 @@ document.body.addEventListener("click", event => {
   notes.blur();
   const next = prompt("Category notes:", notes.value || "");
   if (next !== null) notes.value = next;
+});
+
+document.body.addEventListener("click", event => {
+  const title = event.target.closest("#subpage-rail .family-filter-title");
+  if (!title || !window.matchMedia("(max-width: 899px)").matches) return;
+  const block = title.closest(".family-filter-block");
+  if (!block) return;
+  const open = !block.classList.contains("filter-open");
+  document.querySelectorAll("#subpage-rail .family-filter-block.filter-open").forEach(item => {
+    if (item !== block) item.classList.remove("filter-open");
+  });
+  block.classList.toggle("filter-open", open);
 });
 
 </script>

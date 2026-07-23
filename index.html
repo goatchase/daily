@@ -1841,10 +1841,11 @@ tbody tr.total-row > td {
   cursor:text !important;
 }
 .tracker-card td input[type="number"]:focus {
-  outline:1px solid #dfe3e7 !important;
-  outline-offset:0 !important;
-  background:#fff !important;
-}
+    outline:0 !important;
+    outline-offset:0 !important;
+    box-shadow:none !important;
+    background:transparent !important;
+  }
 .tracker-card td input[type="number"]::-webkit-outer-spin-button,
 .tracker-card td input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance:none !important;
@@ -2862,6 +2863,27 @@ tbody tr.total-row > td:first-child {
       .family-task-form {
         grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
       }
+      .screen-bar {
+        display:flex !important;
+        align-items:center !important;
+        gap:6px !important;
+        flex-wrap:nowrap !important;
+      }
+      #screen-back,
+      .subpage-options-toggle {
+        width:auto !important;
+        min-width:0 !important;
+        height:32px !important;
+        min-height:32px !important;
+        padding:0 10px !important;
+        flex:0 0 auto !important;
+      }
+      #screen-title {
+        min-width:0 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
+      }
       body.subpage-active #subpage-rail {
         display:none !important;
       }
@@ -2879,9 +2901,34 @@ tbody tr.total-row > td:first-child {
         width:100% !important;
       }
       body.subpage-active.mobile-options-open #subpage-rail .family-filter-block > :not(.family-filter-title) {
-        display:grid !important;
+        display:none !important;
         gap:5px !important;
         padding-top:5px !important;
+      }
+      body.subpage-active.mobile-options-open #subpage-rail .family-filter-block.filter-open > :not(.family-filter-title) {
+        display:grid !important;
+      }
+      body.subpage-active.mobile-options-open #subpage-rail .family-filter-title::after {
+        content:"+" !important;
+        color:#5f6368 !important;
+        margin-left:8px !important;
+      }
+      body.subpage-active.mobile-options-open #subpage-rail .family-filter-block.filter-open .family-filter-title::after {
+        content:"-" !important;
+      }
+      .tracker-card thead th {
+        position:sticky !important;
+        top:0 !important;
+        z-index:20 !important;
+        background:#fff !important;
+      }
+      .tracker-card thead th:first-child {
+        z-index:30 !important;
+      }
+      .tracker-card td input[type="number"]:focus {
+        outline:0 !important;
+        box-shadow:none !important;
+        background:transparent !important;
       }
     }
   
@@ -2970,15 +3017,15 @@ tbody tr.total-row > td:first-child {
       <select id="week-select" aria-label="Week"></select>
       </div>
       <div class="tab-container" id="kid-tabs"></div>
-      <button class="btn subpage-options-toggle" id="subpage-options-toggle" type="button">Options</button>
       <div class="subpage-rail" id="subpage-rail"></div>
     </div>
   <div id="kid-views"></div>
-  <div class="screen-view" id="screen-view">
-    <div class="screen-bar">
-      <button class="btn" id="screen-back">Back to Tracker</button>
-      <span id="screen-title"></span>
-    </div>
+    <div class="screen-view" id="screen-view">
+      <div class="screen-bar">
+        <button class="btn" id="screen-back">Back to Tracker</button>
+        <button class="btn subpage-options-toggle" id="subpage-options-toggle" type="button">Options</button>
+        <span id="screen-title"></span>
+      </div>
     <div id="screen-content"></div>
   </div>
 </div>

@@ -2585,75 +2585,99 @@ tbody tr.total-row > td:first-child {
       z-index:1 !important;
     }
 
-    .tracker-card td input[type="number"] {
-      display:block !important;
-      margin:0 auto !important;
-      padding:0 !important;
-      text-align:center !important;
-      text-align-last:center !important;
-    }
+      .tracker-card td input[type="number"] {
+        display:block !important;
+        margin:0 auto !important;
+        padding:0 !important;
+        width:100% !important;
+        max-width:34px !important;
+        height:100% !important;
+        text-align:center !important;
+        text-align-last:center !important;
+      }
+      .tracker-card td {
+        text-align:center !important;
+        vertical-align:middle !important;
+      }
 
     #kid-tabs.tab-container {
       gap:3px !important;
       padding:4px !important;
     }
-    #kid-tabs .tab {
-      height:28px !important;
-      min-height:28px !important;
-      padding:3px 6px !important;
-      gap:4px !important;
-      }
-      #kid-tabs .kid-name {
-        display:inline-flex !important;
+      #kid-tabs .tab {
+        flex-direction:column !important;
+        height:42px !important;
+        min-height:42px !important;
+        min-width:38px !important;
+        padding:3px 5px !important;
+        gap:1px !important;
+        justify-content:center !important;
+        }
+        #kid-tabs .kid-name {
+          display:inline-flex !important;
         align-items:center !important;
         justify-content:center !important;
-        font-size:0 !important;
-        min-width:auto !important;
-        width:12px !important;
-      }
+          font-size:0 !important;
+          height:15px !important;
+          min-width:auto !important;
+          width:100% !important;
+        }
       #kid-tabs .kid-name::first-letter {
         font-size:0 !important;
       }
       #kid-tabs .kid-name::before {
         content:attr(data-initial) !important;
-        font-family:var(--font) !important;
-        font-size:10pt !important;
-        font-weight:500 !important;
-        line-height:18px !important;
+          font-family:var(--font) !important;
+          font-size:9.5pt !important;
+          font-weight:500 !important;
+          line-height:15px !important;
+        }
+        #kid-tabs .rank-circle {
+          display:inline-flex !important;
+          flex:0 0 auto !important;
+        justify-content:center !important;
+        min-width:30px !important;
+        width:30px !important;
+        height:17px !important;
+        padding:0 2px !important;
+        font-size:7.2pt !important;
+        line-height:17px !important;
       }
-      #kid-tabs .rank-circle {
-        display:inline-flex !important;
-        flex:0 0 auto !important;
-      min-width:24px !important;
-      height:18px !important;
-      padding:0 5px !important;
-      font-size:8pt !important;
-      line-height:18px !important;
-    }
 
-    body.subpage-active #subpage-rail {
-      display:flex !important;
-        align-items:flex-start !important;
-        gap:8px !important;
-        max-height:112px !important;
-        overflow-x:auto !important;
-        overflow-y:auto !important;
-        padding:6px 8px !important;
-      }
-    body.subpage-active #subpage-rail .family-filter-block {
-      flex:0 0 138px !important;
-      width:138px !important;
-      padding:4px !important;
-      gap:2px !important;
-      }
-      body.subpage-active #subpage-rail .family-filter-title {
-        align-items:center !important;
-        cursor:pointer !important;
+      body.subpage-active #subpage-rail {
         display:flex !important;
-        justify-content:space-between !important;
-        padding:2px 6px !important;
-        font-size:8.5pt !important;
+        align-items:flex-start !important;
+        flex-wrap:wrap !important;
+        gap:6px !important;
+        max-height:none !important;
+        overflow:visible !important;
+        padding:6px 8px 2px !important;
       }
+      body.subpage-active #subpage-rail .family-filter-block {
+        flex:0 0 auto !important;
+        width:auto !important;
+        min-width:0 !important;
+        padding:0 !important;
+        gap:4px !important;
+        overflow:visible !important;
+        }
+        body.subpage-active #subpage-rail .family-filter-block.filter-open {
+          flex:1 0 100% !important;
+          width:100% !important;
+        }
+        body.subpage-active #subpage-rail .family-filter-title {
+          align-items:center !important;
+          border:1px solid #d0d7de !important;
+          border-radius:999px !important;
+          cursor:pointer !important;
+          display:flex !important;
+          gap:8px !important;
+          height:28px !important;
+          justify-content:space-between !important;
+          min-width:82px !important;
+          padding:0 10px !important;
+          font-size:8.5pt !important;
+        }
       body.subpage-active #subpage-rail .family-filter-title::after {
         color:#5f6368 !important;
         content:"+" !important;
@@ -2663,11 +2687,17 @@ tbody tr.total-row > td:first-child {
       body.subpage-active #subpage-rail .family-filter-block.filter-open .family-filter-title::after {
         content:"-" !important;
       }
-      body.subpage-active #subpage-rail .family-filter-block:not(.filter-open) > :not(.family-filter-title) {
-        display:none !important;
-      }
-      body.subpage-active #subpage-rail .family-filter-pill {
-      height:26px !important;
+        body.subpage-active #subpage-rail .family-filter-block:not(.filter-open) > :not(.family-filter-title) {
+          display:none !important;
+        }
+        body.subpage-active #subpage-rail .family-filter-block.filter-open > :not(.family-filter-title) {
+          display:flex !important;
+          flex-wrap:wrap !important;
+          gap:5px !important;
+          padding-top:5px !important;
+        }
+        body.subpage-active #subpage-rail .family-filter-pill {
+        height:26px !important;
       min-height:26px !important;
       padding:3px 7px !important;
       font-size:8.5pt !important;
@@ -5565,6 +5595,15 @@ document.body.addEventListener("click", event => {
     if (item !== block) item.classList.remove("filter-open");
   });
   block.classList.toggle("filter-open", open);
+});
+
+document.body.addEventListener("click", event => {
+  if (!window.matchMedia("(max-width: 899px)").matches) return;
+  const option = event.target.closest("#subpage-rail .family-filter-pill, #subpage-rail .config-nav");
+  if (!option) return;
+  setTimeout(() => {
+    option.closest(".family-filter-block")?.classList.remove("filter-open");
+  }, 80);
 });
 
 </script>

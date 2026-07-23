@@ -2419,6 +2419,9 @@ tbody tr.total-row > td:first-child {
   margin-bottom:10px !important;
   background:#fff !important;
   overflow:hidden !important;
+  max-height:min(420px, calc(100vh - 180px)) !important;
+  display:flex !important;
+  flex-direction:column !important;
 }
 .calendar-column-editor-head {
   min-height:34px !important;
@@ -2428,6 +2431,10 @@ tbody tr.total-row > td:first-child {
   justify-content:space-between !important;
   border-bottom:1px solid #e1e7ef !important;
   font-weight:500 !important;
+  position:sticky !important;
+  top:0 !important;
+  z-index:5 !important;
+  background:#fff !important;
 }
 .calendar-column-actions {
   display:flex !important;
@@ -2435,6 +2442,8 @@ tbody tr.total-row > td:first-child {
 }
 .calendar-column-list {
   display:grid !important;
+  overflow:auto !important;
+  min-height:0 !important;
 }
 .calendar-column-row {
   display:grid !important;

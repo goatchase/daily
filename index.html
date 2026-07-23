@@ -2555,16 +2555,152 @@ tbody tr.total-row > td:first-child {
   min-height:32px !important;
   border-radius:0 !important;
 }
-@media (max-width:899px) {
-  .calendar-table-wrap {
-    overflow:auto !important;
-    max-height:none !important;
+  @media (max-width:899px) {
+    .calendar-table-wrap {
+      overflow:auto !important;
+      max-height:none !important;
+    }
+    .calendar-table {
+      min-width:max-content !important;
+    }
   }
-  .calendar-table {
-    min-width:max-content !important;
-  }
-}
 
+  /* Mobile polish: keep the tracker compact while preserving table behavior. */
+  @media (max-width:899px) {
+    .top-bar {
+      z-index:50000 !important;
+      overflow:visible !important;
+    }
+    .menu-wrap {
+      z-index:60000 !important;
+    }
+    .overflow-menu,
+    .overflow-menu.open {
+      position:absolute !important;
+      z-index:70000 !important;
+    }
+    #kid-views,
+    #screen-view {
+      position:relative !important;
+      z-index:1 !important;
+    }
+
+    .tracker-card td input[type="number"] {
+      display:block !important;
+      margin:0 auto !important;
+      padding:0 !important;
+      text-align:center !important;
+      text-align-last:center !important;
+    }
+
+    #kid-tabs.tab-container {
+      gap:3px !important;
+      padding:4px !important;
+    }
+    #kid-tabs .tab {
+      height:28px !important;
+      min-height:28px !important;
+      padding:3px 6px !important;
+      gap:4px !important;
+    }
+    #kid-tabs .kid-name {
+      min-width:auto !important;
+    }
+    #kid-tabs .rank-circle {
+      display:inline-flex !important;
+      flex:0 0 auto !important;
+      min-width:24px !important;
+      height:18px !important;
+      padding:0 5px !important;
+      font-size:8pt !important;
+      line-height:18px !important;
+    }
+
+    body.subpage-active #subpage-rail {
+      display:flex !important;
+      align-items:flex-start !important;
+      gap:8px !important;
+      max-height:118px !important;
+      overflow-x:auto !important;
+      overflow-y:hidden !important;
+      padding:6px 8px !important;
+    }
+    body.subpage-active #subpage-rail .family-filter-block {
+      flex:0 0 138px !important;
+      width:138px !important;
+      padding:4px !important;
+      gap:2px !important;
+    }
+    body.subpage-active #subpage-rail .family-filter-title {
+      padding:2px 6px !important;
+      font-size:8.5pt !important;
+    }
+    body.subpage-active #subpage-rail .family-filter-pill {
+      height:26px !important;
+      min-height:26px !important;
+      padding:3px 7px !important;
+      font-size:8.5pt !important;
+      white-space:nowrap !important;
+    }
+    body.subpage-active #screen-view {
+      padding:6px 8px !important;
+    }
+
+    .family-tasks-content,
+    .family-tasks-main,
+    .family-tasks-card {
+      width:100% !important;
+      max-width:100% !important;
+      min-width:0 !important;
+    }
+    .family-tasks-card {
+      min-height:auto !important;
+      padding:8px !important;
+    }
+    .family-task-list {
+      width:100% !important;
+      max-width:100% !important;
+      overflow:auto !important;
+    }
+    .family-task-header {
+      display:grid !important;
+    }
+    .family-task-row {
+      grid-template-columns:34px 86px 170px 64px 86px 76px 54px !important;
+      min-width:570px !important;
+      min-height:28px !important;
+    }
+    .family-task-row > * {
+      display:flex !important;
+      align-items:center !important;
+      min-height:28px !important;
+      height:28px !important;
+      overflow:hidden !important;
+      padding:3px 5px !important;
+      text-overflow:ellipsis !important;
+      white-space:nowrap !important;
+    }
+    .family-task-who,
+    .family-task-date,
+    .family-task-status,
+    .family-task-actions {
+      display:flex !important;
+      grid-column:auto !important;
+    }
+    .family-task-row > .family-task-check {
+      justify-content:center !important;
+      width:18px !important;
+      min-width:18px !important;
+      height:18px !important;
+      min-height:18px !important;
+      overflow:visible !important;
+      padding:0 !important;
+    }
+    .family-task-form {
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  
 </style>
 </head>
 <body>

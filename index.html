@@ -2401,14 +2401,65 @@ tbody tr.total-row > td:first-child {
     z-index:40 !important;
     background:#fff !important;
   }
-  .calendar-header:nth-child(1),
-  .calendar-header:nth-child(2) {
+.calendar-header:nth-child(1),
+.calendar-header:nth-child(2) {
     z-index:60 !important;
   }
   .calendar-total,
   .calendar-day {
     z-index:30 !important;
   }
+}
+.calendar-column-editor.collapsed {
+  display:none !important;
+}
+.calendar-column-editor {
+  border:1px solid #e1e7ef !important;
+  border-radius:14px !important;
+  margin-bottom:10px !important;
+  background:#fff !important;
+  overflow:hidden !important;
+}
+.calendar-column-editor-head {
+  min-height:34px !important;
+  padding:5px 8px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  border-bottom:1px solid #e1e7ef !important;
+  font-weight:500 !important;
+}
+.calendar-column-actions {
+  display:flex !important;
+  gap:6px !important;
+}
+.calendar-column-list {
+  display:grid !important;
+}
+.calendar-column-row {
+  display:grid !important;
+  grid-template-columns:30px 30px minmax(0, 1fr) 30px !important;
+  min-height:32px !important;
+  border-bottom:1px solid #e1e7ef !important;
+}
+.calendar-column-row:last-child {
+  border-bottom:0 !important;
+}
+.calendar-column-row input {
+  border:0 !important;
+  border-left:1px solid #e1e7ef !important;
+  border-right:1px solid #e1e7ef !important;
+  border-radius:0 !important;
+  min-width:0 !important;
+  padding:4px 8px !important;
+  text-align:left !important;
+}
+.calendar-column-row .mini-action {
+  width:30px !important;
+  min-width:30px !important;
+  height:32px !important;
+  min-height:32px !important;
+  border-radius:0 !important;
 }
 @media (max-width:899px) {
   .calendar-table-wrap {
@@ -2572,14 +2623,23 @@ tbody tr.total-row > td:first-child {
       </div>
       <div class="family-filter-block">
         <div class="family-filter-title">Columns</div>
-        <button class="family-filter-pill" id="calendar-add-column" type="button"><span>Add Column</span><span class="filter-count">+</span></button>
+        <button class="family-filter-pill" id="calendar-edit-columns" type="button"><span>Edit Columns</span><span class="filter-count">›</span></button>
       </div>
     </aside>
     <main class="calendar-main">
       <div class="calendar-card">
         <div class="calendar-head">
           <h3>Calendar</h3>
-          <button class="panel-add" id="calendar-add-column-top" type="button" aria-label="Add column">+</button>
+        </div>
+        <div class="calendar-column-editor collapsed" id="calendar-column-editor">
+          <div class="calendar-column-editor-head">
+            <span>Edit Columns</span>
+            <div class="calendar-column-actions">
+              <button class="btn" id="calendar-column-add" type="button">Add</button>
+              <button class="btn primary" id="calendar-column-save" type="button">Save</button>
+            </div>
+          </div>
+          <div class="calendar-column-list" id="calendar-column-list"></div>
         </div>
         <div class="calendar-table-wrap" id="calendar-table-wrap"></div>
       </div>
@@ -4372,17 +4432,71 @@ async function openCalendar() {
   openMainScreen("calendar-modal", "Calendar");
 }
 
-async function addCalendarColumn() {
-  const name = prompt("Column name:", "New Column");
-  if (name === null) return;
-  const column = name.trim();
-  if (!column) return;
-  if (calendarColumns.some(existing => existing.toLowerCase() === column.toLowerCase())) {
-    alert("That column already exists.");
+function renderCalendarColumnEditor() {
+  const list = document.getElementById("calendar-column-list");
+  if (!list) return;
+  list.innerHTML = calendarColumns.map((column, index) => `
+    <div class="calendar-column-row" data-calendar-column-row>
+      <button class="mini-action" data-calendar-column-move="up" aria-label="Move up">↑</button>
+      <button class="mini-action" data-calendar-column-move="down" aria-label="Move down">↓</button>
+      <input type="text" value="${escapeAttr(column)}" data-calendar-column-name aria-label="Column name">
+      <button class="mini-action delete" data-calendar-column-delete aria-label="Delete column">×</button>
+    </div>
+  `).join("");
+}
+
+function readCalendarColumnEditor() {
+  return [...document.querySelectorAll("[data-calendar-column-row] input[data-calendar-column-name]")]
+    .map(input => input.value.trim())
+    .filter(Boolean)
+    .filter((value, index, values) => values.findIndex(other => other.toLowerCase() === value.toLowerCase()) === index);
+}
+
+function toggleCalendarColumnEditor(forceOpen = null) {
+  const editor = document.getElementById("calendar-column-editor");
+  if (!editor) return;
+  const open = forceOpen === null ? editor.classList.contains("collapsed") : forceOpen;
+  if (open) renderCalendarColumnEditor();
+  editor.classList.toggle("collapsed", !open);
+}
+
+function addCalendarColumnRow() {
+  const list = document.getElementById("calendar-column-list");
+  if (!list) return;
+  const row = document.createElement("div");
+  row.className = "calendar-column-row";
+  row.dataset.calendarColumnRow = "";
+  row.innerHTML = `
+    <button class="mini-action" data-calendar-column-move="up" aria-label="Move up">↑</button>
+    <button class="mini-action" data-calendar-column-move="down" aria-label="Move down">↓</button>
+    <input type="text" value="New Column" data-calendar-column-name aria-label="Column name">
+    <button class="mini-action delete" data-calendar-column-delete aria-label="Delete column">×</button>
+  `;
+  list.appendChild(row);
+  row.querySelector("input")?.select();
+}
+
+async function saveCalendarColumns() {
+  const oldColumns = [...calendarColumns];
+  const newColumns = readCalendarColumnEditor();
+  if (!newColumns.length) {
+    alert("Keep at least one calendar column.");
     return;
   }
-  calendarColumns.push(column);
-  await saveCalendarConfig();
+  const renamedEvents = {};
+  Object.entries(calendarEvents || {}).forEach(([day, values]) => {
+    const nextValues = {};
+    newColumns.forEach((column, index) => {
+      const oldColumn = oldColumns[index];
+      const value = values?.[column] ?? values?.[oldColumn];
+      if (String(value || "").trim()) nextValues[column] = value;
+    });
+    if (Object.keys(nextValues).length) renamedEvents[day] = nextValues;
+  });
+  calendarColumns = newColumns;
+  calendarEvents = renamedEvents;
+  await Promise.all([saveCalendarConfig(), saveCalendarEvents()]);
+  toggleCalendarColumnEditor(false);
   renderCalendar();
 }
 
@@ -4849,8 +4963,22 @@ document.body.addEventListener("click", async event => {
     renderCalendar();
   }
 
-  const calendarAddButton = event.target.closest("#calendar-add-column, #calendar-add-column-top");
-  if (calendarAddButton) await addCalendarColumn();
+  const calendarEditColumnsButton = event.target.closest("#calendar-edit-columns");
+  if (calendarEditColumnsButton) toggleCalendarColumnEditor();
+
+  const calendarColumnDelete = event.target.closest("[data-calendar-column-delete]");
+  if (calendarColumnDelete) calendarColumnDelete.closest("[data-calendar-column-row]")?.remove();
+
+  const calendarColumnMove = event.target.closest("[data-calendar-column-move]");
+  if (calendarColumnMove) {
+    const row = calendarColumnMove.closest("[data-calendar-column-row]");
+    if (row && calendarColumnMove.dataset.calendarColumnMove === "up" && row.previousElementSibling) {
+      row.parentElement.insertBefore(row, row.previousElementSibling);
+    }
+    if (row && calendarColumnMove.dataset.calendarColumnMove === "down" && row.nextElementSibling) {
+      row.parentElement.insertBefore(row.nextElementSibling, row);
+    }
+  }
 
   const completeFamilyButton = event.target.closest("[data-complete-family-task]");
   if (completeFamilyButton) await completeFamilyTask(completeFamilyButton.dataset.completeFamilyTask, true);
@@ -4941,6 +5069,8 @@ document.getElementById("calendar-open").addEventListener("click", async () => {
   closeActionsMenu();
   await openCalendar();
 });
+document.getElementById("calendar-column-add").addEventListener("click", addCalendarColumnRow);
+document.getElementById("calendar-column-save").addEventListener("click", saveCalendarColumns);
 document.getElementById("family-task-toggle-form").addEventListener("click", () => toggleFamilyTaskForm());
 document.getElementById("family-task-save").addEventListener("click", addFamilyTask);
 

@@ -2949,20 +2949,49 @@ tbody tr.total-row > td:first-child {
   }
   .tracker-card td input[type="number"],
   .tracker-card td input[type="number"]:focus,
-  .tracker-card td input[type="number"]:focus-visible {
-    outline:0 !important;
-    border:0 !important;
-    box-shadow:none !important;
-    background:transparent !important;
-    border-radius:0 !important;
-    -webkit-tap-highlight-color:transparent !important;
-  }
-
-  /* Absolute final mobile fixes: wins over earlier iterative layout rules. */
-  @media (max-width:899px) {
-    body.subpage-active .screen-bar {
-      display:flex !important;
-      align-items:center !important;
+    .tracker-card td input[type="number"]:focus-visible {
+      outline:0 !important;
+      border:0 !important;
+      box-shadow:none !important;
+      background:transparent !important;
+      border-radius:0 !important;
+      -webkit-tap-highlight-color:transparent !important;
+    }
+    .tracker-card td[data-day-cell] {
+      position:relative !important;
+      text-align:center !important;
+      vertical-align:middle !important;
+    }
+    .tracker-card td[data-day-cell] input[type="number"] {
+      appearance:textfield !important;
+      -webkit-appearance:none !important;
+      -moz-appearance:textfield !important;
+      position:absolute !important;
+      left:50% !important;
+      top:50% !important;
+      transform:translate(-50%, -50%) !important;
+      width:34px !important;
+      height:22px !important;
+      line-height:22px !important;
+      margin:0 !important;
+      padding:0 !important;
+      text-align:center !important;
+      text-align-last:center !important;
+      font-variant-numeric:tabular-nums !important;
+    }
+  
+    /* Absolute final mobile fixes: wins over earlier iterative layout rules. */
+    @media (max-width:899px) {
+      body,
+      .site-container,
+      .top-bar,
+      #kid-tabs,
+      #kid-tabs.tab-container {
+        background:var(--bg) !important;
+      }
+      body.subpage-active .screen-bar {
+        display:flex !important;
+        align-items:center !important;
       gap:6px !important;
       flex-wrap:nowrap !important;
     }
@@ -3055,10 +3084,56 @@ tbody tr.total-row > td:first-child {
       border:0 !important;
       box-shadow:none !important;
       background:transparent !important;
-      border-radius:0 !important;
-      -webkit-tap-highlight-color:transparent !important;
+        border-radius:0 !important;
+        -webkit-tap-highlight-color:transparent !important;
+      }
+      .tracker-card td[data-day-cell] input[type="number"] {
+        position:absolute !important;
+        left:50% !important;
+        top:50% !important;
+        transform:translate(-50%, -50%) !important;
+        width:34px !important;
+        height:22px !important;
+        line-height:22px !important;
+        margin:0 !important;
+        padding:0 !important;
+        text-align:center !important;
+        text-align-last:center !important;
+      }
+      .calendar-table-wrap {
+        max-height:calc(100vh - 132px) !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      .calendar-table {
+        min-width:max-content !important;
+      }
+      .calendar-header {
+        position:sticky !important;
+        top:0 !important;
+        z-index:80 !important;
+        background:#fff !important;
+      }
+      .calendar-header:nth-child(1) {
+        left:0 !important;
+        z-index:100 !important;
+      }
+      .calendar-header:nth-child(2) {
+        left:42px !important;
+        z-index:100 !important;
+      }
+      .calendar-total,
+      .calendar-day {
+        position:sticky !important;
+        z-index:50 !important;
+      }
+      .calendar-total {
+        left:0 !important;
+      }
+      .calendar-day {
+        left:42px !important;
+      }
     }
-  }
 </style>
 </head>
 <body>
@@ -3217,8 +3292,8 @@ tbody tr.total-row > td:first-child {
         <div class="family-filter-title">Show</div>
         <div class="family-status-list" id="calendar-range-list">
           <button class="family-filter-pill" data-calendar-range="week"><span>This Week</span><span class="filter-count" data-calendar-range-total="week">0</span></button>
-          <button class="family-filter-pill active" data-calendar-range="month"><span>This Month</span><span class="filter-count" data-calendar-range-total="month">0</span></button>
-          <button class="family-filter-pill" data-calendar-range="3months"><span>3 Months</span><span class="filter-count" data-calendar-range-total="3months">0</span></button>
+          <button class="family-filter-pill" data-calendar-range="month"><span>This Month</span><span class="filter-count" data-calendar-range-total="month">0</span></button>
+          <button class="family-filter-pill active" data-calendar-range="3months"><span>3 Months</span><span class="filter-count" data-calendar-range-total="3months">0</span></button>
           <button class="family-filter-pill" data-calendar-range="6months"><span>6 Months</span><span class="filter-count" data-calendar-range-total="6months">0</span></button>
           <button class="family-filter-pill" data-calendar-range="year"><span>Year</span><span class="filter-count" data-calendar-range-total="year">0</span></button>
         </div>
@@ -3420,7 +3495,7 @@ let familyTaskStatusFilter = "all";
 let familyTaskOrderBy = ["project"];
 const FAMILY_TASK_STATUSES = ["now", "next", "soon", "parked", "waiting"];
 const DEFAULT_CALENDAR_COLUMNS = ["Projects", "Ryan Baseball", "Jack Baseball", "Henry Baseball", "Sonny Baseball"];
-let calendarRange = "month";
+let calendarRange = "3months";
 let calendarColumns = [...DEFAULT_CALENDAR_COLUMNS];
 let calendarEvents = {};
 let taskEditMode = {};

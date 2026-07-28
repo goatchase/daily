@@ -5876,7 +5876,7 @@ function sanitizeCalendarColorFilters(filters = []) {
 
 function calendarCellColor(value = "") {
   const text = String(value || "").trim().toLowerCase();
-  const match = calendarColorFilters.find(filter => filter.word && text === filter.word.trim().toLowerCase());
+  const match = calendarColorFilters.find(filter => filter.word && text.includes(filter.word.trim().toLowerCase()));
   return match?.color || "";
 }
 

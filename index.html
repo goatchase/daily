@@ -3671,6 +3671,41 @@ tbody tr.total-row > td:first-child {
       max-width:none !important;
     }
   }
+  .family-task-table tr.status-now td { background:#edf4ff !important; }
+  .family-task-table tr.status-next td { background:#eef8f1 !important; }
+  .family-task-table tr.status-soon td { background:#fff7df !important; }
+  .family-task-table tr.status-waiting td { background:#fff0ee !important; }
+  .family-task-table tr.status-parked td { background:#f5f6f7 !important; }
+  .family-task-table tr.complete td { background:#f8f9fa !important; color:#80868b !important; }
+  .family-task-table th,
+  .family-task-table td,
+  .family-task-table .family-task-row > *,
+  .family-task-table .family-task-header > * {
+    height:30px !important;
+    min-height:30px !important;
+  }
+  .family-task-table th {
+    padding:4px 6px !important;
+  }
+  .family-task-table .family-task-cell {
+    height:29px !important;
+    min-height:29px !important;
+    padding:4px 6px !important;
+  }
+  .family-task-table .family-task-actions {
+    height:29px !important;
+  }
+  .family-task-table .family-task-who.summary-goal-green { background:#81c995 !important; color:#0b3d1a !important; }
+  .family-task-table .family-task-who.summary-goal-blue { background:#8ab4f8 !important; color:#041e49 !important; }
+  .family-task-table .family-task-who.summary-goal-yellow { background:#fde293 !important; color:#5f4600 !important; }
+  .family-task-table .family-task-who.summary-goal-orange { background:#fdd6a0 !important; color:#6f3700 !important; }
+  .family-task-table .family-task-who.summary-goal-red { background:#f28b82 !important; color:#601410 !important; }
+  .family-task-table .family-task-who.summary-goal-gray { background:#e8eaed !important; color:#3c4043 !important; }
+  .family-task-table .family-task-status.status-now { background:#d3e3fd !important; color:#0b57d0 !important; }
+  .family-task-table .family-task-status.status-next { background:#ceead6 !important; color:#137333 !important; }
+  .family-task-table .family-task-status.status-soon { background:#feefc3 !important; color:#8f4700 !important; }
+  .family-task-table .family-task-status.status-waiting { background:#fad2cf !important; color:#a50e0e !important; }
+  .family-task-table .family-task-status.status-parked { background:#e8eaed !important; color:#3c4043 !important; }
     </style>
 </head>
 <body>
@@ -5815,7 +5850,7 @@ function renderFamilyTaskList() {
       const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
       const noteTitle = escapeAttr(notes.map(note => note.text || "").filter(Boolean).join(" | "));
       const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">✎</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">＋</button>`;
-      return `<tr class="family-task-row ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-complete-cell">${completeAction}</td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"></td><td><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select></td><td><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="mm/dd/yy" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"></td><td><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      return `<tr class="family-task-row status-${task.status || "now"} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-complete-cell">${completeAction}</td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"></td><td><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select></td><td><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="mm/dd/yy" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"></td><td><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
     const renderTable = rows => `<table class="family-task-table"><thead><tr class="family-task-header"><th></th><th>Project</th><th>Task</th><th>Who</th><th>Date</th><th>Status</th><th>Edit</th></tr></thead><tbody>${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {

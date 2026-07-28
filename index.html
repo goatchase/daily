@@ -3587,6 +3587,90 @@ tbody tr.total-row > td:first-child {
       overflow:auto !important;
     }
   }
+  .family-tasks-head {
+    justify-content:flex-start !important;
+    gap:6px !important;
+    width:704px !important;
+    max-width:100% !important;
+    margin:0 0 6px 0 !important;
+  }
+  .family-tasks-head h3 {
+    display:none !important;
+  }
+  .family-task-form:not(.collapsed) {
+    width:704px !important;
+    max-width:100% !important;
+    grid-template-columns:104px 220px 76px 86px 76px 94px 48px !important;
+    gap:0 !important;
+    margin:0 0 6px 0 !important;
+    padding:0 !important;
+    border:1px solid #dfe3e7 !important;
+    border-radius:14px !important;
+    background:#fff !important;
+    overflow:hidden !important;
+  }
+  .family-task-form:not(.collapsed) input,
+  .family-task-form:not(.collapsed) select,
+  .family-task-form:not(.collapsed) button {
+    height:26px !important;
+    min-height:26px !important;
+    border:0 !important;
+    border-right:1px solid #e1e7ef !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    box-shadow:none !important;
+    padding:3px 5px !important;
+    font-size:8.5pt !important;
+    line-height:1.1 !important;
+  }
+  .family-task-form:not(.collapsed) button {
+    border-right:0 !important;
+    color:#1967d2 !important;
+    font-weight:500 !important;
+  }
+  .family-task-table th,
+  .family-task-table td,
+  .family-task-table .family-task-row > *,
+  .family-task-table .family-task-header > * {
+    height:26px !important;
+    min-height:26px !important;
+    font-size:8.5pt !important;
+    line-height:1.1 !important;
+  }
+  .family-task-table th {
+    padding:3px 5px !important;
+  }
+  .family-task-table th:nth-child(1),
+  .family-task-table td:nth-child(1) { width:36px !important; min-width:36px !important; max-width:36px !important; }
+  .family-task-table th:nth-child(2),
+  .family-task-table td:nth-child(2) { width:104px !important; min-width:104px !important; max-width:104px !important; }
+  .family-task-table th:nth-child(3),
+  .family-task-table td:nth-child(3) { width:240px !important; min-width:240px !important; max-width:240px !important; }
+  .family-task-table th:nth-child(4),
+  .family-task-table td:nth-child(4) { width:82px !important; min-width:82px !important; max-width:82px !important; }
+  .family-task-table th:nth-child(5),
+  .family-task-table td:nth-child(5) { width:96px !important; min-width:96px !important; max-width:96px !important; }
+  .family-task-table th:nth-child(6),
+  .family-task-table td:nth-child(6) { width:86px !important; min-width:86px !important; max-width:86px !important; }
+  .family-task-table th:nth-child(7),
+  .family-task-table td:nth-child(7) { width:60px !important; min-width:60px !important; max-width:60px !important; }
+  .family-task-table .family-task-cell {
+    height:25px !important;
+    min-height:25px !important;
+    padding:3px 5px !important;
+    font-size:8.5pt !important;
+    line-height:1.1 !important;
+  }
+  .family-task-table .family-task-actions {
+    height:25px !important;
+  }
+  @media (max-width:899px) {
+    .family-tasks-head,
+    .family-task-form:not(.collapsed) {
+      width:704px !important;
+      max-width:none !important;
+    }
+  }
     </style>
 </head>
 <body>
@@ -3722,7 +3806,7 @@ tbody tr.total-row > td:first-child {
             <input id="family-task-project" type="text" placeholder="Project" aria-label="Project">
             <input id="family-task-title" type="text" placeholder="Task" aria-label="Task">
             <select id="family-task-who" aria-label="Who"></select>
-            <input id="family-task-end" type="date" aria-label="End date">
+            <input id="family-task-end" type="text" inputmode="numeric" placeholder="mm/dd/yy" aria-label="End date">
             <select id="family-task-status" aria-label="Status"></select>
             <input id="family-task-note" type="text" placeholder="Note" aria-label="Note">
             <button class="btn primary" id="family-task-save" type="button">Add</button>
@@ -5461,11 +5545,30 @@ function calendarDayTotal(dayKey) {
   return calendarColumns.reduce((total, column) => total + (calendarCellValue(dayKey, column).trim() ? 1 : 0), 0);
 }
 
-function calendarRangeTotal(range = calendarRange) {
-  return calendarRangeDates(range).reduce((sum, date) => sum + calendarDayTotal(dateKey(date)), 0);
+  function calendarRangeTotal(range = calendarRange) {
+    return calendarRangeDates(range).reduce((sum, date) => sum + calendarDayTotal(dateKey(date)), 0);
+  }
+
+function formatShortDate(value = "") {
+  if (!value) return "";
+  const [year, month, day] = String(value).split("-");
+  if (!year || !month || !day) return value;
+  return `${month}/${day}/${year.slice(-2)}`;
 }
 
-function calendarTotalClass(value, min, max) {
+function parseShortDate(value = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  const match = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+  if (!match) return trimmed;
+  const month = match[1].padStart(2, "0");
+  const day = match[2].padStart(2, "0");
+  const year = match[3].length === 2 ? `20${match[3]}` : match[3];
+  return `${year}-${month}-${day}`;
+}
+
+  function calendarTotalClass(value, min, max) {
   const number = Number(value || 0);
   if (!Number.isFinite(number)) return "summary-goal-gray";
   const range = max - min;
@@ -5712,7 +5815,7 @@ function renderFamilyTaskList() {
       const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
       const noteTitle = escapeAttr(notes.map(note => note.text || "").filter(Boolean).join(" | "));
       const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">✎</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">＋</button>`;
-      return `<tr class="family-task-row ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-complete-cell">${completeAction}</td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"></td><td><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select></td><td><input class="family-task-cell family-task-date" type="date" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(task.endDate || "")}"></td><td><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      return `<tr class="family-task-row ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-complete-cell">${completeAction}</td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"></td><td><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select></td><td><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="mm/dd/yy" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"></td><td><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
     const renderTable = rows => `<table class="family-task-table"><thead><tr class="family-task-header"><th></th><th>Project</th><th>Task</th><th>Who</th><th>Date</th><th>Status</th><th>Edit</th></tr></thead><tbody>${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
@@ -5742,7 +5845,7 @@ function resetFamilyTaskForm() {
   document.getElementById("family-task-title").value = "";
   document.getElementById("family-task-who").innerHTML = taskPeopleOptions(familyTaskPersonFilter !== "all" ? familyTaskPersonFilter : kids[0]);
   document.getElementById("family-task-status").innerHTML = taskStatusOptions(familyTaskStatusFilter !== "all" ? familyTaskStatusFilter : "now");
-  document.getElementById("family-task-end").value = new Date().toISOString().slice(0, 10);
+  document.getElementById("family-task-end").value = formatShortDate(new Date().toISOString().slice(0, 10));
   document.getElementById("family-task-note").value = "";
 }
 
@@ -5776,7 +5879,7 @@ async function addFamilyTask() {
     project:document.getElementById("family-task-project").value.trim(),
     title,
     who:document.getElementById("family-task-who").value || kids[0],
-    endDate:document.getElementById("family-task-end").value,
+    endDate:parseShortDate(document.getElementById("family-task-end").value),
     status:document.getElementById("family-task-status").value || "now",
     completed:false,
     notes:note ? [{id:makeId("note"), text:note, createdAt:now.toISOString()}] : [],
@@ -5817,7 +5920,9 @@ async function addFamilyTaskNote(id) {
 async function updateFamilyTaskField(id, field, value) {
   const allowed = new Set(["project", "title", "who", "endDate", "status"]);
   if (!allowed.has(field)) return;
-  const normalized = field === "status" && !FAMILY_TASK_STATUSES.includes(value) ? "now" : value;
+  let normalized = value;
+  if (field === "status" && !FAMILY_TASK_STATUSES.includes(value)) normalized = "now";
+  if (field === "endDate") normalized = parseShortDate(value);
   const patch = {[field]:normalized, updatedAt:new Date()};
   await taskCollectionRef().doc(id).set(patch, {merge:true});
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, ...patch} : item);

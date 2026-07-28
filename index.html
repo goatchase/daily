@@ -3343,8 +3343,249 @@ tbody tr.total-row > td:first-child {
       .family-task-row.group-start {
         border-top:1px solid #cfd8dc !important;
       }
+      }
+  /* Final real table override for Tasks, modeled after Summary. */
+  .family-task-list {
+    display:inline-block !important;
+    width:auto !important;
+    max-width:100% !important;
+    overflow:auto !important;
+    border:1px solid #e1e7ef !important;
+    border-radius:14px !important;
+    background:#fff !important;
+  }
+  .family-task-table {
+    width:max-content !important;
+    min-width:0 !important;
+    border-collapse:separate !important;
+    border-spacing:0 !important;
+    table-layout:fixed !important;
+    background:#fff !important;
+  }
+  .family-task-table th,
+  .family-task-table td {
+    height:24px !important;
+    min-height:24px !important;
+    padding:0 !important;
+    border-right:1px solid #e1e7ef !important;
+    border-bottom:1px solid #e1e7ef !important;
+    background:#fff !important;
+    vertical-align:middle !important;
+    font-size:8.5pt !important;
+    line-height:1.1 !important;
+  }
+  .family-task-table th {
+    position:sticky !important;
+    top:0 !important;
+    z-index:5 !important;
+    color:#5f6368 !important;
+    font-weight:500 !important;
+    text-align:left !important;
+  }
+  .family-task-table tr:last-child td {
+    border-bottom:0 !important;
+  }
+  .family-task-table th:last-child,
+  .family-task-table td:last-child {
+    border-right:0 !important;
+  }
+  .family-task-table th:nth-child(1),
+  .family-task-table td:nth-child(1) { width:32px !important; min-width:32px !important; max-width:32px !important; text-align:center !important; }
+  .family-task-table th:nth-child(2),
+  .family-task-table td:nth-child(2) { width:86px !important; min-width:86px !important; max-width:86px !important; }
+  .family-task-table th:nth-child(3),
+  .family-task-table td:nth-child(3) { width:180px !important; min-width:180px !important; max-width:180px !important; }
+  .family-task-table th:nth-child(4),
+  .family-task-table td:nth-child(4) { width:70px !important; min-width:70px !important; max-width:70px !important; }
+  .family-task-table th:nth-child(5),
+  .family-task-table td:nth-child(5) { width:86px !important; min-width:86px !important; max-width:86px !important; }
+  .family-task-table th:nth-child(6),
+  .family-task-table td:nth-child(6) { width:76px !important; min-width:76px !important; max-width:76px !important; }
+  .family-task-table th:nth-child(7),
+  .family-task-table td:nth-child(7) { width:54px !important; min-width:54px !important; max-width:54px !important; text-align:center !important; }
+  .family-task-table .family-task-cell {
+    width:100% !important;
+    height:23px !important;
+    min-height:23px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    padding:0 5px !important;
+    font:inherit !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+  .family-task-table .family-task-actions {
+    height:23px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:3px !important;
+  }
+  .family-task-table .family-task-check {
+    width:14px !important;
+    min-width:14px !important;
+    height:14px !important;
+    min-height:14px !important;
+    margin:auto !important;
+    padding:0 !important;
+    border:1px solid #9aa0a6 !important;
+    border-radius:999px !important;
+    background:#fff !important;
+    display:block !important;
+  }
+  .family-task-table tr.group-start td {
+    border-top:1px solid #cfd8dc !important;
+  }
+  @media (max-width:899px) {
+    .family-task-list {
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow:auto !important;
     }
-  </style>
+    .family-task-table {
+      width:max-content !important;
+    }
+  }
+  /* Final task table correction: table rows must not inherit old grid-row styling. */
+  .family-tasks-card {
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    padding:0 !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+  .family-task-list,
+  .family-task-list.completed {
+    display:block !important;
+    width:max-content !important;
+    max-width:100% !important;
+    overflow:auto !important;
+    border:1px solid #dfe3e7 !important;
+    border-radius:14px !important;
+    background:#fff !important;
+    box-shadow:none !important;
+  }
+  .family-task-table {
+    display:table !important;
+    width:max-content !important;
+    min-width:0 !important;
+    margin:0 !important;
+    border-collapse:separate !important;
+    border-spacing:0 !important;
+    table-layout:fixed !important;
+    background:#fff !important;
+  }
+  .family-task-table .family-task-row,
+  .family-task-table .family-task-header {
+    display:table-row !important;
+    height:auto !important;
+    min-height:0 !important;
+    border:0 !important;
+    box-shadow:none !important;
+  }
+  .family-task-table .family-task-row::before,
+  .family-task-table .family-task-row::after {
+    content:none !important;
+    display:none !important;
+  }
+  .family-task-table th,
+  .family-task-table td,
+  .family-task-table .family-task-row > *,
+  .family-task-table .family-task-header > * {
+    display:table-cell !important;
+    height:24px !important;
+    min-height:24px !important;
+    padding:0 !important;
+    border:0 !important;
+    border-right:1px solid #e1e7ef !important;
+    border-bottom:1px solid #e1e7ef !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    vertical-align:middle !important;
+    font-size:8.5pt !important;
+    line-height:1.1 !important;
+    box-shadow:none !important;
+  }
+  .family-task-table th {
+    position:sticky !important;
+    top:0 !important;
+    z-index:5 !important;
+    color:#5f6368 !important;
+    font-weight:500 !important;
+    text-align:left !important;
+  }
+  .family-task-table tr:last-child td {
+    border-bottom:0 !important;
+  }
+  .family-task-table th:last-child,
+  .family-task-table td:last-child {
+    border-right:0 !important;
+  }
+  .family-task-table tr.group-start td {
+    border-top:2px solid #cfd8dc !important;
+  }
+  .family-task-table th:nth-child(1),
+  .family-task-table td:nth-child(1) { width:32px !important; min-width:32px !important; max-width:32px !important; text-align:center !important; }
+  .family-task-table th:nth-child(2),
+  .family-task-table td:nth-child(2) { width:86px !important; min-width:86px !important; max-width:86px !important; }
+  .family-task-table th:nth-child(3),
+  .family-task-table td:nth-child(3) { width:180px !important; min-width:180px !important; max-width:180px !important; }
+  .family-task-table th:nth-child(4),
+  .family-task-table td:nth-child(4) { width:70px !important; min-width:70px !important; max-width:70px !important; }
+  .family-task-table th:nth-child(5),
+  .family-task-table td:nth-child(5) { width:86px !important; min-width:86px !important; max-width:86px !important; }
+  .family-task-table th:nth-child(6),
+  .family-task-table td:nth-child(6) { width:76px !important; min-width:76px !important; max-width:76px !important; }
+  .family-task-table th:nth-child(7),
+  .family-task-table td:nth-child(7) { width:54px !important; min-width:54px !important; max-width:54px !important; text-align:center !important; }
+  .family-task-table .family-task-cell {
+    display:block !important;
+    width:100% !important;
+    height:23px !important;
+    min-height:23px !important;
+    padding:0 5px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    font:inherit !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+  .family-task-table .family-task-actions {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:3px !important;
+    height:23px !important;
+  }
+  .family-task-table .family-task-check {
+    display:block !important;
+    width:14px !important;
+    min-width:14px !important;
+    height:14px !important;
+    min-height:14px !important;
+    margin:0 auto !important;
+    padding:0 !important;
+    border:1px solid #9aa0a6 !important;
+    border-radius:999px !important;
+    background:#fff !important;
+  }
+  @media (max-width:899px) {
+    .family-task-list,
+    .family-task-list.completed {
+      width:100% !important;
+      max-width:100% !important;
+      overflow:auto !important;
+    }
+  }
+    </style>
 </head>
 <body>
 <div class="auth-screen" id="auth-screen">
@@ -5464,14 +5705,14 @@ function renderFamilyTaskList() {
     if (field === "endDate") return task.endDate || "9999";
     return task.project || "";
   };
-  const renderRow = task => {
-    const notes = Array.isArray(task.notes) ? task.notes : [];
-    const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
-    const noteTitle = escapeAttr(notes.map(note => note.text || "").filter(Boolean).join(" | "));
-    const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">✎</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">＋</button>`;
-    return `<div class="family-task-row ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}">${completeAction}<input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select><input class="family-task-cell family-task-date" type="date" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(task.endDate || "")}"><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></div>`;
-  };
-  const taskHeader = `<div class="family-task-row family-task-header"><span></span><div>Project</div><div>Task</div><div>Who</div><div>Date</div><div>Status</div><div>Edit</div></div>`;
+    const renderRow = task => {
+      const notes = Array.isArray(task.notes) ? task.notes : [];
+      const completeAction = task.completed ? `<button class="mini-action" data-reopen-family-task="${task.id}" aria-label="Reopen task">↩</button>` : `<button class="family-task-check" data-complete-family-task="${task.id}" aria-label="Complete task"></button>`;
+      const noteTitle = escapeAttr(notes.map(note => note.text || "").filter(Boolean).join(" | "));
+      const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">✎</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">＋</button>`;
+      return `<tr class="family-task-row ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-complete-cell">${completeAction}</td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"></td><td><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select></td><td><input class="family-task-cell family-task-date" type="date" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(task.endDate || "")}"></td><td><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+    };
+    const renderTable = rows => `<table class="family-task-table"><thead><tr class="family-task-header"><th></th><th>Project</th><th>Task</th><th>Who</th><th>Date</th><th>Status</th><th>Edit</th></tr></thead><tbody>${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
     for (const field of familyTaskOrderBy) {
       const valueA = taskOrderValue(a, field);
@@ -5489,8 +5730,8 @@ function renderFamilyTaskList() {
   const completed = visibleFamilyTasks(true);
   const primaryOrder = familyTaskOrderBy[0] || "project";
   const groupedActive = sortTasks(active).map((task, index, list) => ({...task, groupStart:index > 0 && String(taskOrderValue(task, primaryOrder)) !== String(taskOrderValue(list[index - 1], primaryOrder))}));
-  activeList.innerHTML = active.length ? taskHeader + groupedActive.map(renderRow).join("") : `<div class="empty-state">All tasks complete. Nice work.</div>`;
-  completedList.innerHTML = completed.length ? completed.map(renderRow).join("") : `<div class="empty-state">No completed tasks yet.</div>`;
+    activeList.innerHTML = active.length ? renderTable(groupedActive.map(renderRow).join("")) : `<div class="empty-state">All tasks complete. Nice work.</div>`;
+    completedList.innerHTML = completed.length ? renderTable(completed.map(renderRow).join("")) : `<div class="empty-state">No completed tasks yet.</div>`;
   if (completedCount) completedCount.textContent = String(completed.length);
 }
 

@@ -3706,6 +3706,92 @@ tbody tr.total-row > td:first-child {
   .family-task-table .family-task-status.status-soon { background:#feefc3 !important; color:#8f4700 !important; }
   .family-task-table .family-task-status.status-waiting { background:#fad2cf !important; color:#a50e0e !important; }
   .family-task-table .family-task-status.status-parked { background:#e8eaed !important; color:#3c4043 !important; }
+  .calendar-total.sunday-row,
+  .calendar-day.sunday-row,
+  .calendar-cell.sunday-row {
+    border-bottom:2px solid #cfd8dc !important;
+  }
+  .calendar-total.today-row,
+  .calendar-day.today-row,
+  .calendar-cell.today-row {
+    border-top:3px solid #5f6368 !important;
+  }
+  .family-tasks-head,
+  .family-task-form:not(.collapsed),
+  .family-task-list,
+  .family-task-list.completed {
+    width:min(100%, 980px) !important;
+    max-width:100% !important;
+  }
+  .family-task-table {
+    width:100% !important;
+    min-width:760px !important;
+    font-size:10pt !important;
+  }
+  .family-task-table th,
+  .family-task-table td,
+  .family-task-table .family-task-row > *,
+  .family-task-table .family-task-header > * {
+    height:34px !important;
+    min-height:34px !important;
+    font-size:10pt !important;
+    line-height:1.2 !important;
+  }
+  .family-task-table th {
+    padding:6px 8px !important;
+  }
+  .family-task-table .family-task-cell {
+    height:33px !important;
+    min-height:33px !important;
+    padding:6px 8px !important;
+    font-size:10pt !important;
+    line-height:1.2 !important;
+  }
+  .family-task-table .family-task-actions {
+    height:33px !important;
+  }
+  .family-task-table th:nth-child(1),
+  .family-task-table td:nth-child(1) { width:42px !important; min-width:42px !important; max-width:42px !important; }
+  .family-task-table th:nth-child(2),
+  .family-task-table td:nth-child(2) { width:15% !important; min-width:112px !important; max-width:none !important; }
+  .family-task-table th:nth-child(3),
+  .family-task-table td:nth-child(3) { width:auto !important; min-width:260px !important; max-width:none !important; }
+  .family-task-table th:nth-child(4),
+  .family-task-table td:nth-child(4) { width:12% !important; min-width:92px !important; max-width:none !important; }
+  .family-task-table th:nth-child(5),
+  .family-task-table td:nth-child(5) { width:12% !important; min-width:104px !important; max-width:none !important; }
+  .family-task-table th:nth-child(6),
+  .family-task-table td:nth-child(6) { width:12% !important; min-width:96px !important; max-width:none !important; }
+  .family-task-table th:nth-child(7),
+  .family-task-table td:nth-child(7) { width:70px !important; min-width:70px !important; max-width:70px !important; }
+  .family-task-form:not(.collapsed) {
+    grid-template-columns:minmax(112px, 15%) minmax(260px, 1fr) minmax(92px, 12%) minmax(104px, 12%) minmax(96px, 12%) minmax(120px, 16%) 70px !important;
+  }
+  .family-task-form:not(.collapsed) input,
+  .family-task-form:not(.collapsed) select,
+  .family-task-form:not(.collapsed) button {
+    height:34px !important;
+    min-height:34px !important;
+    padding:6px 8px !important;
+    font-size:10pt !important;
+    line-height:1.2 !important;
+  }
+  @media (max-width:899px) {
+    .family-tasks-head,
+    .family-task-form:not(.collapsed),
+    .family-task-list,
+    .family-task-list.completed {
+      width:100% !important;
+      max-width:100% !important;
+    }
+    .family-task-table {
+      min-width:760px !important;
+    }
+    .family-task-form:not(.collapsed) {
+      width:760px !important;
+      max-width:none !important;
+    }
+  }
     </style>
 </head>
 <body>
@@ -5656,16 +5742,24 @@ function renderCalendar() {
   dates.forEach(date => {
     const key = dateKey(date);
     const isToday = key === dateKey(new Date());
-    const todayClass = isToday ? " today-row" : "";
-    html += `<div class="calendar-total${todayClass} ${calendarTotalClass(calendarDayTotal(key), min, max)}" data-calendar-total="${key}">${calendarDayTotal(key)}</div>`;
-    html += `<div class="calendar-day${todayClass} ${isToday ? "today" : ""}">${escapeHtml(localDateLabel(date))}</div>`;
+    const rowClasses = `${isToday ? " today-row" : ""}${date.getDay() === 0 ? " sunday-row" : ""}`;
+    html += `<div class="calendar-total${rowClasses} ${calendarTotalClass(calendarDayTotal(key), min, max)}" data-calendar-total="${key}">${calendarDayTotal(key)}</div>`;
+    html += `<div class="calendar-day${rowClasses} ${isToday ? "today" : ""}">${escapeHtml(localDateLabel(date))}</div>`;
     calendarColumns.forEach(column => {
       const value = calendarCellValue(key, column);
-      html += `<textarea class="calendar-cell${todayClass} ${value.trim() ? "has-content" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder="">${escapeHtml(value)}</textarea>`;
+      html += `<textarea class="calendar-cell${rowClasses} ${value.trim() ? "has-content" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder="">${escapeHtml(value)}</textarea>`;
     });
   });
   html += `</div>`;
   wrap.innerHTML = html;
+}
+
+function scrollCalendarToToday() {
+  const wrap = document.getElementById("calendar-table-wrap");
+  const today = wrap?.querySelector(".calendar-day.today-row");
+  if (!wrap || !today) return;
+  const top = today.offsetTop - 34;
+  wrap.scrollTop = Math.max(0, top);
 }
 
 function syncCalendarCellToCache(cell) {
@@ -5704,6 +5798,7 @@ async function openCalendar() {
   await loadCalendarData();
   renderCalendar();
   openMainScreen("calendar-modal", "Calendar");
+  requestAnimationFrame(scrollCalendarToToday);
 }
 
 function renderCalendarColumnEditor() {

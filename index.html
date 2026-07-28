@@ -3837,6 +3837,103 @@ tbody tr.total-row > td:first-child {
     height:auto !important;
     min-height:68px !important;
   }
+  .calendar-column-editor {
+    width:min(100%, 720px) !important;
+    max-height:min(560px, calc(100vh - 150px)) !important;
+    border:1px solid #dfe3e7 !important;
+    border-radius:14px !important;
+    background:#fff !important;
+    box-shadow:0 1px 2px rgba(60,64,67,.08) !important;
+    overflow:hidden !important;
+  }
+  .calendar-column-editor-head {
+    min-height:42px !important;
+    padding:8px 10px !important;
+    gap:10px !important;
+    border-bottom:1px solid #dfe3e7 !important;
+  }
+  .calendar-column-editor-head > span {
+    font-size:10pt !important;
+    font-weight:600 !important;
+    color:#202124 !important;
+    white-space:nowrap !important;
+  }
+  .calendar-column-actions {
+    gap:6px !important;
+    flex-wrap:wrap !important;
+    justify-content:flex-end !important;
+  }
+  .calendar-column-actions .btn {
+    height:28px !important;
+    min-height:28px !important;
+    padding:0 10px !important;
+    border-color:#dfe3e7 !important;
+    font-size:10pt !important;
+  }
+  .calendar-editor-body {
+    display:grid !important;
+    grid-template-columns:minmax(260px, 1fr) minmax(230px, .85fr) !important;
+    gap:0 !important;
+    min-height:0 !important;
+    overflow:auto !important;
+  }
+  .calendar-editor-section {
+    min-width:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    border-right:1px solid #eef2f6 !important;
+  }
+  .calendar-editor-section:last-child {
+    border-right:0 !important;
+  }
+  .calendar-editor-label {
+    min-height:34px !important;
+    padding:9px 10px 6px !important;
+    font-size:10pt !important;
+    font-weight:600 !important;
+    color:#3c4043 !important;
+    border-bottom:1px solid #eef2f6 !important;
+    background:#fff !important;
+  }
+  .calendar-column-list,
+  .calendar-color-list {
+    overflow:auto !important;
+    display:grid !important;
+    align-content:start !important;
+    max-height:360px !important;
+  }
+  .calendar-column-row,
+  .calendar-color-row {
+    min-height:38px !important;
+    border-bottom:1px solid #eef2f6 !important;
+    background:#fff !important;
+  }
+  .calendar-column-row {
+    grid-template-columns:34px 34px minmax(0, 1fr) 34px !important;
+  }
+  .calendar-color-row {
+    grid-template-columns:minmax(0, 1fr) 64px 34px !important;
+  }
+  .calendar-column-row input,
+  .calendar-color-row input {
+    height:38px !important;
+    min-height:38px !important;
+    padding:7px 10px !important;
+    border-color:#eef2f6 !important;
+    font-size:10pt !important;
+    color:#202124 !important;
+  }
+  .calendar-color-row input[type="color"] {
+    padding:5px 8px !important;
+  }
+  .calendar-column-row .mini-action,
+  .calendar-color-row .mini-action {
+    width:34px !important;
+    min-width:34px !important;
+    height:38px !important;
+    min-height:38px !important;
+    color:#5f6368 !important;
+  }
   @media (max-width:899px) {
     .family-tasks-head,
     .family-task-form:not(.collapsed),
@@ -3851,6 +3948,28 @@ tbody tr.total-row > td:first-child {
     .family-task-form:not(.collapsed) {
       width:776px !important;
       max-width:none !important;
+    }
+    .calendar-column-editor {
+      width:100% !important;
+      max-height:none !important;
+    }
+    .calendar-column-editor-head {
+      align-items:flex-start !important;
+      flex-direction:column !important;
+    }
+    .calendar-column-actions {
+      justify-content:flex-start !important;
+    }
+    .calendar-editor-body {
+      grid-template-columns:1fr !important;
+    }
+    .calendar-editor-section {
+      border-right:0 !important;
+      border-bottom:1px solid #eef2f6 !important;
+    }
+    .calendar-column-list,
+    .calendar-color-list {
+      max-height:none !important;
     }
   }
     </style>
@@ -4037,10 +4156,16 @@ tbody tr.total-row > td:first-child {
               <button class="btn primary" id="calendar-column-save" type="button">Save</button>
             </div>
           </div>
-          <div class="calendar-editor-label">Columns</div>
-          <div class="calendar-column-list" id="calendar-column-list"></div>
-          <div class="calendar-editor-label">Color Filters</div>
-          <div class="calendar-color-list" id="calendar-color-list"></div>
+          <div class="calendar-editor-body">
+            <section class="calendar-editor-section">
+              <div class="calendar-editor-label">Columns</div>
+              <div class="calendar-column-list" id="calendar-column-list"></div>
+            </section>
+            <section class="calendar-editor-section">
+              <div class="calendar-editor-label">Color Filters</div>
+              <div class="calendar-color-list" id="calendar-color-list"></div>
+            </section>
+          </div>
         </div>
         <div class="calendar-table-wrap" id="calendar-table-wrap"></div>
       </div>
@@ -5750,6 +5875,19 @@ function calendarCellColor(value = "") {
   return match?.color || "";
 }
 
+function pruneCalendarEvents(events = {}, columns = calendarColumns) {
+  const allowed = new Set(columns);
+  const pruned = {};
+  Object.entries(events || {}).forEach(([day, values]) => {
+    const nextValues = {};
+    Object.entries(values || {}).forEach(([column, value]) => {
+      if (allowed.has(column) && String(value || "").trim()) nextValues[column] = value;
+    });
+    if (Object.keys(nextValues).length) pruned[day] = nextValues;
+  });
+  return pruned;
+}
+
 function calendarDayTotal(dayKey) {
   return calendarColumns.reduce((total, column) => total + (calendarCellValue(dayKey, column).trim() ? 1 : 0), 0);
 }
@@ -5796,7 +5934,7 @@ async function loadCalendarData() {
     const config = configDoc.exists ? configDoc.data() : {};
     calendarColumns = uniqueCalendarColumns(Array.isArray(config.columns) && config.columns.length ? config.columns : DEFAULT_CALENDAR_COLUMNS);
     calendarColorFilters = Array.isArray(config.colorFilters) ? sanitizeCalendarColorFilters(config.colorFilters) : [];
-    calendarEvents = eventsDoc.exists && eventsDoc.data().events ? eventsDoc.data().events : {};
+    calendarEvents = pruneCalendarEvents(eventsDoc.exists && eventsDoc.data().events ? eventsDoc.data().events : {}, calendarColumns);
   } catch (error) {
     console.warn("Calendar data could not load.", error);
     calendarColumns = [...DEFAULT_CALENDAR_COLUMNS];
@@ -5806,11 +5944,11 @@ async function loadCalendarData() {
 }
 
 async function saveCalendarConfig() {
-  await calendarConfigRef().set({columns:calendarColumns, colorFilters:calendarColorFilters, updatedAt:new Date()}, {merge:true});
+  await calendarConfigRef().set({columns:calendarColumns, colorFilters:calendarColorFilters, updatedAt:new Date()});
 }
 
 async function saveCalendarEvents() {
-  await calendarEventsRef().set({events:calendarEvents, updatedAt:new Date()}, {merge:true});
+  await calendarEventsRef().set({events:calendarEvents, updatedAt:new Date()});
 }
 
 function renderCalendar() {

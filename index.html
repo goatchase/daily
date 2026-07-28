@@ -3839,12 +3839,12 @@ tbody tr.total-row > td:first-child {
   }
   .calendar-column-editor {
     width:min(100%, 720px) !important;
-    max-height:min(560px, calc(100vh - 150px)) !important;
+    max-height:none !important;
     border:1px solid #dfe3e7 !important;
     border-radius:14px !important;
     background:#fff !important;
     box-shadow:0 1px 2px rgba(60,64,67,.08) !important;
-    overflow:hidden !important;
+    overflow:visible !important;
   }
   .calendar-column-editor-head {
     min-height:42px !important;
@@ -3875,7 +3875,7 @@ tbody tr.total-row > td:first-child {
     grid-template-columns:minmax(260px, 1fr) minmax(230px, .85fr) !important;
     gap:0 !important;
     min-height:0 !important;
-    overflow:auto !important;
+    overflow:visible !important;
   }
   .calendar-editor-section {
     min-width:0 !important;
@@ -3897,10 +3897,10 @@ tbody tr.total-row > td:first-child {
   }
   .calendar-column-list,
   .calendar-color-list {
-    overflow:auto !important;
+    overflow:visible !important;
     display:grid !important;
     align-content:start !important;
-    max-height:360px !important;
+    max-height:none !important;
   }
   .calendar-column-row,
   .calendar-color-row {
@@ -5870,8 +5870,8 @@ function sanitizeCalendarColorFilters(filters = []) {
 }
 
 function calendarCellColor(value = "") {
-  const text = String(value || "").toLowerCase();
-  const match = calendarColorFilters.find(filter => filter.word && text.includes(filter.word.toLowerCase()));
+  const text = String(value || "").trim().toLowerCase();
+  const match = calendarColorFilters.find(filter => filter.word && text === filter.word.trim().toLowerCase());
   return match?.color || "";
 }
 

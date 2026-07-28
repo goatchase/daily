@@ -2348,6 +2348,9 @@ tbody tr.total-row > td:first-child {
 .calendar-cell.has-content {
   background:#e8eaed !important;
 }
+.calendar-cell.color-filtered {
+  background:var(--calendar-cell-color) !important;
+}
 .calendar-cell:focus {
   background:#fff !important;
   box-shadow:inset 0 0 0 1px #9bbcff !important;
@@ -2419,6 +2422,9 @@ tbody tr.total-row > td:first-child {
 }
 .calendar-cell.has-content {
   background:#e8eaed !important;
+}
+.calendar-cell.color-filtered {
+  background:var(--calendar-cell-color) !important;
 }
 .calendar-period-total {
   margin-top:4px !important;
@@ -5976,7 +5982,7 @@ function renderCalendar() {
     calendarColumns.forEach(column => {
       const value = calendarCellValue(key, column);
       const filterColor = calendarCellColor(value);
-      html += `<textarea class="calendar-cell${rowClasses} ${value.trim() ? "has-content" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder=""${filterColor ? ` style="background:${escapeAttr(filterColor)}"` : ""}>${escapeHtml(value)}</textarea>`;
+      html += `<textarea class="calendar-cell${rowClasses} ${value.trim() ? "has-content" : ""}${filterColor ? " color-filtered" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder=""${filterColor ? ` style="--calendar-cell-color:${escapeAttr(filterColor)}"` : ""}>${escapeHtml(value)}</textarea>`;
     });
   });
   html += `</div>`;
@@ -6000,7 +6006,10 @@ function syncCalendarCellToCache(cell) {
   else delete calendarEvents[day][column];
   if (!Object.keys(calendarEvents[day]).length) delete calendarEvents[day];
   cell.classList.toggle("has-content", Boolean(value));
-  cell.style.background = calendarCellColor(value);
+  const filterColor = calendarCellColor(value);
+  cell.classList.toggle("color-filtered", Boolean(filterColor));
+  if (filterColor) cell.style.setProperty("--calendar-cell-color", filterColor);
+  else cell.style.removeProperty("--calendar-cell-color");
 }
 
 function refreshCalendarTotals() {

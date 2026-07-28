@@ -3706,6 +3706,153 @@ tbody tr.total-row > td:first-child {
   .family-task-table .family-task-status.status-soon { background:#feefc3 !important; color:#8f4700 !important; }
   .family-task-table .family-task-status.status-waiting { background:#fad2cf !important; color:#a50e0e !important; }
   .family-task-table .family-task-status.status-parked { background:#e8eaed !important; color:#3c4043 !important; }
+  .calendar-total.sunday-row,
+  .calendar-day.sunday-row,
+  .calendar-cell.sunday-row {
+    border-bottom:2px solid #cfd8dc !important;
+  }
+  .calendar-total.today-row,
+  .calendar-day.today-row,
+  .calendar-cell.today-row {
+    border-top:3px solid #5f6368 !important;
+  }
+  .calendar-editor-label {
+    min-height:28px !important;
+    padding:6px 8px 3px !important;
+    color:#3c4043 !important;
+    font-weight:500 !important;
+    border-bottom:1px solid #eef2f6 !important;
+    background:#fff !important;
+  }
+  .calendar-color-list {
+    display:grid !important;
+    overflow:auto !important;
+    min-height:0 !important;
+  }
+  .calendar-color-row {
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 54px 30px !important;
+    min-height:32px !important;
+    border-bottom:1px solid #e1e7ef !important;
+  }
+  .calendar-color-row:last-child {
+    border-bottom:0 !important;
+  }
+  .calendar-color-row input {
+    min-width:0 !important;
+    height:32px !important;
+    border:0 !important;
+    border-right:1px solid #e1e7ef !important;
+    border-radius:0 !important;
+    padding:4px 8px !important;
+    text-align:left !important;
+    background:#fff !important;
+  }
+  .calendar-color-row input[type="color"] {
+    padding:3px !important;
+  }
+  .calendar-color-row .mini-action {
+    width:30px !important;
+    min-width:30px !important;
+    height:32px !important;
+    min-height:32px !important;
+    border-radius:0 !important;
+  }
+  .family-tasks-head,
+  .family-task-form:not(.collapsed),
+  .family-task-list,
+  .family-task-list.completed {
+    width:min(100%, 980px) !important;
+    max-width:100% !important;
+  }
+  .family-task-table {
+    width:100% !important;
+    min-width:760px !important;
+    font-size:10pt !important;
+  }
+  .family-task-table th,
+  .family-task-table td,
+  .family-task-table .family-task-row > *,
+  .family-task-table .family-task-header > * {
+    height:34px !important;
+    min-height:34px !important;
+    font-size:10pt !important;
+    line-height:1.2 !important;
+  }
+  .family-task-table th {
+    padding:6px 8px !important;
+  }
+  .family-task-table .family-task-cell {
+    height:33px !important;
+    min-height:33px !important;
+    padding:6px 8px !important;
+    font-size:10pt !important;
+    line-height:1.2 !important;
+  }
+  .family-task-table .family-task-actions {
+    height:33px !important;
+  }
+  .family-task-table th:nth-child(1),
+  .family-task-table td:nth-child(1) { width:42px !important; min-width:42px !important; max-width:42px !important; }
+  .family-task-table th:nth-child(2),
+  .family-task-table td:nth-child(2) { width:15% !important; min-width:112px !important; max-width:none !important; }
+  .family-task-table th:nth-child(3),
+  .family-task-table td:nth-child(3) { width:auto !important; min-width:260px !important; max-width:none !important; }
+  .family-task-table th:nth-child(4),
+  .family-task-table td:nth-child(4) { width:12% !important; min-width:92px !important; max-width:none !important; }
+  .family-task-table th:nth-child(5),
+  .family-task-table td:nth-child(5) { width:12% !important; min-width:104px !important; max-width:none !important; }
+  .family-task-table th:nth-child(6),
+  .family-task-table td:nth-child(6) { width:12% !important; min-width:96px !important; max-width:none !important; }
+  .family-task-table th:nth-child(7),
+  .family-task-table td:nth-child(7) { width:70px !important; min-width:70px !important; max-width:70px !important; }
+  .family-task-form:not(.collapsed) {
+    grid-template-columns:42px minmax(112px, 15%) minmax(260px, 1fr) minmax(92px, 12%) minmax(104px, 12%) minmax(96px, 12%) 70px !important;
+  }
+  .family-task-form:not(.collapsed)::before {
+    content:"" !important;
+    display:block !important;
+    grid-column:1 !important;
+    grid-row:1 !important;
+    border-right:1px solid #e1e7ef !important;
+    min-height:34px !important;
+  }
+  .family-task-form:not(.collapsed) > :nth-child(1) { grid-column:2 !important; grid-row:1 !important; }
+  .family-task-form:not(.collapsed) > :nth-child(2) { grid-column:3 !important; grid-row:1 !important; }
+  .family-task-form:not(.collapsed) > :nth-child(3) { grid-column:4 !important; grid-row:1 !important; }
+  .family-task-form:not(.collapsed) > :nth-child(4) { grid-column:5 !important; grid-row:1 !important; }
+  .family-task-form:not(.collapsed) > :nth-child(5) { grid-column:6 !important; grid-row:1 !important; }
+  .family-task-form:not(.collapsed) > :nth-child(6) { grid-column:2 / 7 !important; grid-row:2 !important; border-top:1px solid #e1e7ef !important; }
+  .family-task-form:not(.collapsed) > :nth-child(7) { grid-column:7 !important; grid-row:1 / 3 !important; height:auto !important; }
+  .family-task-form:not(.collapsed) input,
+  .family-task-form:not(.collapsed) select,
+  .family-task-form:not(.collapsed) button {
+    height:34px !important;
+    min-height:34px !important;
+    padding:6px 8px !important;
+    font-size:10pt !important;
+    line-height:1.2 !important;
+  }
+  .family-task-form:not(.collapsed) > :nth-child(7) {
+    height:auto !important;
+    min-height:68px !important;
+  }
+  @media (max-width:899px) {
+    .family-tasks-head,
+    .family-task-form:not(.collapsed),
+    .family-task-list,
+    .family-task-list.completed {
+      width:100% !important;
+      max-width:100% !important;
+    }
+    .family-task-table {
+      min-width:776px !important;
+    }
+    .family-task-form:not(.collapsed) {
+      width:776px !important;
+      max-width:none !important;
+    }
+  }
     </style>
 </head>
 <body>
@@ -3886,10 +4033,14 @@ tbody tr.total-row > td:first-child {
             <span>Edit Columns</span>
             <div class="calendar-column-actions">
               <button class="btn" id="calendar-column-add" type="button">Add</button>
+              <button class="btn" id="calendar-color-add" type="button">Add Color</button>
               <button class="btn primary" id="calendar-column-save" type="button">Save</button>
             </div>
           </div>
+          <div class="calendar-editor-label">Columns</div>
           <div class="calendar-column-list" id="calendar-column-list"></div>
+          <div class="calendar-editor-label">Color Filters</div>
+          <div class="calendar-color-list" id="calendar-color-list"></div>
         </div>
         <div class="calendar-table-wrap" id="calendar-table-wrap"></div>
       </div>
@@ -4069,6 +4220,7 @@ const FAMILY_TASK_STATUSES = ["now", "next", "soon", "parked", "waiting"];
 const DEFAULT_CALENDAR_COLUMNS = ["Projects", "Ryan Baseball", "Jack Baseball", "Henry Baseball", "Sonny Baseball"];
 let calendarRange = "3months";
 let calendarColumns = [...DEFAULT_CALENDAR_COLUMNS];
+let calendarColorFilters = [];
 let calendarEvents = {};
 let taskEditMode = {};
 let logEditMode = {};
@@ -5576,6 +5728,28 @@ function calendarCellValue(dayKey, column) {
   return calendarEvents?.[dayKey]?.[column] || "";
 }
 
+function uniqueCalendarColumns(columns = []) {
+  return columns
+    .map(column => String(column || "").trim())
+    .filter(Boolean)
+    .filter((value, index, values) => values.findIndex(other => other.toLowerCase() === value.toLowerCase()) === index);
+}
+
+function sanitizeCalendarColorFilters(filters = []) {
+  return filters
+    .map(filter => ({
+      word:String(filter?.word || "").trim(),
+      color:String(filter?.color || "#e8eaed").trim() || "#e8eaed"
+    }))
+    .filter(filter => filter.word);
+}
+
+function calendarCellColor(value = "") {
+  const text = String(value || "").toLowerCase();
+  const match = calendarColorFilters.find(filter => filter.word && text.includes(filter.word.toLowerCase()));
+  return match?.color || "";
+}
+
 function calendarDayTotal(dayKey) {
   return calendarColumns.reduce((total, column) => total + (calendarCellValue(dayKey, column).trim() ? 1 : 0), 0);
 }
@@ -5620,17 +5794,19 @@ async function loadCalendarData() {
   try {
     const [configDoc, eventsDoc] = await Promise.all([calendarConfigRef().get(), calendarEventsRef().get()]);
     const config = configDoc.exists ? configDoc.data() : {};
-    calendarColumns = Array.isArray(config.columns) && config.columns.length ? config.columns : [...DEFAULT_CALENDAR_COLUMNS];
+    calendarColumns = uniqueCalendarColumns(Array.isArray(config.columns) && config.columns.length ? config.columns : DEFAULT_CALENDAR_COLUMNS);
+    calendarColorFilters = Array.isArray(config.colorFilters) ? sanitizeCalendarColorFilters(config.colorFilters) : [];
     calendarEvents = eventsDoc.exists && eventsDoc.data().events ? eventsDoc.data().events : {};
   } catch (error) {
     console.warn("Calendar data could not load.", error);
     calendarColumns = [...DEFAULT_CALENDAR_COLUMNS];
+    calendarColorFilters = [];
     calendarEvents = {};
   }
 }
 
 async function saveCalendarConfig() {
-  await calendarConfigRef().set({columns:calendarColumns, updatedAt:new Date()}, {merge:true});
+  await calendarConfigRef().set({columns:calendarColumns, colorFilters:calendarColorFilters, updatedAt:new Date()}, {merge:true});
 }
 
 async function saveCalendarEvents() {
@@ -5656,16 +5832,25 @@ function renderCalendar() {
   dates.forEach(date => {
     const key = dateKey(date);
     const isToday = key === dateKey(new Date());
-    const todayClass = isToday ? " today-row" : "";
-    html += `<div class="calendar-total${todayClass} ${calendarTotalClass(calendarDayTotal(key), min, max)}" data-calendar-total="${key}">${calendarDayTotal(key)}</div>`;
-    html += `<div class="calendar-day${todayClass} ${isToday ? "today" : ""}">${escapeHtml(localDateLabel(date))}</div>`;
+    const rowClasses = `${isToday ? " today-row" : ""}${date.getDay() === 0 ? " sunday-row" : ""}`;
+    html += `<div class="calendar-total${rowClasses} ${calendarTotalClass(calendarDayTotal(key), min, max)}" data-calendar-total="${key}">${calendarDayTotal(key)}</div>`;
+    html += `<div class="calendar-day${rowClasses} ${isToday ? "today" : ""}">${escapeHtml(localDateLabel(date))}</div>`;
     calendarColumns.forEach(column => {
       const value = calendarCellValue(key, column);
-      html += `<textarea class="calendar-cell${todayClass} ${value.trim() ? "has-content" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder="">${escapeHtml(value)}</textarea>`;
+      const filterColor = calendarCellColor(value);
+      html += `<textarea class="calendar-cell${rowClasses} ${value.trim() ? "has-content" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder=""${filterColor ? ` style="background:${escapeAttr(filterColor)}"` : ""}>${escapeHtml(value)}</textarea>`;
     });
   });
   html += `</div>`;
   wrap.innerHTML = html;
+}
+
+function scrollCalendarToToday() {
+  const wrap = document.getElementById("calendar-table-wrap");
+  const today = wrap?.querySelector(".calendar-day.today-row");
+  if (!wrap || !today) return;
+  const top = today.offsetTop - 34;
+  wrap.scrollTop = Math.max(0, top);
 }
 
 function syncCalendarCellToCache(cell) {
@@ -5677,6 +5862,7 @@ function syncCalendarCellToCache(cell) {
   else delete calendarEvents[day][column];
   if (!Object.keys(calendarEvents[day]).length) delete calendarEvents[day];
   cell.classList.toggle("has-content", Boolean(value));
+  cell.style.background = calendarCellColor(value);
 }
 
 function refreshCalendarTotals() {
@@ -5704,10 +5890,12 @@ async function openCalendar() {
   await loadCalendarData();
   renderCalendar();
   openMainScreen("calendar-modal", "Calendar");
+  requestAnimationFrame(scrollCalendarToToday);
 }
 
 function renderCalendarColumnEditor() {
   const list = document.getElementById("calendar-column-list");
+  const colorList = document.getElementById("calendar-color-list");
   if (!list) return;
   list.innerHTML = calendarColumns.map((column, index) => `
     <div class="calendar-column-row" data-calendar-column-row>
@@ -5717,13 +5905,28 @@ function renderCalendarColumnEditor() {
       <button class="mini-action delete" data-calendar-column-delete aria-label="Delete column">×</button>
     </div>
   `).join("");
+  if (colorList) {
+    colorList.innerHTML = calendarColorFilters.map(filter => `
+      <div class="calendar-color-row" data-calendar-color-row>
+        <input type="text" value="${escapeAttr(filter.word)}" data-calendar-color-word placeholder="Word" aria-label="Color word">
+        <input type="color" value="${escapeAttr(filter.color || "#e8eaed")}" data-calendar-color-value aria-label="Color">
+        <button class="mini-action delete" data-calendar-color-delete aria-label="Delete color">×</button>
+      </div>
+    `).join("");
+  }
 }
 
 function readCalendarColumnEditor() {
-  return [...document.querySelectorAll("[data-calendar-column-row] input[data-calendar-column-name]")]
-    .map(input => input.value.trim())
-    .filter(Boolean)
-    .filter((value, index, values) => values.findIndex(other => other.toLowerCase() === value.toLowerCase()) === index);
+  return uniqueCalendarColumns([...document.querySelectorAll("[data-calendar-column-row] input[data-calendar-column-name]")]
+    .map(input => input.value.trim()));
+}
+
+function readCalendarColorEditor() {
+  return sanitizeCalendarColorFilters([...document.querySelectorAll("[data-calendar-color-row]")]
+    .map(row => ({
+      word:row.querySelector("[data-calendar-color-word]")?.value || "",
+      color:row.querySelector("[data-calendar-color-value]")?.value || "#e8eaed"
+    })));
 }
 
 function toggleCalendarColumnEditor(forceOpen = null) {
@@ -5750,6 +5953,21 @@ function addCalendarColumnRow() {
   row.querySelector("input")?.select();
 }
 
+function addCalendarColorRow() {
+  const list = document.getElementById("calendar-color-list");
+  if (!list) return;
+  const row = document.createElement("div");
+  row.className = "calendar-color-row";
+  row.dataset.calendarColorRow = "";
+  row.innerHTML = `
+    <input type="text" value="" data-calendar-color-word placeholder="Word" aria-label="Color word">
+    <input type="color" value="#e8eaed" data-calendar-color-value aria-label="Color">
+    <button class="mini-action delete" data-calendar-color-delete aria-label="Delete color">×</button>
+  `;
+  list.appendChild(row);
+  row.querySelector("input")?.focus();
+}
+
 async function saveCalendarColumns() {
   const oldColumns = [...calendarColumns];
   const newColumns = readCalendarColumnEditor();
@@ -5762,12 +5980,15 @@ async function saveCalendarColumns() {
     const nextValues = {};
     newColumns.forEach((column, index) => {
       const oldColumn = oldColumns[index];
-      const value = values?.[column] ?? values?.[oldColumn];
+      const value = Object.prototype.hasOwnProperty.call(values || {}, column)
+        ? values[column]
+        : (oldColumn && oldColumn !== column ? values?.[oldColumn] : undefined);
       if (String(value || "").trim()) nextValues[column] = value;
     });
     if (Object.keys(nextValues).length) renamedEvents[day] = nextValues;
   });
   calendarColumns = newColumns;
+  calendarColorFilters = readCalendarColorEditor();
   calendarEvents = renamedEvents;
   await Promise.all([saveCalendarConfig(), saveCalendarEvents()]);
   toggleCalendarColumnEditor(false);
@@ -6293,6 +6514,9 @@ document.body.addEventListener("click", async event => {
   const calendarColumnDelete = event.target.closest("[data-calendar-column-delete]");
   if (calendarColumnDelete) calendarColumnDelete.closest("[data-calendar-column-row]")?.remove();
 
+  const calendarColorDelete = event.target.closest("[data-calendar-color-delete]");
+  if (calendarColorDelete) calendarColorDelete.closest("[data-calendar-color-row]")?.remove();
+
   const calendarColumnMove = event.target.closest("[data-calendar-column-move]");
   if (calendarColumnMove) {
     const row = calendarColumnMove.closest("[data-calendar-column-row]");
@@ -6394,6 +6618,7 @@ document.getElementById("calendar-open").addEventListener("click", async () => {
   await openCalendar();
 });
 document.getElementById("calendar-column-add").addEventListener("click", addCalendarColumnRow);
+document.getElementById("calendar-color-add").addEventListener("click", addCalendarColorRow);
 document.getElementById("calendar-column-save").addEventListener("click", saveCalendarColumns);
 document.getElementById("family-task-toggle-form").addEventListener("click", () => toggleFamilyTaskForm());
 document.getElementById("family-task-save").addEventListener("click", addFamilyTask);

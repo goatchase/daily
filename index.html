@@ -367,6 +367,11 @@ th.current-day .day-head { color:var(--blue); font-weight:700; }
 .note-dot { width:5px; height:5px; border-radius:999px; }
 .note-dot.good { background:var(--green); }
 .note-dot.bad { background:var(--red); }
+.note-dot.thoughts { background:#1a73e8; }
+.note-dot.ideas { background:#fbbc04; }
+.note-dot.feelings { background:#a142f4; }
+.note-dot.reminders { background:#5f6368; }
+.note-dot.gratitude { background:#137333; }
 .category-label {
   width:100%;
   border:0;
@@ -439,7 +444,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
   margin-bottom:10px;
 }
 .entry-row { grid-template-columns:76px minmax(0,1fr) auto; }
-.log-compose { grid-template-columns:70px 78px minmax(0,1fr) minmax(0,1fr) auto; }
+.log-compose { grid-template-columns:70px 112px minmax(0,1fr) minmax(0,1fr) auto; }
 .entry-row.collapsed, .log-compose.collapsed, .family-task-form.collapsed { display:none; }
 .task-list, .log-list { display:grid; gap:6px; }
 .task-item, .log-item {
@@ -465,8 +470,25 @@ td input[data-negative="true"]:checked { background:var(--red); }
 }
 .task-text, .log-copy, .log-outcome { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .log-main { display:flex; align-items:center; gap:6px; min-width:0; }
-.log-item.good .day-chip { background:var(--green-soft); color:var(--green); }
-.log-item.bad .day-chip { background:var(--red-soft); color:var(--red); }
+.log-item.good .day-chip, .log-item.good .log-type-chip { background:var(--green-soft); color:var(--green); }
+.log-item.bad .day-chip, .log-item.bad .log-type-chip { background:var(--red-soft); color:var(--red); }
+.log-item.thoughts .day-chip, .log-item.thoughts .log-type-chip { background:#d3e3fd; color:#0b57d0; }
+.log-item.ideas .day-chip, .log-item.ideas .log-type-chip { background:#feefc3; color:#8f4700; }
+.log-item.feelings .day-chip, .log-item.feelings .log-type-chip { background:#eadcff; color:#6a1b9a; }
+.log-item.reminders .day-chip, .log-item.reminders .log-type-chip { background:#e8eaed; color:#3c4043; }
+.log-item.gratitude .day-chip, .log-item.gratitude .log-type-chip { background:#ceead6; color:#137333; }
+.log-type-chip {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  height:22px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#f1f3f4;
+  color:var(--muted);
+  font-weight:700;
+}
 
 .modal {
   display:none;
@@ -1946,11 +1968,54 @@ body.subpage-active #subpage-rail {
 .tab.active .rank-circle.summary-goal-red { background:#f28b82 !important; color:#601410 !important; }
 .tab.active .rank-circle.summary-goal-gray { background:#e8eaed !important; color:#3c4043 !important; }
 .menu-button {
-  align-content:center !important;
-  row-gap:2px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:3px !important;
+  width:36px !important;
+  min-width:36px !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:0 !important;
+  line-height:0 !important;
 }
 .menu-button span {
+  display:block !important;
+  width:18px !important;
+  height:2px !important;
+  flex:0 0 2px !important;
   margin:0 !important;
+  border-radius:999px !important;
+}
+.tracker-nav-links {
+  display:grid;
+  gap:4px;
+  border:1px solid #dfe3e7;
+  border-radius:18px;
+  background:#fff;
+  padding:6px;
+  margin-top:6px;
+}
+.tracker-nav-link {
+  border:0;
+  background:transparent;
+  border-radius:999px;
+  color:#3c4043;
+  cursor:pointer;
+  font:inherit;
+  min-height:30px;
+  padding:5px 8px;
+  text-align:left;
+}
+.tracker-nav-link:hover { background:#f1f3f4; }
+body.subpage-active #tracker-nav-links { display:none !important; }
+@media (max-width:899px) {
+  .tracker-nav-links {
+    grid-template-columns:1fr 1fr;
+    margin-top:4px;
+  }
+  .tracker-nav-link { text-align:center; }
 }
 @media (min-width:900px) and (max-width:1280px) {
   .tracker-workspace {
@@ -4094,10 +4159,6 @@ tbody tr.total-row > td:first-child {
         <button class="menu-item" id="goal-folder">Goal Tracker ▾</button>
         <div class="menu-section" id="goal-folder-items">
           <button class="menu-item" id="tracker-open">Tracker</button>
-          <button class="menu-item" id="summary-open">Summary</button>
-          <button class="menu-item" id="edit-categories">Configuration</button>
-          <button class="menu-item" id="archive-week">Archive</button>
-          <button class="menu-item danger" id="clear-week">Clear</button>
         </div>
         <button class="menu-item" id="tasks-open">Tasks</button>
         <button class="menu-item" id="calendar-open">Calendar</button>
@@ -4108,6 +4169,10 @@ tbody tr.total-row > td:first-child {
       <select id="week-select" aria-label="Week"></select>
       </div>
       <div class="tab-container" id="kid-tabs"></div>
+      <div class="tracker-nav-links" id="tracker-nav-links">
+        <button class="tracker-nav-link" id="tracker-summary-link" type="button">Summary</button>
+        <button class="tracker-nav-link" id="tracker-config-link" type="button">Configuration</button>
+      </div>
       <div class="subpage-rail" id="subpage-rail"></div>
     </div>
   <div id="kid-views"></div>
@@ -4393,6 +4458,15 @@ let familyTaskPersonFilter = "all";
 let familyTaskStatusFilter = "all";
 let familyTaskOrderBy = ["project"];
 const FAMILY_TASK_STATUSES = ["now", "next", "soon", "parked", "waiting"];
+const LOG_TYPES = [
+  {value:"good", label:"Good", outcome:"Reward"},
+  {value:"bad", label:"Bad", outcome:"Punishment"},
+  {value:"thoughts", label:"Thoughts", outcome:"Follow-up"},
+  {value:"ideas", label:"Ideas", outcome:"Next step"},
+  {value:"feelings", label:"Feelings", outcome:"Support"},
+  {value:"reminders", label:"Reminders", outcome:"Action"},
+  {value:"gratitude", label:"Gratitude", outcome:"Thanks"}
+];
 const DEFAULT_CALENDAR_COLUMNS = ["Projects", "Ryan Baseball", "Jack Baseball", "Henry Baseball", "Sonny Baseball"];
 let calendarRange = "3months";
 let calendarColumns = [...DEFAULT_CALENDAR_COLUMNS];
@@ -4445,6 +4519,14 @@ function combinedBad(data = {}) {
 
 function dayOptions(selected = todayIndex) {
   return days.map((day, index) => `<option value="${index}" ${index === selected ? "selected" : ""}>${day}</option>`).join("");
+}
+
+function logTypeMeta(type) {
+  return LOG_TYPES.find(item => item.value === type) || LOG_TYPES[0];
+}
+
+function logTypeOptions(selected = "good") {
+  return LOG_TYPES.map(item => `<option value="${item.value}" ${item.value === selected ? "selected" : ""}>${item.label}</option>`).join("");
 }
 
 function makeId(prefix) {
@@ -4820,7 +4902,7 @@ function buildTables() {
     if (showProgressColumn) html += `<td></td>`;
     html += `</tr></tbody></table></div></div>`;
     html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-task-edit="${kid}" aria-label="Edit other tasks">✎</button><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
-    html += `<div class="panel"><div class="panel-head"><span>Log</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-log-edit="${kid}" aria-label="Edit log entries">✎</button><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Good or bad"><option value="good">Good</option><option value="bad">Bad</option></select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward or punishment"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div></div>`;
+    html += `<div class="panel"><div class="panel-head"><span>Log</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-log-edit="${kid}" aria-label="Edit log entries">✎</button><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Log type">${logTypeOptions()}</select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward, support, or next step"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div></div>`;
     container.innerHTML = html;
     applyDayFocus(kid, todayIndex);
   });
@@ -5378,11 +5460,11 @@ function applyDayFocus(kid, dayIndex) {
 function renderNoteIndicators() {
   kids.forEach(kid => {
     days.forEach((day, i) => {
-      const hasGood = (logsCache[kid] || []).some(entry => Number(entry.day) === i && entry.type === "good");
+      const dayTypes = LOG_TYPES.filter(meta => (logsCache[kid] || []).some(entry => Number(entry.day) === i && logTypeMeta(entry.type).value === meta.value));
       const dots = document.getElementById(`${kid}-dots-${i}`);
       if (!dots) return;
       dots.innerHTML = "";
-      if (hasGood) dots.insertAdjacentHTML("beforeend", `<span class="note-dot good" title="Good"></span>`);
+      dayTypes.forEach(meta => dots.insertAdjacentHTML("beforeend", `<span class="note-dot ${meta.value}" title="${meta.label}"></span>`));
     });
   });
 }
@@ -5490,14 +5572,14 @@ function renderLogList(kid) {
   document.querySelector(`[data-toggle-log-edit="${kid}"]`)?.classList.toggle("active", !!logEditMode[kid]);
   const entries = logsCache[kid] || [];
   if (!entries.length) {
-    list.innerHTML = `<div class="empty-state">No good or bad notes logged yet.</div>`;
+    list.innerHTML = `<div class="empty-state">No log entries yet.</div>`;
     return;
   }
   list.innerHTML = entries.slice().reverse().map(entry => {
-    const type = entry.type === "bad" ? "bad" : "good";
-    const outcomeLabel = type === "bad" ? "Punishment" : "Reward";
+    const meta = logTypeMeta(entry.type);
+    const type = meta.value;
     const actions = logEditMode[kid] ? `<button class="mini-action" title="Edit" aria-label="Edit log entry" data-edit-log="${kid}" data-log-id="${entry.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete log entry" data-delete-log="${kid}" data-log-id="${entry.id}">×</button>` : "";
-    return `<div class="log-item ${type}"><div class="log-main"><span class="day-chip">${days[Number(entry.day)] || "Any"}</span><div class="log-copy">${escapeHtml(entry.note || "")}</div>${actions}</div><div class="log-outcome">${outcomeLabel}: ${escapeHtml(entry.outcome || "")}</div></div>`;
+    return `<div class="log-item ${type}"><div class="log-main"><span class="day-chip">${days[Number(entry.day)] || "Any"}</span><span class="log-type-chip">${meta.label}</span><div class="log-copy">${escapeHtml(entry.note || "")}</div>${actions}</div><div class="log-outcome">${meta.outcome}: ${escapeHtml(entry.outcome || "")}</div></div>`;
   }).join("");
 }
 
@@ -5523,14 +5605,16 @@ async function editLog(kid, id) {
   if (!entry) return;
   const day = promptDay(entry.day);
   if (day === null) return;
-  const typeInput = prompt("Type good or bad:", entry.type || "good");
+  const currentMeta = logTypeMeta(entry.type);
+  const typeInput = prompt(`Type (${LOG_TYPES.map(item => item.label).join(", ")}):`, currentMeta.label);
   if (typeInput === null) return;
-  const type = typeInput.trim().toLowerCase() === "bad" ? "bad" : "good";
+  const normalizedType = typeInput.trim().toLowerCase();
+  const meta = LOG_TYPES.find(item => item.value === normalizedType || item.label.toLowerCase() === normalizedType) || currentMeta;
   const note = prompt("Edit note:", entry.note || "");
   if (note === null) return;
-  const outcome = prompt(type === "bad" ? "Edit punishment:" : "Edit reward:", entry.outcome || "");
+  const outcome = prompt(`Edit ${meta.outcome.toLowerCase()}:`, entry.outcome || "");
   if (outcome === null) return;
-  logsCache[kid] = (logsCache[kid] || []).map(item => item.id === id ? {...item, day, type, note:note.trim(), outcome:outcome.trim()} : item);
+  logsCache[kid] = (logsCache[kid] || []).map(item => item.id === id ? {...item, day, type:meta.value, note:note.trim(), outcome:outcome.trim()} : item);
   await saveLogs(kid);
   renderLogList(kid);
   renderNoteIndicators();
@@ -6841,7 +6925,11 @@ document.body.addEventListener("dragover", event => {
   target.parentElement.insertBefore(draggedCategoryRow, after ? target.nextSibling : target);
 });
 
-document.getElementById("edit-categories").addEventListener("click", () => {
+document.getElementById("edit-categories")?.addEventListener("click", () => {
+  closeActionsMenu();
+  openCategoryEditor();
+});
+document.getElementById("tracker-config-link")?.addEventListener("click", () => {
   closeActionsMenu();
   openCategoryEditor();
 });
@@ -6849,7 +6937,11 @@ document.getElementById("tracker-open").addEventListener("click", () => {
   closeActionsMenu();
   showTrackerScreen();
 });
-document.getElementById("summary-open").addEventListener("click", async () => {
+document.getElementById("summary-open")?.addEventListener("click", async () => {
+  closeActionsMenu();
+  await openSummary();
+});
+document.getElementById("tracker-summary-link")?.addEventListener("click", async () => {
   closeActionsMenu();
   await openSummary();
 });
@@ -6924,12 +7016,12 @@ document.getElementById("close-categories")?.addEventListener("click", () => clo
 document.getElementById("save-categories").addEventListener("click", saveCategories);
 document.getElementById("close-category-detail").addEventListener("click", () => closeModal("category-detail-modal"));
 document.getElementById("save-category-detail").addEventListener("click", saveCategoryDetail);
-document.getElementById("archive-week").addEventListener("click", async () => {
+document.getElementById("archive-week")?.addEventListener("click", async () => {
   closeActionsMenu();
   await weekRef(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});
   await populateWeekDropdown();
 });
-document.getElementById("clear-week").addEventListener("click", async () => {
+document.getElementById("clear-week")?.addEventListener("click", async () => {
   closeActionsMenu();
   const pass = prompt("Enter password to clear week:");
   if (pass !== CLEAR_PASSWORD) {

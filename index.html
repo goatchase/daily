@@ -3979,6 +3979,50 @@ tbody tr.total-row > td:first-child {
       max-height:none !important;
     }
   }
+  .tracker-card td input[type="checkbox"][data-count] {
+    appearance:none !important;
+    -webkit-appearance:none !important;
+    width:22px !important;
+    min-width:22px !important;
+    max-width:22px !important;
+    height:22px !important;
+    min-height:22px !important;
+    max-height:22px !important;
+    border:0 !important;
+    border-radius:999px !important;
+    background:transparent !important;
+    overflow:visible !important;
+    position:relative !important;
+    margin:0 auto !important;
+    cursor:pointer !important;
+  }
+  .tracker-card td input[type="checkbox"][data-count]::before {
+    content:"" !important;
+    display:block !important;
+    position:absolute !important;
+    width:10px !important;
+    height:10px !important;
+    left:6px !important;
+    top:6px !important;
+    border-radius:999px !important;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+  .tracker-card td input[type="checkbox"][data-count="1"]::before,
+  .tracker-card td input[type="checkbox"][data-count="2"]::before,
+  .tracker-card td input[type="checkbox"][data-count="3"]::before,
+  .tracker-card td input[type="checkbox"][data-count="4"]::before {
+    background:#5f6368 !important;
+  }
+  .tracker-card td input[type="checkbox"][data-count="2"]::before {
+    box-shadow:0 0 0 3px #fff, 0 0 0 5px #9aa0a6 !important;
+  }
+  .tracker-card td input[type="checkbox"][data-count="3"]::before {
+    box-shadow:0 0 0 3px #fff, 0 0 0 5px #9aa0a6, 0 0 0 8px #fff, 0 0 0 10px #c3c7cc !important;
+  }
+  .tracker-card td input[type="checkbox"][data-count="4"]::before {
+    box-shadow:0 0 0 3px #fff, 0 0 0 5px #9aa0a6, 0 0 0 8px #fff, 0 0 0 10px #c3c7cc, 0 0 0 13px #fff, 0 0 0 15px #dfe3e7 !important;
+  }
     </style>
 </head>
 <body>
@@ -4765,7 +4809,7 @@ function buildTables() {
           html += `<td data-day-cell="${i}"><input type="number" min="0" inputmode="numeric" pattern="[0-9]*" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         } else {
           const negative = category.amount < 0 ? "true" : "false";
-          html += `<td data-day-cell="${i}"><input type="checkbox" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
+          html += `<td data-day-cell="${i}"><input type="checkbox" data-count="0" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
       if (showProgressColumn) html += `<td class="goal-progress-cell" id="${kid}-week-${category.key}">${category.showProgress ? "<span class=\"goal-percent summary-goal-red\">0%</span>" : ""}</td>`;
@@ -4792,7 +4836,8 @@ async function saveData(kid) {
       if (category.kind === "number") {
         if (input.value !== "") data[`${i}-${category.key}`] = input.value;
       } else {
-        data[`${i}-${category.key}`] = input.checked;
+        const count = trackerCheckboxCount(input);
+        if (count > 0) data[`${i}-${category.key}`] = count;
       }
     });
   });
@@ -4816,7 +4861,7 @@ async function loadData(weekKey = currentWeek) {
         const input = document.querySelector(`[data-kid="${kid}"][data-day="${i}"][data-type="${category.key}"]`);
         if (!input) return;
         if (category.kind === "number") input.value = data[`${i}-${category.key}`] || "";
-        else input.checked = data[`${i}-${category.key}`] || false;
+        else setTrackerCheckboxCount(input, data[`${i}-${category.key}`]);
       });
     });
   }));
@@ -4869,6 +4914,30 @@ function formulaReferencesCategory(formula = "", category) {
   return formulaAliases(category).some(alias => new RegExp(`\\b${escapeRegExp(alias)}\\b`).test(text));
 }
 
+function checkboxCountFromValue(value) {
+  if (value === true) return 1;
+  if (value === false || value === null || value === undefined || value === "") return 0;
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? Math.min(Math.round(number), 4) : 0;
+}
+
+function setTrackerCheckboxCount(input, count) {
+  const nextCount = checkboxCountFromValue(count);
+  input.dataset.count = String(nextCount);
+  input.checked = nextCount > 0;
+  input.setAttribute("aria-label", nextCount ? `Completed ${nextCount} time${nextCount === 1 ? "" : "s"}` : "Not completed");
+}
+
+function trackerCheckboxCount(input) {
+  return checkboxCountFromValue(input?.dataset?.count);
+}
+
+function incrementTrackerCheckbox(input) {
+  const nextCount = (trackerCheckboxCount(input) + 1) % 5;
+  setTrackerCheckboxCount(input, nextCount);
+  input.dispatchEvent(new Event("change", {bubbles:true}));
+}
+
 function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set()) {
   if (category.kind === "calculated") {
     if (!categoryDayHasEntry(kid, category, dayIndex, data, stack)) return 0;
@@ -4876,11 +4945,11 @@ function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set(
   }
   if (data) {
     const value = data[`${dayIndex}-${category.key}`];
-    return category.kind === "number" ? Number(value || 0) : value ? 1 : 0;
+    return category.kind === "number" ? Number(value || 0) : checkboxCountFromValue(value);
   }
   const input = document.querySelector(`[data-kid="${kid}"][data-day="${dayIndex}"][data-type="${category.key}"]`);
   if (!input) return 0;
-  return category.kind === "number" ? Number(input.value || 0) : input.checked ? 1 : 0;
+  return category.kind === "number" ? Number(input.value || 0) : trackerCheckboxCount(input);
 }
 
 function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new Set()) {
@@ -4899,11 +4968,11 @@ function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new S
     const dataKey = `${dayIndex}-${category.key}`;
     if (!Object.prototype.hasOwnProperty.call(data, dataKey)) return false;
     if (category.kind === "number") return data[dataKey] !== "" && data[dataKey] !== null && data[dataKey] !== undefined;
-    return true;
+    return checkboxCountFromValue(data[dataKey]) > 0;
   }
   const input = document.querySelector(`[data-kid="${kid}"][data-day="${dayIndex}"][data-type="${category.key}"]`);
   if (!input) return false;
-  return category.kind === "number" ? input.value !== "" : true;
+  return category.kind === "number" ? input.value !== "" : trackerCheckboxCount(input) > 0;
 }
 
 function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()) {
@@ -6561,13 +6630,19 @@ document.getElementById("more-actions").addEventListener("click", event => {
 document.body.addEventListener("click", async event => {
   if (!event.target.closest(".menu-wrap")) closeActionsMenu();
 
+  const trackerCheckbox = event.target.closest('.tracker-card input[type="checkbox"][data-kid][data-day][data-type]');
+  if (trackerCheckbox) {
+    event.preventDefault();
+    incrementTrackerCheckbox(trackerCheckbox);
+    return;
+  }
+
   const trackerCell = event.target.closest(".tracker-card tbody td[data-day-cell]");
   if (trackerCell && !event.target.closest("input, button, select, textarea, a")) {
     const checkbox = trackerCell.querySelector('input[type="checkbox"][data-kid][data-day][data-type]');
     const numberInput = trackerCell.querySelector('input[type="number"][data-kid][data-day][data-type]');
     if (checkbox) {
-      checkbox.checked = !checkbox.checked;
-      checkbox.dispatchEvent(new Event("change", {bubbles:true}));
+      incrementTrackerCheckbox(checkbox);
       return;
     }
     if (numberInput) {

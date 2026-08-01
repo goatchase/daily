@@ -5081,10 +5081,10 @@ function incrementTrackerCheckbox(input) {
   input.dispatchEvent(new Event("change", {bubbles:true}));
 }
  
-function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set()) {
+function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set(), categoryList = categoriesForKid(kid)) {
   if (category.kind === "calculated") {
-    if (!categoryDayHasEntry(kid, category, dayIndex, data, stack)) return 0;
-    return evaluateFormula(category, kid, dayIndex, data, stack);
+    if (!categoryDayHasEntry(kid, category, dayIndex, data, stack, categoryList)) return 0;
+    return evaluateFormula(category, kid, dayIndex, data, stack, categoryList);
   }
   if (data) {
     const value = data[`${dayIndex}-${category.key}`];
@@ -5095,17 +5095,17 @@ function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set(
   return category.kind === "number" ? Number(input.value || 0) : trackerCheckboxCount(input);
 }
  
-function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new Set()) {
+function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new Set(), categoryList = categoriesForKid(kid)) {
   if (category.kind === "calculated") {
     if (stack.has(category.key)) return false;
     const nextStack = new Set(stack);
     nextStack.add(category.key);
-    const referenced = categoriesForKid(kid).filter(other => {
+    const referenced = categoryList.filter(other => {
       if (other.key === category.key) return false;
       return formulaReferencesCategory(category.formula, other);
     });
     const dependencies = referenced.length ? referenced : [];
-    return dependencies.length > 0 && dependencies.every(other => categoryDayHasEntry(kid, other, dayIndex, data, nextStack));
+    return dependencies.length > 0 && dependencies.every(other => categoryDayHasEntry(kid, other, dayIndex, data, nextStack, categoryList));
   }
   if (data) {
     const dataKey = `${dayIndex}-${category.key}`;
@@ -5118,17 +5118,17 @@ function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new S
   return category.kind === "number" ? input.value !== "" : trackerCheckboxCount(input) > 0;
 }
  
-function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()) {
+function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set(), categoryList = categoriesForKid(kid)) {
   const formula = (category.formula || "").trim();
   if (!formula || stack.has(category.key)) return 0;
   const nextStack = new Set(stack);
   nextStack.add(category.key);
   const scope = {};
   const labelValues = {};
-  categoriesForKid(kid).forEach(other => {
+  categoryList.forEach(other => {
     if (other.key === category.key) return;
-    if (formulaReferencesCategory(formula, other) && !categoryDayHasEntry(kid, other, dayIndex, data, nextStack)) return;
-    const value = categoryDayValue(kid, other, dayIndex, data, nextStack);
+    if (formulaReferencesCategory(formula, other) && !categoryDayHasEntry(kid, other, dayIndex, data, nextStack, categoryList)) return;
+    const value = categoryDayValue(kid, other, dayIndex, data, nextStack, categoryList);
     formulaAliases(other).forEach(alias => { scope[alias] = value; });
     [other.key, other.label].filter(Boolean).forEach(name => {
       labelValues[String(name).toLowerCase()] = value;
@@ -5258,20 +5258,26 @@ function scoreDataForKid(kid, data = {}) {
   return total;
 }
  
-function categoryRawValue(kid, category, data = {}) {
+function categoryRawValue(kid, category, data = {}, categoryList = categoriesForKid(kid)) {
   let total = 0;
   days.forEach((day, i) => {
-    if (categoryDayHasEntry(kid, category, i, data)) total += categoryDayValue(kid, category, i, data);
+    if (categoryDayHasEntry(kid, category, i, data, new Set(), categoryList)) total += categoryDayValue(kid, category, i, data, new Set(), categoryList);
   });
   return total;
 }
  
-function categoryEntryCount(kid, category, data = {}) {
+function categoryEntryCount(kid, category, data = {}, categoryList = categoriesForKid(kid)) {
   let total = 0;
   days.forEach((day, i) => {
-    if (categoryDayHasEntry(kid, category, i, data)) total += 1;
+    if (categoryDayHasEntry(kid, category, i, data, new Set(), categoryList)) total += 1;
   });
   return total;
+}
+ 
+async function summaryConfigurationForWeek(kid, weekKey) {
+  const snapshot = await weekRef(weekKey).collection("configurations").doc(kid).get();
+  const saved = snapshot.exists && Array.isArray(snapshot.data().categories) ? snapshot.data().categories : null;
+  return cloneCategories(saved || defaultCategoriesByKid[kid] || categoriesForKid(kid));
 }
  
 function dateFromWeekKey(weekKey) {
@@ -5331,8 +5337,11 @@ async function fetchOverallSummaryRows(bucket, count) {
   await Promise.all(weekKeys.flatMap(weekKey => rows.map(async row => {
     const label = bucketLabel(weekKey, bucket);
     if (!labels.includes(label)) return;
-    const choresDoc = await weekRef(weekKey).collection("chores").doc(row.kid).get();
-    const score = scoreSummaryDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {});
+    const [choresDoc, weekCategories] = await Promise.all([
+      weekRef(weekKey).collection("chores").doc(row.kid).get(),
+      summaryConfigurationForWeek(row.kid, weekKey)
+    ]);
+    const score = scoreSummaryDataForKid(row.kid, choresDoc.exists ? choresDoc.data() : {}, weekCategories);
     if (score !== null) row.values[label] = (row.values[label] || 0) + score;
   })));
   return {labels, rows};
@@ -5371,22 +5380,27 @@ function renderOverallSummaryRows(summary) {
 async function fetchDetailedSummary(kid, bucket, count) {
   const weekKeys = await summaryWeekKeys(bucket, count);
   const buckets = {};
+  const categoryMap = new Map();
   await Promise.all(weekKeys.map(async weekKey => {
     const label = bucketLabel(weekKey, bucket);
     if (!buckets[label]) buckets[label] = {weeks:new Set(), values:{}};
     buckets[label].weeks.add(weekKey);
-    const choresDoc = await weekRef(weekKey).collection("chores").doc(kid).get();
+    const [choresDoc, weekCategories] = await Promise.all([
+      weekRef(weekKey).collection("chores").doc(kid).get(),
+      summaryConfigurationForWeek(kid, weekKey)
+    ]);
     const data = choresDoc.exists ? choresDoc.data() : {};
-    categoriesForKid(kid).forEach(category => {
-      buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(kid, category, data);
-      buckets[label].values[`${category.key}__count`] = (buckets[label].values[`${category.key}__count`] || 0) + categoryEntryCount(kid, category, data);
+    weekCategories.filter(category => category.showSummary !== false).forEach(category => {
+      if (!categoryMap.has(category.key)) categoryMap.set(category.key, category);
+      buckets[label].values[category.key] = (buckets[label].values[category.key] || 0) + categoryRawValue(kid, category, data, weekCategories);
+      buckets[label].values[`${category.key}__count`] = (buckets[label].values[`${category.key}__count`] || 0) + categoryEntryCount(kid, category, data, weekCategories);
     });
   }));
-  return {labels:Object.keys(buckets).sort().reverse().slice(0, Math.max(Number(count || 12), 1)), buckets};
+  return {labels:Object.keys(buckets).sort().reverse().slice(0, Math.max(Number(count || 12), 1)), buckets, categories:[...categoryMap.values()]};
 }
  
 function renderDetailedSummary(kid, detail) {
-  const categories = summaryCategoriesForKid(kid);
+  const categories = detail.categories?.length ? detail.categories : summaryCategoriesForKid(kid);
   let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
   detail.labels.forEach(label => { head += `<th>${label}</th>`; });
   head += `</tr>`;
@@ -5772,14 +5786,14 @@ function summaryCategoriesForKid(kid) {
   return categoriesForKid(kid).filter(category => category.showSummary !== false);
 }
  
-function scoreSummaryDataForKid(kid, data = {}) {
+function scoreSummaryDataForKid(kid, data = {}, categoryList = summaryCategoriesForKid(kid)) {
   let total = 0;
   let entries = 0;
   days.forEach((day, i) => {
-    summaryCategoriesForKid(kid).forEach(category => {
-      if (!categoryDayHasEntry(kid, category, i, data)) return;
+    categoryList.filter(category => category.showSummary !== false).forEach(category => {
+      if (!categoryDayHasEntry(kid, category, i, data, new Set(), categoryList)) return;
       entries += 1;
-      total += categoryDayValue(kid, category, i, data) * category.amount;
+      total += categoryDayValue(kid, category, i, data, new Set(), categoryList) * category.amount;
     });
   });
   return entries ? total : null;
@@ -6091,14 +6105,17 @@ function trackerPayloadFromWorkbook(workbook) {
     const personName = String(row["Person Name"] || personId).trim();
     const yearWeek = String(row["Year-Week"] || "").trim().toUpperCase();
     const key = workbookRecordKey(row);
-    if (!recordMap.has(key)) recordMap.set(key, {person:{id:personId, displayName:personName}, yearWeek, configuration:{categories:[], goalBands:[]}, values:{chores:{}, notes:{}, tasks:[], logs:[]}});
+    if (!recordMap.has(key)) recordMap.set(key, {person:{id:personId, displayName:personName}, yearWeek, configuration:{categories:[], goalBands:[]}, values:{chores:{}, notes:{}, tasks:[], logs:[]}, inferredCategories:{}});
     return recordMap.get(key);
   };
   workbookRows(workbook, "Values").forEach(row => {
     const record = ensureRecord(row);
     const day = Number(row["Day Number"]) - 1;
     const categoryKey = String(row["Category Key"] || "").trim();
-    if (day >= 0 && day < days.length && categoryKey) record.values.chores[`${day}-${categoryKey}`] = row.Value;
+    if (day >= 0 && day < days.length && categoryKey) {
+      record.values.chores[`${day}-${categoryKey}`] = row.Value;
+      record.inferredCategories[categoryKey] = {key:categoryKey, label:String(row.Category || categoryKey), details:"Imported from historical values", group:"Imported", kind:String(row.Kind || "number").toLowerCase(), amount:0, goal:0, goalType:"min", goalPeriod:"weekly", showProgress:false, showSummary:true, formula:""};
+    }
   });
   workbookRows(workbook, "Configuration").sort((a, b) => Number(a.Order) - Number(b.Order)).forEach(row => {
     const record = ensureRecord(row);
@@ -6120,7 +6137,40 @@ function trackerPayloadFromWorkbook(workbook) {
     const record = ensureRecord(row);
     record.values.logs.push({id:String(row["Log ID"] || makeId("log")), day:Number(row["Day Number"]) - 1, type:String(row.Type || "good").toLowerCase(), note:String(row.Note || ""), outcome:String(row.Outcome || "")});
   });
-  return {format:"daily-tracker-transfer", version:1, records:[...recordMap.values()]};
+  const records = [...recordMap.values()];
+  const people = new Map();
+  records.forEach(record => {
+    const key = record.person.id || record.person.displayName;
+    if (!people.has(key)) people.set(key, []);
+    people.get(key).push(record);
+  });
+  people.forEach(personRecords => {
+    personRecords.sort((a, b) => a.yearWeek.localeCompare(b.yearWeek));
+    let lastCategories = null;
+    let lastGoalBands = null;
+    personRecords.forEach(record => {
+      if (record.configuration.categories.length) lastCategories = record.configuration.categories;
+      else if (lastCategories) record.configuration.categories = cloneCategories(lastCategories);
+      if (record.configuration.goalBands.length) lastGoalBands = record.configuration.goalBands;
+      else if (lastGoalBands) record.configuration.goalBands = lastGoalBands.map(normalizeGoalBand);
+    });
+    let nextCategories = null;
+    let nextGoalBands = null;
+    personRecords.slice().reverse().forEach(record => {
+      if (record.configuration.categories.length) nextCategories = record.configuration.categories;
+      else if (nextCategories) record.configuration.categories = cloneCategories(nextCategories);
+      if (record.configuration.goalBands.length) nextGoalBands = record.configuration.goalBands;
+      else if (nextGoalBands) record.configuration.goalBands = nextGoalBands.map(normalizeGoalBand);
+    });
+    personRecords.forEach(record => {
+      const existing = new Set(record.configuration.categories.map(category => category.key));
+      Object.values(record.inferredCategories).forEach(category => {
+        if (!existing.has(category.key)) record.configuration.categories.push(normalizeCategory(category, record.configuration.categories.length));
+      });
+      delete record.inferredCategories;
+    });
+  });
+  return {format:"daily-tracker-transfer", version:1, records};
 }
  
 async function importTrackerWorkbook(file) {

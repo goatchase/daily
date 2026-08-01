@@ -6246,7 +6246,7 @@ async function importTrackerPayload(payload) {
   });
   if (!prepared.length) throw new Error("The file has no tracker records.");
   const summary = [...new Set(prepared.map(item => `${memberLabel(item.kid)} / ${item.yearWeek}`))].join("\n");
-  if (!confirm(`Import these historical tracker records?\n\n${summary}\n\nMatching values will be updated.`)) return 0;
+  if (!confirm(`Import these historical tracker records?\n\n${summary}\n\nTracker values for each listed person/week will be replaced with the Excel values. Tasks, notes, and logs are imported separately.`)) return 0;
   for (const {record, yearWeek, kid} of prepared) {
     const configuration = record.configuration || {};
     const values = record.values || {};
@@ -6259,7 +6259,10 @@ async function importTrackerPayload(payload) {
       }));
     }
     if (values.chores && typeof values.chores === "object" && !Array.isArray(values.chores)) {
-      writes.push(weekRef(yearWeek).collection("chores").doc(kid).set(values.chores, {merge:true}));
+      // A workbook record represents the complete tracker grid for this person/week.
+      // Replace it so values removed from Excel do not survive as stale fields and
+      // get counted again in summaries after a re-import.
+      writes.push(weekRef(yearWeek).collection("chores").doc(kid).set(values.chores));
     }
     if (Array.isArray(values.tasks)) writes.push(weekRef(yearWeek).collection("tasks").doc(kid).set({items:values.tasks, importedAt:new Date()}));
     if (Array.isArray(values.logs)) writes.push(weekRef(yearWeek).collection("logs").doc(kid).set({entries:values.logs, importedAt:new Date()}));

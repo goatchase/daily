@@ -5419,11 +5419,20 @@ async function fetchDetailedSummary(kid, bucket, count) {
       buckets[label].values[`${category.key}__count`] = (buckets[label].values[`${category.key}__count`] || 0) + categoryEntryCount(kid, category, data, weekCategories);
     });
   }));
-  return {labels:Object.keys(buckets).sort().reverse().slice(0, Math.max(Number(count || 12), 1)), buckets, categories:[...categoryMap.values()]};
+  return {labels:Object.keys(buckets).sort().reverse().slice(0, Math.max(Number(count || 12), 1)), buckets, categories:[...categoryMap.values()], bucket};
+}
+ 
+function detailedSummaryGoal(category, bucket = "week") {
+  const goal = Number(category.goal || 0);
+  if (category.goalPeriod === "daily") return goal;
+  if (bucket === "month") return goal * 52 / 12;
+  if (bucket === "year") return goal * 52;
+  return goal;
 }
  
 function renderDetailedSummary(kid, detail) {
   const categories = detail.categories?.length ? detail.categories : summaryCategoriesForKid(kid);
+  const bucket = detail.bucket || "week";
   let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
   detail.labels.forEach(label => { head += `<th>${label}</th>`; });
   head += `</tr>`;
@@ -5434,7 +5443,8 @@ function renderDetailedSummary(kid, detail) {
     previousGroup = group;
     const goalType = category.goalType === "min" ? "Min" : "Max";
     const goalPeriod = category.goalPeriod === "daily" ? "D" : "W";
-    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalPeriod}</td><td>${goalType}</td><td>${Number(category.goal || 0).toFixed(0)}</td>`;
+    const adjustedGoal = detailedSummaryGoal(category, bucket);
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalPeriod}</td><td>${goalType}</td><td>${formatRawValue(adjustedGoal)}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
       const entryCount = bucket.values[`${category.key}__count`] || 0;
@@ -5443,10 +5453,9 @@ function renderDetailedSummary(kid, detail) {
         return;
       }
       const sum = bucket.values[category.key] || 0;
-      const weeks = Math.max(bucket.weeks.size, 1);
-      const count = category.goalPeriod === "daily" ? entryCount : weeks;
-      const value = category.goalPeriod === "daily" ? sum / count : sum;
-      const cellClass = category.goalPeriod === "daily" ? goalClass(category, value, 1, true) : goalClass(category, value, count);
+      const value = category.goalPeriod === "daily" ? sum / Math.max(entryCount, 1) : sum;
+      const periodCategory = category.goalPeriod === "daily" ? category : {...category, goal:adjustedGoal};
+      const cellClass = category.goalPeriod === "daily" ? goalClass(periodCategory, value, 1, true) : goalClass(periodCategory, value, 1);
       html += `<td class="${cellClass}">${value.toFixed(0)}</td>`;
     });
     html += `</tr>`;
@@ -5578,7 +5587,11 @@ async function loadTasks(kid) {
       legacy.push({id:`legacy-task-${i}`, day:i, text:data.other, done:!!data.otherDone, legacy:true});
     }
   });
-  tasksCache[kid] = saved.length ? saved : legacy;
+  tasksCache[kid] = orderTasksByCompletion(saved.length ? saved : legacy);
+}
+ 
+function orderTasksByCompletion(items = []) {
+  return items.map((item, index) => ({item, index})).sort((a, b) => Number(!!a.item.done) - Number(!!b.item.done) || a.index - b.index).map(entry => entry.item);
 }
  
 async function saveTasks(kid) {
@@ -5607,7 +5620,7 @@ async function addTask(kid) {
   const dayInput = document.getElementById(`${kid}-task-day`);
   const text = textInput.value.trim();
   if (!text) return;
-  tasksCache[kid] = [...(tasksCache[kid] || []), {id:makeId("task"), day:Number(dayInput.value), text, done:false}];
+  tasksCache[kid] = orderTasksByCompletion([...(tasksCache[kid] || []), {id:makeId("task"), day:Number(dayInput.value), text, done:false}]);
   textInput.value = "";
   await saveTasks(kid);
   document.getElementById(`${kid}-task-entry`)?.classList.add("collapsed");
@@ -5616,7 +5629,7 @@ async function addTask(kid) {
 }
  
 async function toggleTask(kid, id) {
-  tasksCache[kid] = (tasksCache[kid] || []).map(task => task.id === id ? {...task, done:!task.done} : task);
+  tasksCache[kid] = orderTasksByCompletion((tasksCache[kid] || []).map(task => task.id === id ? {...task, done:!task.done} : task));
   await saveTasks(kid);
   renderTaskList(kid);
   renderNoteIndicators();
@@ -5628,7 +5641,7 @@ async function moveTask(kid, id, direction) {
   const to = from + Number(direction || 0);
   if (from < 0 || to < 0 || to >= items.length) return;
   [items[from], items[to]] = [items[to], items[from]];
-  tasksCache[kid] = items;
+  tasksCache[kid] = orderTasksByCompletion(items);
   await saveTasks(kid);
   renderTaskList(kid);
 }

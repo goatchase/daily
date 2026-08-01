@@ -479,7 +479,8 @@ td input[data-negative="true"]:checked { background:var(--red); }
 .task-item.done {
   color:#80868b;
 }
-.task-item.done .task-text { text-decoration:line-through; }
+.task-item.done .task-inline-text { color:#80868b; text-decoration:line-through; }
+.task-item:not(.editing) { grid-template-columns:auto auto minmax(0,1fr) auto; }
 .task-item .day-chip {
   width:32px;
   min-width:32px;
@@ -487,9 +488,13 @@ td input[data-negative="true"]:checked { background:var(--red); }
   justify-self:start;
   padding:0;
 }
-.task-item.editing { grid-template-columns:auto 82px minmax(0,1fr) auto; }
 .task-inline-day, .task-inline-text { min-height:30px; height:30px; padding:4px 8px; border-radius:8px; }
+.task-inline-text { background:transparent; border-color:transparent; }
+.task-inline-text:hover, .task-inline-text:focus { background:#fff; border-color:var(--line-strong); }
+.task-item .task-inline-day { width:58px; min-width:58px; max-width:58px; padding-left:6px; padding-right:2px; }
 .task-inline-actions { display:flex; gap:4px; }
+.task-row-actions { display:flex; align-items:center; gap:2px; }
+.task-order-button { min-width:24px; padding:2px 5px; }
 .day-chip {
   display:inline-flex;
   align-items:center;
@@ -4534,8 +4539,7 @@ let calendarRange = "3months";
 let calendarColumns = [...DEFAULT_CALENDAR_COLUMNS];
 let calendarColorFilters = [];
 let calendarEvents = {};
-let taskEditMode = {};
-let taskInlineEdit = {};
+let taskAutoSaveTimers = {};
 let logEditMode = {};
 let activeKid = kids[0];
 let activeCategory = null;
@@ -4973,7 +4977,7 @@ function buildTables() {
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
     if (showProgressColumn) html += `<td></td>`;
     html += `</tr></tbody></table></div></div>`;
-    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-task-edit="${kid}" aria-label="Edit other tasks">✎</button><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
+    html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Other Tasks</span><div class="panel-actions"><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add other task">+</button></div></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
     html += `<div class="panel"><div class="panel-head"><span>Log</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-log-edit="${kid}" aria-label="Edit log entries">✎</button><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Log type">${logTypeOptions()}</select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward, support, or next step"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div></div>`;
     container.innerHTML = html;
     applyDayFocus(kid, todayIndex);
@@ -5585,20 +5589,16 @@ async function saveTasks(kid) {
 function renderTaskList(kid) {
   const list = document.getElementById(`${kid}-tasks`);
   if (!list) return;
-  document.querySelector(`[data-toggle-task-edit="${kid}"]`)?.classList.toggle("active", !!taskEditMode[kid]);
   const items = tasksCache[kid] || [];
   if (!items.length) {
     list.innerHTML = `<div class="empty-state">No other tasks added yet.</div>`;
     return;
   }
-  list.innerHTML = items.map(item => {
+  list.innerHTML = items.map((item, index) => {
     const done = item.done ? "done" : "";
     const checked = item.done ? "checked" : "";
-    if (taskInlineEdit[kid] === item.id) {
-      return `<div class="task-item editing ${done}"><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}"><select class="task-inline-day" id="${kid}-task-edit-day-${item.id}" aria-label="Task day">${dayOptions(Number(item.day))}</select><input class="task-inline-text" id="${kid}-task-edit-text-${item.id}" value="${escapeAttr(item.text || "")}" aria-label="Task text"><div class="task-inline-actions"><button class="mini-action" type="button" aria-label="Save task" data-save-task="${kid}" data-task-id="${item.id}">Save</button><button class="mini-action" type="button" aria-label="Cancel editing" data-cancel-task="${kid}">Cancel</button></div></div>`;
-    }
-    const actions = taskEditMode[kid] ? `<button class="mini-action" title="Edit" aria-label="Edit task" data-edit-task="${kid}" data-task-id="${item.id}">✎</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button>` : "";
-    return `<div class="task-item ${done}"><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}"><div class="day-chip">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div>${actions}</div>`;
+    const actions = `<div class="task-row-actions"><button class="mini-action task-order-button" title="Move up" aria-label="Move task up" data-move-task="${kid}" data-task-id="${item.id}" data-direction="-1" ${index === 0 ? "disabled" : ""}>↑</button><button class="mini-action task-order-button" title="Move down" aria-label="Move task down" data-move-task="${kid}" data-task-id="${item.id}" data-direction="1" ${index === items.length - 1 ? "disabled" : ""}>↓</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button></div>`;
+    return `<div class="task-item ${done}"><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}"><select class="task-inline-day" aria-label="Task day" data-auto-task-field="day" data-task-kid="${kid}" data-task-id="${item.id}">${dayOptions(Number(item.day))}</select><input class="task-inline-text" value="${escapeAttr(item.text || "")}" aria-label="Task text" data-auto-task-field="text" data-task-kid="${kid}" data-task-id="${item.id}">${actions}</div>`;
   }).join("");
 }
  
@@ -5622,27 +5622,29 @@ async function toggleTask(kid, id) {
   renderNoteIndicators();
 }
  
-function editTask(kid, id) {
-  taskInlineEdit[kid] = id;
-  renderTaskList(kid);
-  document.getElementById(`${kid}-task-edit-text-${id}`)?.focus();
-}
- 
-async function saveTaskEdit(kid, id) {
-  const dayInput = document.getElementById(`${kid}-task-edit-day-${id}`);
-  const textInput = document.getElementById(`${kid}-task-edit-text-${id}`);
-  const text = textInput?.value.trim() || "";
-  if (!text) return textInput?.focus();
-  tasksCache[kid] = (tasksCache[kid] || []).map(item => item.id === id ? {...item, day:Number(dayInput?.value || 0), text} : item);
-  taskInlineEdit[kid] = null;
+async function moveTask(kid, id, direction) {
+  const items = [...(tasksCache[kid] || [])];
+  const from = items.findIndex(item => item.id === id);
+  const to = from + Number(direction || 0);
+  if (from < 0 || to < 0 || to >= items.length) return;
+  [items[from], items[to]] = [items[to], items[from]];
+  tasksCache[kid] = items;
   await saveTasks(kid);
   renderTaskList(kid);
-  renderNoteIndicators();
 }
  
-function cancelTaskEdit(kid) {
-  taskInlineEdit[kid] = null;
-  renderTaskList(kid);
+function updateTaskAutomatically(input) {
+  const kid = input.dataset.taskKid;
+  const id = input.dataset.taskId;
+  const field = input.dataset.autoTaskField;
+  const value = field === "day" ? Number(input.value) : input.value;
+  tasksCache[kid] = (tasksCache[kid] || []).map(item => item.id === id ? {...item, [field]:value} : item);
+  const timerKey = `${kid}-${id}`;
+  clearTimeout(taskAutoSaveTimers[timerKey]);
+  taskAutoSaveTimers[timerKey] = setTimeout(async () => {
+    await saveTasks(kid);
+    delete taskAutoSaveTimers[timerKey];
+  }, field === "day" ? 100 : 500);
 }
  
 async function deleteTask(kid, id) {
@@ -7224,13 +7226,6 @@ document.body.addEventListener("click", async event => {
     if (form) form.classList.toggle("collapsed");
   }
  
-  const taskEditButton = event.target.closest("[data-toggle-task-edit]");
-  if (taskEditButton) {
-    const kid = taskEditButton.dataset.toggleTaskEdit;
-    taskEditMode[kid] = !taskEditMode[kid];
-    renderTaskList(kid);
-  }
- 
   const logEditButton = event.target.closest("[data-toggle-log-edit]");
   if (logEditButton) {
     const kid = logEditButton.dataset.toggleLogEdit;
@@ -7244,14 +7239,8 @@ document.body.addEventListener("click", async event => {
   const toggle = event.target.closest("[data-toggle-task]");
   if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.taskId);
  
-  const editTaskButton = event.target.closest("[data-edit-task]");
-  if (editTaskButton) editTask(editTaskButton.dataset.editTask, editTaskButton.dataset.taskId);
- 
-  const saveTaskButton = event.target.closest("[data-save-task]");
-  if (saveTaskButton) await saveTaskEdit(saveTaskButton.dataset.saveTask, saveTaskButton.dataset.taskId);
- 
-  const cancelTaskButton = event.target.closest("[data-cancel-task]");
-  if (cancelTaskButton) cancelTaskEdit(cancelTaskButton.dataset.cancelTask);
+  const moveTaskButton = event.target.closest("[data-move-task]");
+  if (moveTaskButton) await moveTask(moveTaskButton.dataset.moveTask, moveTaskButton.dataset.taskId, moveTaskButton.dataset.direction);
  
   const deleteTaskButton = event.target.closest("[data-delete-task]");
   if (deleteTaskButton) await deleteTask(deleteTaskButton.dataset.deleteTask, deleteTaskButton.dataset.taskId);
@@ -7360,6 +7349,8 @@ document.body.addEventListener("click", async event => {
  
  
 document.body.addEventListener("change", async event => {
+  const taskField = event.target.closest("[data-auto-task-field]");
+  if (taskField) updateTaskAutomatically(taskField);
   const field = event.target.closest("[data-family-task-field]");
   if (field) await updateFamilyTaskField(field.dataset.taskId, field.dataset.familyTaskField, field.value.trim ? field.value.trim() : field.value);
   const calendarCell = event.target.closest("[data-calendar-day][data-calendar-column]");
@@ -7525,6 +7516,8 @@ document.body.addEventListener("change", event => {
 });
  
 document.body.addEventListener("input", event => {
+  const taskField = event.target.closest('[data-auto-task-field="text"]');
+  if (taskField) updateTaskAutomatically(taskField);
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) updateTotals();
   const calendarCell = event.target.closest("[data-calendar-day][data-calendar-column]");
@@ -7546,15 +7539,10 @@ function focusGridElement(elements, current, columns, dx, dy) {
  
 document.body.addEventListener("keydown", event => {
   const taskText = event.target.closest(".task-inline-text");
-  if (taskText && (event.key === "Enter" || event.key === "Escape")) {
+  if (taskText && event.key === "Enter") {
     event.preventDefault();
-    const row = taskText.closest(".task-item");
-    const saveButton = row?.querySelector("[data-save-task]");
-    if (event.key === "Enter" && saveButton) saveTaskEdit(saveButton.dataset.saveTask, saveButton.dataset.taskId);
-    if (event.key === "Escape") {
-      const cancelButton = row?.querySelector("[data-cancel-task]");
-      if (cancelButton) cancelTaskEdit(cancelButton.dataset.cancelTask);
-    }
+    updateTaskAutomatically(taskText);
+    taskText.blur();
     return;
   }
   const directions = {

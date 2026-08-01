@@ -93,7 +93,14 @@ textarea { resize:vertical; line-height:1.3; }
 .btn.danger, .mini-action.delete, .remove-category, .remove-member { color:var(--red); }
 .icon-btn, .panel-add, .mini-action { width:30px; min-width:30px; padding:0; }
 .empty-state, .summary-empty { color:var(--muted); padding:18px; text-align:center; }
-
+.transfer-content { width:min(560px, 100%); }
+.transfer-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.transfer-note { color:var(--muted); line-height:1.45; margin:0; }
+.transfer-status { min-height:20px; color:var(--muted); font-weight:700; }
+.transfer-status.success { color:var(--green); }
+.transfer-status.error { color:var(--red); }
+@media(max-width:620px) { .transfer-grid { grid-template-columns:1fr; } }
+ 
 .auth-screen {
   min-height:100vh;
   display:none;
@@ -125,7 +132,7 @@ textarea { resize:vertical; line-height:1.3; }
 }
 .setup-check { display:flex; align-items:center; gap:8px; color:var(--ink); }
 .modal-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; align-items:center; }
-
+ 
 .site-container {
   width:100%;
   min-height:100vh;
@@ -230,7 +237,7 @@ textarea { resize:vertical; line-height:1.3; }
 }
 .menu-section.open { display:grid; gap:2px; }
 .menu-item.danger { color:var(--red); }
-
+ 
 .tab-container {
   display:grid;
   grid-template-columns:1fr;
@@ -274,7 +281,7 @@ textarea { resize:vertical; line-height:1.3; }
   font-weight:700;
   white-space:nowrap;
 }
-
+ 
 #kid-views, #screen-view {
   grid-column:2;
   grid-row:1;
@@ -305,7 +312,7 @@ body:not(.subpage-active) #screen-view, body:not(.subpage-active) #screen-conten
   background:transparent;
   padding:0;
 }
-
+ 
 .table-container { display:none; }
 .table-container.active { display:block; }
 .tracker-workspace {
@@ -435,7 +442,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
 .summary-goal-red { background:#f28b82 !important; color:#601410 !important; }
 .summary-goal-gray { background:#e8eaed !important; color:#3c4043 !important; }
 .calc-value { color:var(--muted); font-weight:700; }
-
+ 
 .work-grid { display:grid; gap:12px; }
 .panel { padding:12px; }
 .panel-head, .family-tasks-head, .goal-band-head {
@@ -499,7 +506,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
   color:var(--muted);
   font-weight:700;
 }
-
+ 
 .modal {
   display:none;
   position:fixed;
@@ -524,7 +531,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
 #category-detail-modal .modal-content { width:min(430px, 92vw); pointer-events:auto; }
 .category-detail-form { display:grid; gap:10px; }
 .category-detail-meta { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-
+ 
 .category-config-content, .household-content { display:grid; gap:12px; }
 .category-config-layout, .household-layout, .family-tasks-app {
   display:grid;
@@ -633,7 +640,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
 #member-editor .category-row > * { border-radius:0; border:0; border-right:1px solid var(--line); min-height:34px; }
 .goal-band-editor { padding:12px; }
 .goal-band-row { display:grid; grid-template-columns:120px 120px 34px; gap:8px; align-items:center; margin-top:8px; }
-
+ 
 .summary-controls {
   grid-template-columns:repeat(4, minmax(90px, auto)) 1fr auto;
   margin-bottom:12px;
@@ -644,7 +651,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
 .summary-table th, .summary-table td { width:72px; min-width:72px; max-width:72px; }
 .summary-table th:first-child, .summary-table td:first-child { width:128px; min-width:128px; max-width:128px; }
 .summary-table tbody tr.group-start > td { border-top:2px solid var(--line-strong); }
-
+ 
 .family-tasks-content { background:transparent !important; border:0 !important; padding:0 !important; }
 .family-tasks-card { padding:16px; min-height:calc(100vh - 92px); }
 .family-task-form {
@@ -704,7 +711,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
 .family-task-notes { display:none !important; }
 .completed-tasks { margin-top:12px; color:var(--muted); }
 .completed-tasks summary { min-height:32px; display:flex; align-items:center; gap:6px; cursor:pointer; }
-
+ 
 @media (min-width:900px) {
   body.subpage-active #screen-content .summary-controls,
   body.subpage-active #screen-content .category-side,
@@ -733,7 +740,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
     min-width:0;
   }
 }
-
+ 
 @media (max-width:899px) {
   .site-container { display:block; }
   .top-bar {
@@ -785,7 +792,7 @@ td input[data-negative="true"]:checked { background:var(--red); }
   .family-task-status { grid-column:4; }
   .family-task-actions { grid-column:4; }
 }
-
+ 
 /* Font weight cleanup: Source Sans Pro with selective bold only */
 :root { --font:Roboto, Arial, Helvetica, "Segoe UI", sans-serif; }
 body, button, input, select, textarea, table, td, .menu-item, .config-nav, .family-filter-pill, .task-text, .log-copy, .log-outcome {
@@ -823,8 +830,8 @@ tbody tr.total-row > td {
 #week-select {
   font-weight:600 !important;
 }
-
-
+ 
+ 
 /* Name rail refinement: Source Sans Pro, softer than full bold */
 .kid-name {
   font-family:var(--font) !important;
@@ -856,8 +863,8 @@ tbody tr.total-row > td {
     font-weight:600 !important;
   }
 }
-
-
+ 
+ 
 /* Final requested layout polish */
 :root { --font:Roboto, Arial, Helvetica, "Segoe UI", sans-serif; }
 html, body, button, input, select, textarea, table, th, td {
@@ -981,8 +988,8 @@ td input[type="number"] {
   #category-editor .category-header,
   #category-editor .category-row { grid-template-columns:1fr !important; }
 }
-
-
+ 
+ 
 /* Configuration person menu */
 .category-person-field select {
   display:none !important;
@@ -1008,8 +1015,8 @@ td input[type="number"] {
   color:#041e49;
   font-weight:700;
 }
-
-
+ 
+ 
 /* Totals should stay visually calm, not bold */
 tbody tr.total-row > td,
 .rank-circle,
@@ -1017,8 +1024,8 @@ tbody tr.total-row > td,
 .filter-count {
   font-weight:400 !important;
 }
-
-
+ 
+ 
 /* Google Calendar-inspired visual system pass */
 :root {
   --bg:#f8fafd;
@@ -1344,8 +1351,8 @@ td input[type="checkbox"]:checked::before,
     max-width:84px !important;
   }
 }
-
-
+ 
+ 
 /* Font reset: Google-like Roboto, not Aptos */
 :root { --font:Roboto, Arial, Helvetica, "Segoe UI", sans-serif; }
 html, body, button, input, select, textarea, table, th, td {
@@ -1374,8 +1381,8 @@ thead th,
 tbody tr.total-row > td {
   font-weight:400 !important;
 }
-
-
+ 
+ 
 /* Match tracker check bubbles to number bubbles */
 .tracker-card td input[type="checkbox"] {
   width:44px !important;
@@ -1395,8 +1402,8 @@ tbody tr.total-row > td {
 .tracker-card td input[type="checkbox"]:checked::before {
   left:22px !important;
 }
-
-
+ 
+ 
 /* Final subpage layout repair: no overlapping filters, cleaner tables */
 @media (min-width:900px) {
   body.subpage-active #screen-view {
@@ -1508,8 +1515,8 @@ tbody tr.total-row > td {
     font-weight:400 !important;
   }
 }
-
-
+ 
+ 
 /* Compact tracker width on desktop */
 @media (min-width:900px) {
   .tracker-workspace {
@@ -1537,7 +1544,7 @@ tbody tr.total-row > td {
     width:100% !important;
   }
 }
-
+ 
 /* Final tracker/configuration polish */
 .tracker-card td input[type="checkbox"] {
   appearance:none !important;
@@ -1680,7 +1687,7 @@ tbody tr.total-row > td {
   overflow:hidden !important;
   text-overflow:ellipsis !important;
 }
-
+ 
 /* Configuration shrink-wrap and alignment */
 .category-nav-group {
   display:grid !important;
@@ -1739,7 +1746,7 @@ tbody tr.total-row > td {
 .goal-band-row input[type="number"] {
   text-align:right !important;
 }
-
+ 
 /* Final table/menu polish */
 .overflow-menu,
 .folder-panel {
@@ -1831,7 +1838,7 @@ tbody tr.total-row > td {
   line-height:1.2 !important;
   background:#fff !important;
 }
-
+ 
 /* Tracker cells act like direct-entry cells */
 .tracker-card tbody td[data-day-cell] {
   cursor:pointer !important;
@@ -1890,7 +1897,7 @@ tbody tr.total-row > td {
 .tracker-card td input[type="number"] {
   -moz-appearance:textfield !important;
 }
-
+ 
 /* Compact summaries: scroll right only when columns need it */
 #summary-content {
   justify-self:start !important;
@@ -1921,7 +1928,7 @@ tbody tr.total-row > td {
   min-width:112px !important;
   max-width:112px !important;
 }
-
+ 
 .subpage-rail {
     display:none;
   }
@@ -1933,7 +1940,7 @@ body.subpage-active #subpage-rail {
     grid-template-columns:1fr !important;
   gap:6px !important;
 }
-
+ 
 /* Final requested sizing and responsive tracker behavior */
 #screen-back {
   height:36px !important;
@@ -2056,7 +2063,7 @@ body.subpage-active #tracker-nav-links { display:none !important; }
     grid-template-columns:1fr !important;
   }
 }
-
+ 
 /* Subpage controls use the same left rail position as tracker names */
 @media (min-width:900px) {
   body.subpage-active #screen-view {
@@ -2104,7 +2111,7 @@ body.subpage-active #tracker-nav-links { display:none !important; }
     grid-column:auto !important;
   }
 }
-
+ 
 tbody tr.total-row > td.summary-goal-green,
 tbody tr.total-row > td.summary-goal-blue,
 tbody tr.total-row > td.summary-goal-yellow,
@@ -2659,7 +2666,7 @@ tbody tr.total-row > td:first-child {
       min-width:max-content !important;
     }
   }
-
+ 
   /* Mobile polish: keep the tracker compact while preserving table behavior. */
   @media (max-width:899px) {
     .top-bar {
@@ -2679,7 +2686,7 @@ tbody tr.total-row > td:first-child {
       position:relative !important;
       z-index:1 !important;
     }
-
+ 
       .tracker-card td input[type="number"] {
         display:block !important;
         margin:0 auto !important;
@@ -2710,7 +2717,7 @@ tbody tr.total-row > td:first-child {
         text-align:center !important;
         vertical-align:middle !important;
       }
-
+ 
     #kid-tabs.tab-container {
       gap:3px !important;
       padding:4px !important;
@@ -2754,7 +2761,7 @@ tbody tr.total-row > td:first-child {
         font-size:7.2pt !important;
         line-height:17px !important;
       }
-
+ 
       body.subpage-active #subpage-rail {
         display:flex !important;
         align-items:flex-start !important;
@@ -2817,7 +2824,7 @@ tbody tr.total-row > td:first-child {
       body.subpage-active #screen-view {
           padding:6px 8px !important;
         }
-
+ 
       body.subpage-active .subpage-options-toggle {
         display:inline-flex !important;
         align-items:center !important;
@@ -3070,7 +3077,7 @@ tbody tr.total-row > td:first-child {
       text-align-last:center !important;
       font-variant-numeric:tabular-nums !important;
     }
-
+ 
   /* Absolute final task/name polish. */
   #kid-tabs.tab-container {
     background:#fff !important;
@@ -3317,7 +3324,7 @@ tbody tr.total-row > td:first-child {
         left:42px !important;
       }
     }
-
+ 
   /* Absolute final Tasks-as-table layout. */
   .family-tasks-card {
     overflow:visible !important;
@@ -4130,7 +4137,7 @@ tbody tr.total-row > td:first-child {
     <div class="empty-state" id="auth-message"></div>
   </div>
 </div>
-
+ 
 <div class="auth-screen" id="household-screen">
   <div class="auth-card">
     <h3 class="modal-title">Household Setup</h3>
@@ -4166,7 +4173,7 @@ tbody tr.total-row > td:first-child {
     <div class="empty-state" id="household-message"></div>
   </div>
 </div>
-
+ 
 <div class="site-container" id="app-shell" style="display:none">
   <div class="top-bar">
     <div class="top-controls">
@@ -4177,6 +4184,7 @@ tbody tr.total-row > td:first-child {
         <button class="menu-item" id="tasks-open">Tasks</button>
         <button class="menu-item" id="calendar-open">Calendar</button>
         <button class="menu-item" id="settings-open">Household</button>
+        <button class="menu-item" id="transfer-open">Import / Export</button>
         <button class="menu-item" id="sign-out">Sign Out</button>
       </div>
       </div>
@@ -4199,7 +4207,7 @@ tbody tr.total-row > td:first-child {
     <div id="screen-content"></div>
   </div>
 </div>
-
+ 
 <div class="modal" id="tasks-modal">
   <div class="modal-content family-tasks-content">
     <div class="family-tasks-app">
@@ -4252,7 +4260,7 @@ tbody tr.total-row > td:first-child {
     </div>
   </div>
 </div>
-
+ 
 <div class="modal" id="calendar-modal">
   <div class="modal-content calendar-content">
     <aside class="calendar-side">
@@ -4302,7 +4310,7 @@ tbody tr.total-row > td:first-child {
     </main>
   </div>
 </div>
-
+ 
 <div class="modal" id="category-detail-modal">
   <div class="modal-content">
     <h3 class="modal-title" id="category-detail-title">Category</h3>
@@ -4321,7 +4329,7 @@ tbody tr.total-row > td:first-child {
     </div>
   </div>
 </div>
-
+ 
 <div class="modal" id="category-modal">
   <div class="modal-content category-config-content">
     <h3 class="modal-title">Tracker Configuration</h3>
@@ -4354,7 +4362,7 @@ tbody tr.total-row > td:first-child {
     </div>
   </div>
 </div>
-
+ 
 <div class="modal" id="settings-modal">
   <div class="modal-content household-content">
     <h3 class="modal-title">Household</h3>
@@ -4399,7 +4407,27 @@ tbody tr.total-row > td:first-child {
     </div>
   </div>
 </div>
-
+ 
+<div class="modal" id="transfer-modal">
+  <div class="modal-content transfer-content">
+    <h3 class="modal-title">Import / Export Tracker Data</h3>
+    <p class="transfer-note">Choose a person and a year-week range to export many weeks into one Excel workbook. Imported workbooks can contain multiple people and historical weeks.</p>
+    <div class="transfer-grid">
+      <label class="field">Person<select id="transfer-person" aria-label="Export person"></select></label>
+      <label class="field">Start year-week<select id="transfer-week-start" aria-label="Export start year-week"></select></label>
+      <label class="field">End year-week<select id="transfer-week-end" aria-label="Export end year-week"></select></label>
+    </div>
+    <input id="transfer-file" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.xlsx,.xls" hidden>
+    <div class="transfer-status" id="transfer-status" role="status" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button class="btn" id="transfer-close" type="button">Close</button>
+      <button class="btn" id="transfer-import" type="button">Import Excel</button>
+      <button class="btn" id="transfer-export-all" type="button">Export All People</button>
+      <button class="btn primary" id="transfer-export" type="button">Export Person to Excel</button>
+    </div>
+  </div>
+</div>
+ 
 <div class="modal" id="summary-modal">
   <div class="modal-content">
     <div class="summary-controls">
@@ -4426,11 +4454,12 @@ tbody tr.total-row > td:first-child {
     <div id="summary-content" class="summary-empty">Choose a summary.</div>
   </div>
 </div>
-
+ 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+ 
 <script>
 const firebaseConfig = {
   apiKey:"AIzaSyD8cUG9VG3HbTER_s2g0KLkd1EXB_uIRIM",
@@ -4444,7 +4473,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
+ 
 const LEGACY_KIDS = ["Ryan","Jack","Henry","Sonny","Meg","Wes"];
 let kids = [...LEGACY_KIDS];
 let householdMembers = [];
@@ -4464,6 +4493,7 @@ const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 let currentWeek = getYearWeek();
 let categories = [...DEFAULT_CATEGORIES];
 let categoriesByKid = {};
+let defaultCategoriesByKid = {};
 let notesCache = {};
 let tasksCache = {};
 let logsCache = {};
@@ -4505,7 +4535,7 @@ let authLoadToken = 0;
 let canImportLegacy = false;
 let firstHouseholdSetup = false;
 let currentScreen = null;
-
+ 
 function getYearWeek(date = new Date()) {
   const tmpDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = tmpDate.getUTCDay() || 7;
@@ -4514,68 +4544,68 @@ function getYearWeek(date = new Date()) {
   const weekNo = Math.ceil((((tmpDate - yearStart) / 86400000) + 1) / 7);
   return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
 }
-
+ 
 function dollars(value) {
   return `$${Math.round(value)}`;
 }
-
+ 
 function noteKey(kid, day) {
   return `${kid}-${day}`;
 }
-
+ 
 function combinedGood(data = {}) {
   return data.goodReward ?? [data.good, data.rewards].filter(Boolean).join("\n");
 }
-
+ 
 function combinedBad(data = {}) {
   return data.badPunishment ?? [data.bad, data.punishments].filter(Boolean).join("\n");
 }
-
+ 
 function dayOptions(selected = todayIndex) {
   return days.map((day, index) => `<option value="${index}" ${index === selected ? "selected" : ""}>${day}</option>`).join("");
 }
-
+ 
 function logTypeMeta(type) {
   return LOG_TYPES.find(item => item.value === type) || LOG_TYPES[0];
 }
-
+ 
 function logTypeOptions(selected = "good") {
   return LOG_TYPES.map(item => `<option value="${item.value}" ${item.value === selected ? "selected" : ""}>${item.label}</option>`).join("");
 }
-
+ 
 function makeId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
-
+ 
 function memberIdFromName(name = "Member") {
   return name.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || makeId("member");
 }
-
+ 
 function memberLabel(memberId) {
   return householdMembers.find(member => member.id === memberId)?.displayName || memberId;
 }
-
+ 
 function memberInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || "").join("") || "?";
 }
-
+ 
 function householdRef() {
   if (!householdId) throw new Error("No household selected.");
   return db.collection("households").doc(householdId);
 }
-
+ 
 function householdCollection(name) {
   return householdRef().collection(name);
 }
-
+ 
 function trackerSettingsRef() {
   return householdCollection("settings").doc("tracker");
 }
-
+ 
 function weekRef(weekKey = currentWeek) {
   return householdCollection("weeks").doc(weekKey);
 }
-
+ 
 function showOnly(screenId) {
   ["auth-screen", "household-screen", "app-shell"].forEach(id => {
     const element = document.getElementById(id);
@@ -4583,17 +4613,17 @@ function showOnly(screenId) {
     element.style.display = id === screenId ? (id === "app-shell" ? "" : "flex") : "none";
   });
 }
-
+ 
 function setAuthMessage(message = "") {
   const node = document.getElementById("auth-message");
   if (node) node.textContent = message;
 }
-
+ 
 function setHouseholdMessage(message = "") {
   const node = document.getElementById("household-message");
   if (node) node.textContent = message;
 }
-
+ 
 async function refreshLegacyImportOption() {
   canImportLegacy = false;
   const row = document.getElementById("household-import-row");
@@ -4609,7 +4639,7 @@ async function refreshLegacyImportOption() {
   }
   if (row) row.style.display = canImportLegacy ? "flex" : "none";
 }
-
+ 
 function friendlyFirebaseError(error, fallback = "Something went wrong.") {
   const code = error?.code || "";
   if (code === "auth/email-already-in-use") return "That email already has an account. Use Sign In.";
@@ -4620,24 +4650,24 @@ function friendlyFirebaseError(error, fallback = "Something went wrong.") {
   if (code === "permission-denied") return "Signed in, but Firestore rules blocked account or household data. Temporarily allow legacy migration or deploy the household rules.";
   return error?.message || fallback;
 }
-
+ 
 function promptDay(currentDay) {
   const entered = prompt("Day number, 1-7:", String(Number(currentDay) + 1));
   if (entered === null) return null;
   const day = Number(entered) - 1;
   return Number.isInteger(day) && day >= 0 && day < days.length ? day : Number(currentDay);
 }
-
+ 
 function formatTodayLabel() {
   return new Date().toLocaleDateString(undefined, {month:"short", day:"numeric"});
 }
-
+ 
 function previousWeekKey(weekKey = currentWeek) {
   const date = dateFromWeekKey(weekKey) || new Date();
   date.setUTCDate(date.getUTCDate() - 7);
   return getYearWeek(date);
 }
-
+ 
 function normalizeCategory(category, index) {
   const defaults = DEFAULT_CATEGORY_MAP[category.key] || {};
   const rawLabel = (category.label || defaults.label || category.key || `Row ${index + 1}`).trim();
@@ -4659,18 +4689,18 @@ function normalizeCategory(category, index) {
     formula:(category.formula || "").trim()
   };
 }
-
+ 
 function cloneCategories(list = DEFAULT_CATEGORIES) {
   return list.map((category, index) => normalizeCategory({...category}, index));
 }
-
+ 
   function categoriesForKid(kid) {
     if (!categoriesByKid[kid] || !categoriesByKid[kid].length) {
       categoriesByKid[kid] = cloneCategories(categories);
     }
     return categoriesByKid[kid];
   }
-
+ 
   function groupCategoriesByUserOrder(categoryList) {
     const normalized = categoryList.map(normalizeCategory);
     const groupOrder = [];
@@ -4683,13 +4713,13 @@ function cloneCategories(list = DEFAULT_CATEGORIES) {
       ...normalized.filter(category => !(category.group || "").trim())
     ];
   }
-
+ 
   function setAllKidsCategories(list) {
   const normalized = cloneCategories(list);
   categories = cloneCategories(normalized);
   categoriesByKid = Object.fromEntries(kids.map(kid => [kid, cloneCategories(normalized)]));
 }
-
+ 
 function seedMembersFromNames(names = LEGACY_KIDS) {
   return names.map((name, index) => ({
     id:name,
@@ -4701,7 +4731,7 @@ function seedMembersFromNames(names = LEGACY_KIDS) {
     archived:false
   }));
 }
-
+ 
 async function loadUserHousehold() {
   const userDoc = await db.collection("users").doc(currentUser.uid).get();
   if (userDoc.exists && userDoc.data().activeHouseholdId) {
@@ -4711,7 +4741,7 @@ async function loadUserHousehold() {
   }
   return false;
 }
-
+ 
 async function currentHouseholdRole() {
   if (!currentUser || !householdId) return "";
   try {
@@ -4722,14 +4752,14 @@ async function currentHouseholdRole() {
     return "";
   }
 }
-
+ 
 async function requireHouseholdAdmin(action = "change household configuration") {
   const role = await currentHouseholdRole();
   if (["owner", "admin"].includes(role)) return true;
   alert(`Only household owners or admins can ${action}. Check this account's userRoles/${currentUser?.uid || "uid"} document for the selected household.`);
   return false;
 }
-
+ 
 async function createHousehold(name, options = {}) {
   const householdDoc = db.collection("households").doc();
   householdId = householdDoc.id;
@@ -4759,17 +4789,17 @@ async function createHousehold(name, options = {}) {
   householdData = householdPayload;
   return householdId;
 }
-
+ 
 async function createLegacyHouseholdForUser() {
   await createHousehold(`${currentUser.email?.split("@")[0] || "Family"} Household`, {scoringMode:"money", weeklyResetDay:1});
   await migrateLegacyData();
 }
-
+ 
 async function copyCollectionDocs(sourceCollectionRef, targetCollectionRef) {
   const snap = await sourceCollectionRef.get();
   await Promise.all(snap.docs.map(doc => targetCollectionRef.doc(doc.id).set(doc.data(), {merge:true})));
 }
-
+ 
 async function migrateLegacyData() {
   try {
     const legacySettings = await db.collection("settings").doc("tracker").get();
@@ -4785,7 +4815,7 @@ async function migrateLegacyData() {
     console.warn("Legacy migration skipped or incomplete.", error);
   }
 }
-
+ 
 async function loadHouseholdMembers() {
   const snap = await householdCollection("members").orderBy("order", "asc").get();
   householdMembers = snap.docs.map(doc => ({id:doc.id, ...doc.data()}));
@@ -4801,7 +4831,7 @@ async function loadHouseholdMembers() {
   if (!kids.includes(activeKid)) activeKid = kids[0];
   if (!kids.includes(categoryEditorKid)) categoryEditorKid = kids[0];
 }
-
+ 
 async function loadCategories() {
   const doc = await trackerSettingsRef().get();
   const data = doc.exists ? doc.data() : {};
@@ -4817,21 +4847,26 @@ async function loadCategories() {
   } else {
     setAllKidsCategories(DEFAULT_CATEGORIES);
   }
+  defaultCategoriesByKid = Object.fromEntries(kids.map(kid => [kid, cloneCategories(categoriesByKid[kid] || categories)]));
 }
-
+ 
 async function saveCategories() {
   if (!(await requireHouseholdAdmin("change tracker configuration"))) return;
   try {
     goalBands = readGoalBandEditor();
     const editedCategories = readCategoryEditor().map(normalizeCategory);
     categoriesByKid[categoryEditorKid] = editedCategories;
+    defaultCategoriesByKid[categoryEditorKid] = cloneCategories(editedCategories);
     categories = cloneCategories(editedCategories);
-    await trackerSettingsRef().set({
-      categories:cloneCategories(editedCategories),
-      categoriesByKid,
-      goalBands,
-      updatedAt:new Date()
-    }, {merge:true});
+    await Promise.all([
+      trackerSettingsRef().set({
+        categories:cloneCategories(editedCategories),
+        categoriesByKid:defaultCategoriesByKid,
+        goalBands,
+        updatedAt:new Date()
+      }, {merge:true}),
+      weekRef(currentWeek).collection("configurations").doc(categoryEditorKid).set({categories:cloneCategories(editedCategories), goalBands, updatedAt:new Date()})
+    ]);
     buildShell();
     await loadData(currentWeek);
     closeModal("category-modal");
@@ -4840,26 +4875,30 @@ async function saveCategories() {
     alert("Tracker configuration did not save. Make sure this account is an owner or admin for the household, then try again.");
   }
 }
-
-
+ 
+ 
 async function saveCategoriesForKid(kid, updatedCategories) {
   if (!(await requireHouseholdAdmin("change tracker configuration"))) return;
   categoriesByKid[kid] = updatedCategories.map(normalizeCategory);
+  defaultCategoriesByKid[kid] = cloneCategories(categoriesByKid[kid]);
   categories = cloneCategories(categoriesByKid[kid]);
   try {
-    await trackerSettingsRef().set({
-      categories:cloneCategories(categoriesByKid[kid]),
-      categoriesByKid,
-      goalBands,
-      updatedAt:new Date()
-    }, {merge:true});
+    await Promise.all([
+      trackerSettingsRef().set({
+        categories:cloneCategories(categoriesByKid[kid]),
+        categoriesByKid:defaultCategoriesByKid,
+        goalBands,
+        updatedAt:new Date()
+      }, {merge:true}),
+      weekRef(currentWeek).collection("configurations").doc(kid).set({categories:cloneCategories(categoriesByKid[kid]), goalBands, updatedAt:new Date()})
+    ]);
   } catch (error) {
     console.error("Category detail save failed", error);
     alert("Category changes did not save. Make sure this account is an owner or admin for the household, then try again.");
     throw error;
   }
 }
-
+ 
 function buildShell() {
   const tabs = document.getElementById("kid-tabs");
   const views = document.getElementById("kid-views");
@@ -4871,7 +4910,7 @@ function buildShell() {
     tab.dataset.kid = kid;
     tab.innerHTML = `<span class="kid-name" data-initial="${escapeHtml(memberLabel(kid).slice(0, 1))}">${escapeHtml(memberLabel(kid))}</span><span class="rank-circle" id="rank-${kid}">$0</span>`;
     tabs.appendChild(tab);
-
+ 
     const view = document.createElement("section");
     view.id = kid;
     view.className = `table-container ${kid === activeKid ? "active" : ""}`;
@@ -4879,7 +4918,7 @@ function buildShell() {
   });
   buildTables();
 }
-
+ 
 function buildTables() {
   kids.forEach(kid => {
     const container = document.getElementById(kid);
@@ -4921,7 +4960,7 @@ function buildTables() {
     applyDayFocus(kid, todayIndex);
   });
 }
-
+ 
 async function saveData(kid) {
   const data = {};
   days.forEach((day, i) => {
@@ -4941,10 +4980,18 @@ async function saveData(kid) {
   await weekRef(currentWeek).collection("chores").doc(kid).set(data);
   updateTotals();
 }
-
+ 
 async function loadData(weekKey = currentWeek) {
   currentWeek = weekKey;
   await ensureWeekOption(weekKey);
+  const configurationDocs = await Promise.all(kids.map(kid => weekRef(weekKey).collection("configurations").doc(kid).get()));
+  kids.forEach((kid, index) => {
+    const snapshot = configurationDocs[index];
+    const savedCategories = snapshot.exists && Array.isArray(snapshot.data().categories) ? snapshot.data().categories : defaultCategoriesByKid[kid];
+    categoriesByKid[kid] = cloneCategories(savedCategories || categories || DEFAULT_CATEGORIES);
+  });
+  categories = cloneCategories(categoriesByKid[kids[0]] || DEFAULT_CATEGORIES);
+  buildShell();
   notesCache = {};
   tasksCache = {};
   logsCache = {};
@@ -4964,7 +5011,7 @@ async function loadData(weekKey = currentWeek) {
   await loadWeeklyPanels();
   updateTotals();
 }
-
+ 
 async function loadWeeklyPanels() {
   await Promise.all(kids.map(async kid => {
     const noteDocs = await Promise.all(days.map((day, i) => weekRef(currentWeek).collection("notes").doc(noteKey(kid, i)).get()));
@@ -4977,17 +5024,17 @@ async function loadWeeklyPanels() {
   }));
   renderNoteIndicators();
 }
-
+ 
 function formatRawValue(value) {
   const number = Number(value || 0);
   if (!Number.isFinite(number)) return "0";
   return Number.isInteger(number) ? String(number) : number.toFixed(1);
 }
-
+ 
 function formulaName(category) {
   return String(category.key || category.label || "").replace(/[^a-z0-9_]+/gi, "_").replace(/^_+|_+$/g, "") || "value";
 }
-
+ 
 function formulaAliases(category) {
   const names = new Set();
   [category.key, category.label].filter(Boolean).forEach(value => {
@@ -4997,11 +5044,11 @@ function formulaAliases(category) {
   });
   return [...names].filter(name => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name));
 }
-
+ 
 function escapeRegExp(text = "") {
   return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-
+ 
 function formulaReferencesCategory(formula = "", category) {
   const text = String(formula || "");
   if (!text.trim()) return false;
@@ -5009,31 +5056,31 @@ function formulaReferencesCategory(formula = "", category) {
   if (quotedNames.some(name => new RegExp(`(["'])${escapeRegExp(name)}\\1`, "i").test(text))) return true;
   return formulaAliases(category).some(alias => new RegExp(`\\b${escapeRegExp(alias)}\\b`).test(text));
 }
-
+ 
 function checkboxCountFromValue(value) {
   if (value === true) return 1;
   if (value === false || value === null || value === undefined || value === "") return 0;
   const number = Number(value);
   return Number.isFinite(number) && number > 0 ? Math.min(Math.round(number), 4) : 0;
 }
-
+ 
 function setTrackerCheckboxCount(input, count) {
   const nextCount = checkboxCountFromValue(count);
   input.dataset.count = String(nextCount);
   input.checked = nextCount > 0;
   input.setAttribute("aria-label", nextCount ? `Completed ${nextCount} time${nextCount === 1 ? "" : "s"}` : "Not completed");
 }
-
+ 
 function trackerCheckboxCount(input) {
   return checkboxCountFromValue(input?.dataset?.count);
 }
-
+ 
 function incrementTrackerCheckbox(input) {
   const nextCount = (trackerCheckboxCount(input) + 1) % 5;
   setTrackerCheckboxCount(input, nextCount);
   input.dispatchEvent(new Event("change", {bubbles:true}));
 }
-
+ 
 function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set()) {
   if (category.kind === "calculated") {
     if (!categoryDayHasEntry(kid, category, dayIndex, data, stack)) return 0;
@@ -5047,7 +5094,7 @@ function categoryDayValue(kid, category, dayIndex, data = null, stack = new Set(
   if (!input) return 0;
   return category.kind === "number" ? Number(input.value || 0) : trackerCheckboxCount(input);
 }
-
+ 
 function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new Set()) {
   if (category.kind === "calculated") {
     if (stack.has(category.key)) return false;
@@ -5070,7 +5117,7 @@ function categoryDayHasEntry(kid, category, dayIndex, data = null, stack = new S
   if (!input) return false;
   return category.kind === "number" ? input.value !== "" : trackerCheckboxCount(input) > 0;
 }
-
+ 
 function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()) {
   const formula = (category.formula || "").trim();
   if (!formula || stack.has(category.key)) return 0;
@@ -5101,7 +5148,7 @@ function evaluateFormula(category, kid, dayIndex, data = null, stack = new Set()
     return 0;
   }
 }
-
+ 
 function goalPercent(category, value, count = 1) {
   const goal = Number(category.goal || 0);
   const number = goalComparisonValue(category, value, count);
@@ -5111,13 +5158,13 @@ function goalPercent(category, value, count = 1) {
   }
   return Math.round((number / goal) * 100);
 }
-
+ 
 function goalComparisonValue(category, value, count = 1) {
   const number = Number(value || 0);
   const divisor = Math.max(Number(count || 1), 1);
   return number / divisor;
 }
-
+ 
 function updateTotals() {
   const totalsByKid = {};
   kids.forEach(kid => {
@@ -5170,7 +5217,7 @@ function updateTotals() {
   });
   updateNameMetricColors(totalsByKid);
 }
-
+ 
 function updateNameMetricColors(totalsByKid = {}) {
   const values = kids.map(kid => Number(totalsByKid[kid] || 0));
   const min = values.length ? Math.min(...values) : 0;
@@ -5187,7 +5234,7 @@ function updateNameMetricColors(totalsByKid = {}) {
     node.style.borderColor = "";
   });
 }
-
+ 
 function nameTotalClass(value, min, max) {
   const number = Number(value || 0);
   if (!Number.isFinite(number)) return "summary-goal-gray";
@@ -5200,7 +5247,7 @@ function nameTotalClass(value, min, max) {
   if (ratio >= .2) return "summary-goal-orange";
   return "summary-goal-red";
 }
-
+ 
 function scoreDataForKid(kid, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
@@ -5210,7 +5257,7 @@ function scoreDataForKid(kid, data = {}) {
   });
   return total;
 }
-
+ 
 function categoryRawValue(kid, category, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
@@ -5218,7 +5265,7 @@ function categoryRawValue(kid, category, data = {}) {
   });
   return total;
 }
-
+ 
 function categoryEntryCount(kid, category, data = {}) {
   let total = 0;
   days.forEach((day, i) => {
@@ -5226,7 +5273,7 @@ function categoryEntryCount(kid, category, data = {}) {
   });
   return total;
 }
-
+ 
 function dateFromWeekKey(weekKey) {
   const match = String(weekKey).match(/^(\d{4})-W(\d{1,2})$/);
   if (!match) return null;
@@ -5237,7 +5284,7 @@ function dateFromWeekKey(weekKey) {
   simple.setUTCDate(simple.getUTCDate() + 1 - day);
   return simple;
 }
-
+ 
 function bucketLabel(weekKey, bucket) {
   const date = dateFromWeekKey(weekKey);
   if (!date) return weekKey;
@@ -5245,7 +5292,7 @@ function bucketLabel(weekKey, bucket) {
   if (bucket === "month") return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
   return weekKey;
 }
-
+ 
 function periodStart(date, bucket) {
   const copy = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   if (bucket === "year") copy.setUTCMonth(0, 1);
@@ -5257,7 +5304,7 @@ function periodStart(date, bucket) {
   copy.setUTCHours(0, 0, 0, 0);
   return copy;
 }
-
+ 
 async function summaryWeekKeys(bucket = "week", count = 12) {
   const snap = await householdCollection("weeks").orderBy("timestamp", "desc").get();
   const keys = new Set([currentWeek]);
@@ -5267,7 +5314,7 @@ async function summaryWeekKeys(bucket = "week", count = 12) {
   const allowed = new Set(starts);
   return parsed.filter(item => allowed.has(periodStart(item.date, bucket).toISOString())).map(item => item.key).sort().reverse();
 }
-
+ 
 function formatSummaryMetric(value) {
   const mode = householdData?.scoringMode || "money";
   const rounded = Math.round(Number(value || 0));
@@ -5276,7 +5323,7 @@ function formatSummaryMetric(value) {
   if (mode === "completion") return String(rounded);
   return `${rounded} pts`;
 }
-
+ 
 async function fetchOverallSummaryRows(bucket, count) {
   const weekKeys = await summaryWeekKeys(bucket, count);
   const labels = [...new Set(weekKeys.map(weekKey => bucketLabel(weekKey, bucket)))].sort().reverse().slice(0, Math.max(Number(count || 12), 1));
@@ -5290,7 +5337,7 @@ async function fetchOverallSummaryRows(bucket, count) {
   })));
   return {labels, rows};
 }
-
+ 
 function overallSummaryClass(value, min, max) {
   const number = Number(value || 0);
   if (!Number.isFinite(number)) return "";
@@ -5301,7 +5348,7 @@ function overallSummaryClass(value, min, max) {
   if (ratio >= .25) return "summary-goal-orange";
   return "summary-goal-red";
 }
-
+ 
 function renderOverallSummaryRows(summary) {
   let head = `<tr><th>Person</th>`;
   summary.labels.forEach(label => { head += `<th>${label}</th>`; });
@@ -5320,7 +5367,7 @@ function renderOverallSummaryRows(summary) {
   }).join("");
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
-
+ 
 async function fetchDetailedSummary(kid, bucket, count) {
   const weekKeys = await summaryWeekKeys(bucket, count);
   const buckets = {};
@@ -5337,7 +5384,7 @@ async function fetchDetailedSummary(kid, bucket, count) {
   }));
   return {labels:Object.keys(buckets).sort().reverse().slice(0, Math.max(Number(count || 12), 1)), buckets};
 }
-
+ 
 function renderDetailedSummary(kid, detail) {
   const categories = summaryCategoriesForKid(kid);
   let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
@@ -5370,13 +5417,13 @@ function renderDetailedSummary(kid, detail) {
   }).join("");
   return `<div class="summary-table-wrap"><table class="summary-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
-
-
+ 
+ 
 function normalizeGoalBand(band = {}) {
   const color = ["blue", "green", "yellow", "red", "gray"].includes(band.color) ? band.color : "green";
   return {threshold:Number(band.threshold || 0), color};
 }
-
+ 
 function goalBandPercent(category, value, count = 1, valueIsNormalized = false) {
   const goal = Number(category.goal || 0);
   const comparisonValue = valueIsNormalized ? Number(value || 0) : goalComparisonValue(category, value, count);
@@ -5387,14 +5434,14 @@ function goalBandPercent(category, value, count = 1, valueIsNormalized = false) 
   }
   return Math.round((comparisonValue / goal) * 100);
 }
-
+ 
 function goalBandClass(category, value, count = 1, valueIsNormalized = false) {
   const percent = goalBandPercent(category, value, count, valueIsNormalized);
   const sorted = goalBands.map(normalizeGoalBand).sort((a, b) => Number(b.threshold) - Number(a.threshold));
   const match = sorted.find(band => percent >= Number(band.threshold));
   return `summary-goal-${match?.color || "green"}`;
 }
-
+ 
 function renderGoalBandEditor() {
   const editor = document.getElementById("goal-band-editor");
   if (!editor) return;
@@ -5403,7 +5450,7 @@ function renderGoalBandEditor() {
     return `<div class="goal-band-row" data-goal-band-row><input type="number" min="0" step="1" data-field="threshold" aria-label="Percent threshold" value="${Number(normalized.threshold)}" placeholder="Percent"><select data-field="color" aria-label="Color"><option value="blue" ${normalized.color === "blue" ? "selected" : ""}>Blue</option><option value="green" ${normalized.color === "green" ? "selected" : ""}>Green</option><option value="yellow" ${normalized.color === "yellow" ? "selected" : ""}>Yellow</option><option value="red" ${normalized.color === "red" ? "selected" : ""}>Red</option><option value="gray" ${normalized.color === "gray" ? "selected" : ""}>Gray</option></select><button class="icon-btn remove-goal-band" type="button" aria-label="Delete color">x</button></div>`;
   }).join("");
 }
-
+ 
 function readGoalBandEditor() {
   const rows = [...document.querySelectorAll("#goal-band-editor [data-goal-band-row]")];
   const bands = rows.map(row => normalizeGoalBand({
@@ -5412,11 +5459,11 @@ function readGoalBandEditor() {
   })).sort((a, b) => Number(b.threshold) - Number(a.threshold));
   return bands.length ? bands : [{threshold:100, color:"green"}, {threshold:0, color:"red"}];
 }
-
+ 
 function goalClass(category, value, count = 1, valueIsNormalized = false) {
   return goalBandClass(category, value, count, valueIsNormalized);
 }
-
+ 
 async function refreshSummary() {
   const content = document.getElementById("summary-content");
   const kind = document.getElementById("summary-kind").value;
@@ -5435,7 +5482,7 @@ async function refreshSummary() {
   content.className = "";
   content.innerHTML = summary.labels.length ? renderOverallSummaryRows(summary) : `<div class="summary-empty">No data in this range.</div>`;
 }
-
+ 
 async function openSummary() {
   document.getElementById("summary-person").innerHTML = kids.map(kid => `<option value="${kid}" ${kid === activeKid ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
   document.getElementById("summary-kind").value = "overall";
@@ -5443,7 +5490,7 @@ async function openSummary() {
   openMainScreen("summary-modal", "Summary");
   await refreshSummary();
 }
-
+ 
 function syncSummaryControls() {
   const detailed = document.getElementById("summary-kind").value === "detailed";
   document.querySelectorAll(".summary-detail-only").forEach(control => {
@@ -5453,13 +5500,13 @@ function syncSummaryControls() {
     control.style.display = detailed ? "none" : "";
   });
 }
-
+ 
 function switchKid(kid) {
   activeKid = kid;
   document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.kid === kid));
   document.querySelectorAll(".table-container").forEach(view => view.classList.toggle("active", view.id === kid));
 }
-
+ 
 function applyDayFocus(kid, dayIndex) {
   const container = document.getElementById(kid);
   if (!container) return;
@@ -5470,7 +5517,7 @@ function applyDayFocus(kid, dayIndex) {
     button.classList.toggle("active", Number(button.dataset.filterDay) === Number(dayIndex));
   });
 }
-
+ 
 function renderNoteIndicators() {
   kids.forEach(kid => {
     days.forEach((day, i) => {
@@ -5482,7 +5529,7 @@ function renderNoteIndicators() {
     });
   });
 }
-
+ 
 async function loadTasks(kid) {
   const doc = await weekRef(currentWeek).collection("tasks").doc(kid).get();
   const saved = doc.exists && Array.isArray(doc.data().items) ? doc.data().items : [];
@@ -5495,12 +5542,12 @@ async function loadTasks(kid) {
   });
   tasksCache[kid] = saved.length ? saved : legacy;
 }
-
+ 
 async function saveTasks(kid) {
   await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
   await weekRef(currentWeek).collection("tasks").doc(kid).set({items:tasksCache[kid] || [], updatedAt:new Date()});
 }
-
+ 
 function renderTaskList(kid) {
   const list = document.getElementById(`${kid}-tasks`);
   if (!list) return;
@@ -5517,7 +5564,7 @@ function renderTaskList(kid) {
     return `<div class="task-item ${done}"><div class="day-chip">${days[Number(item.day)] || "Any"}</div><div class="task-text">${escapeHtml(item.text || "")}</div><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}">${actions}</div>`;
   }).join("");
 }
-
+ 
 async function addTask(kid) {
   const textInput = document.getElementById(`${kid}-task-text`);
   const dayInput = document.getElementById(`${kid}-task-day`);
@@ -5530,14 +5577,14 @@ async function addTask(kid) {
   renderTaskList(kid);
   renderNoteIndicators();
 }
-
+ 
 async function toggleTask(kid, id) {
   tasksCache[kid] = (tasksCache[kid] || []).map(task => task.id === id ? {...task, done:!task.done} : task);
   await saveTasks(kid);
   renderTaskList(kid);
   renderNoteIndicators();
 }
-
+ 
 async function editTask(kid, id) {
   const task = (tasksCache[kid] || []).find(item => item.id === id);
   if (!task) return;
@@ -5552,7 +5599,7 @@ async function editTask(kid, id) {
   renderTaskList(kid);
   renderNoteIndicators();
 }
-
+ 
 async function deleteTask(kid, id) {
   if (!confirm("Delete this task?")) return;
   tasksCache[kid] = (tasksCache[kid] || []).filter(item => item.id !== id);
@@ -5560,7 +5607,7 @@ async function deleteTask(kid, id) {
   renderTaskList(kid);
   renderNoteIndicators();
 }
-
+ 
 async function loadLogs(kid) {
   const doc = await weekRef(currentWeek).collection("logs").doc(kid).get();
   const saved = doc.exists && Array.isArray(doc.data().entries) ? doc.data().entries : [];
@@ -5574,12 +5621,12 @@ async function loadLogs(kid) {
   });
   logsCache[kid] = saved.length ? saved : legacy;
 }
-
+ 
 async function saveLogs(kid) {
   await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
   await weekRef(currentWeek).collection("logs").doc(kid).set({entries:logsCache[kid] || [], updatedAt:new Date()});
 }
-
+ 
 function renderLogList(kid) {
   const list = document.getElementById(`${kid}-logs`);
   if (!list) return;
@@ -5596,7 +5643,7 @@ function renderLogList(kid) {
     return `<div class="log-item ${type}"><div class="log-main"><span class="day-chip">${days[Number(entry.day)] || "Any"}</span><span class="log-type-chip">${meta.label}</span><div class="log-copy">${escapeHtml(entry.note || "")}</div>${actions}</div><div class="log-outcome">${meta.outcome}: ${escapeHtml(entry.outcome || "")}</div></div>`;
   }).join("");
 }
-
+ 
 async function addLog(kid) {
   const dayInput = document.getElementById(`${kid}-log-day`);
   const typeInput = document.getElementById(`${kid}-log-type`);
@@ -5613,7 +5660,7 @@ async function addLog(kid) {
   renderLogList(kid);
   renderNoteIndicators();
 }
-
+ 
 async function editLog(kid, id) {
   const entry = (logsCache[kid] || []).find(item => item.id === id);
   if (!entry) return;
@@ -5633,7 +5680,7 @@ async function editLog(kid, id) {
   renderLogList(kid);
   renderNoteIndicators();
 }
-
+ 
 async function deleteLog(kid, id) {
   if (!confirm("Delete this log entry?")) return;
   logsCache[kid] = (logsCache[kid] || []).filter(item => item.id !== id);
@@ -5641,7 +5688,7 @@ async function deleteLog(kid, id) {
   renderLogList(kid);
   renderNoteIndicators();
 }
-
+ 
 function openCategoryDetail(key, kid = activeKid) {
   const category = categoriesForKid(kid).find(item => item.key === key);
   if (!category) return;
@@ -5655,7 +5702,7 @@ function openCategoryDetail(key, kid = activeKid) {
   document.getElementById("category-detail-goal-period").value = category.goalPeriod === "daily" ? "daily" : "weekly";
   openModal("category-detail-modal");
 }
-
+ 
 async function saveCategoryDetail() {
   if (!activeCategory || !activeCategoryKid) return;
   const updated = categoriesForKid(activeCategoryKid).map(category => {
@@ -5675,7 +5722,7 @@ async function saveCategoryDetail() {
   await loadData(currentWeek);
   closeModal("category-detail-modal");
 }
-
+ 
 async function populateWeekDropdown() {
   const select = document.getElementById("week-select");
   select.innerHTML = "";
@@ -5690,7 +5737,7 @@ async function populateWeekDropdown() {
   });
   select.appendChild(new Option("Add New", "__add_new__"));
 }
-
+ 
 async function ensureWeekOption(weekKey) {
   const select = document.getElementById("week-select");
   if (![...select.options].some(option => option.value === weekKey)) {
@@ -5698,7 +5745,7 @@ async function ensureWeekOption(weekKey) {
   }
   select.value = weekKey;
 }
-
+ 
 async function addHistoricalWeek() {
   const entered = prompt("Week to add, like 2026-W07:", previousWeekKey());
   if (entered === null) return;
@@ -5718,13 +5765,13 @@ async function addHistoricalWeek() {
   await populateWeekDropdown();
   await loadData(weekKey);
 }
-
-
-
+ 
+ 
+ 
 function summaryCategoriesForKid(kid) {
   return categoriesForKid(kid).filter(category => category.showSummary !== false);
 }
-
+ 
 function scoreSummaryDataForKid(kid, data = {}) {
   let total = 0;
   let entries = 0;
@@ -5737,7 +5784,7 @@ function scoreSummaryDataForKid(kid, data = {}) {
   });
   return entries ? total : null;
 }
-
+ 
 function showCategoryConfigScreen(screen) {
   document.getElementById("category-screen-categories")?.classList.toggle("active", screen === "categories");
   document.getElementById("category-screen-colors")?.classList.toggle("active", screen === "colors");
@@ -5745,7 +5792,7 @@ function showCategoryConfigScreen(screen) {
   document.getElementById("category-view-colors")?.classList.toggle("active", screen === "colors");
   document.getElementById("add-category")?.style.setProperty("display", screen === "categories" ? "" : "none");
 }
-
+ 
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
   editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Tracker</span><span>Summary</span></div>`;
@@ -5758,14 +5805,14 @@ function renderCategoryEditor(kid = categoryEditorKid) {
     previousGroup = group || previousGroup;
   });
 }
-
-
+ 
+ 
 function renderCategoryPersonMenu() {
   const menu = document.getElementById("category-person-menu");
   if (!menu) return;
   menu.innerHTML = kids.map(name => `<button class="category-person-choice ${name === categoryEditorKid ? "active" : ""}" type="button" data-category-person-choice="${escapeAttr(name)}">${escapeHtml(memberLabel(name))}</button>`).join("");
 }
-
+ 
 function openCategoryEditor(kid = activeKid) {
   categoryEditorKid = kid;
   const personSelect = document.getElementById("category-person");
@@ -5778,19 +5825,19 @@ function openCategoryEditor(kid = activeKid) {
   showCategoryConfigScreen("categories");
   openMainScreen("category-modal", "Configuration");
 }
-
+ 
 function refreshImportOptions() {
   const importSelect = document.getElementById("category-import-person");
   importSelect.innerHTML = kids.filter(name => name !== categoryEditorKid).map(name => `<option value="${name}">${escapeHtml(memberLabel(name))}</option>`).join("");
   renderCategoryPersonMenu();
 }
-
+ 
 function renderMemberEditor() {
   const editor = document.getElementById("member-editor");
   editor.innerHTML = "";
   householdMembers.slice().sort((a, b) => Number(a.order || 0) - Number(b.order || 0)).forEach(addMemberRow);
 }
-
+ 
 function addMemberRow(member = {displayName:"New Member", initials:"", role:"child", goal:0, archived:false}) {
   const editor = document.getElementById("member-editor");
   const row = document.createElement("div");
@@ -5814,7 +5861,7 @@ function addMemberRow(member = {displayName:"New Member", initials:"", role:"chi
   `;
   editor.appendChild(row);
 }
-
+ 
 function readMemberEditor() {
   return [...document.querySelectorAll("#member-editor .category-row")].map((row, index) => {
     const displayName = row.querySelector('[data-field="displayName"]').value.trim() || `Member ${index + 1}`;
@@ -5830,7 +5877,7 @@ function readMemberEditor() {
     };
   });
 }
-
+ 
 async function saveMembers() {
   if (!(await requireHouseholdAdmin("change household members"))) return;
   const editedMembers = readMemberEditor();
@@ -5845,7 +5892,7 @@ async function saveMembers() {
   await loadData(currentWeek);
   closeModal("settings-modal");
 }
-
+ 
 function showHouseholdScreen(screen = "household") {
   const isHousehold = screen === "household";
   document.getElementById("household-screen-household")?.classList.toggle("active", isHousehold);
@@ -5859,11 +5906,11 @@ function showHouseholdScreen(screen = "household") {
   if (saveMembersButton) saveMembersButton.style.display = isHousehold ? "none" : "";
   if (saveSettingsButton) saveSettingsButton.style.display = isHousehold ? "" : "none";
 }
-
+ 
 function openMemberEditor() {
   openSettingsModal("members");
 }
-
+ 
 function openSettingsModal(screen = "household") {
   document.getElementById("settings-household-name").value = householdData?.name || "";
   document.getElementById("settings-household-scoring").value = householdData?.scoringMode || "money";
@@ -5872,7 +5919,7 @@ function openSettingsModal(screen = "household") {
   showHouseholdScreen(screen);
   openMainScreen("settings-modal", "Household");
 }
-
+ 
 async function saveHouseholdSettings() {
   if (!(await requireHouseholdAdmin("change household settings"))) return;
   const name = document.getElementById("settings-household-name").value.trim() || "My Household";
@@ -5882,7 +5929,7 @@ async function saveHouseholdSettings() {
   householdData = {...(householdData || {}), name, scoringMode, weeklyResetDay};
   closeModal("settings-modal");
 }
-
+ 
 function importCategoryConfig() {
   const importFrom = document.getElementById("category-import-person").value;
   if (!importFrom || importFrom === categoryEditorKid) return;
@@ -5890,7 +5937,324 @@ function importCategoryConfig() {
   categoriesByKid[categoryEditorKid] = cloneCategories(categoriesForKid(importFrom));
   renderCategoryEditor(categoryEditorKid);
 }
-
+ 
+function setTransferStatus(message = "", type = "") {
+  const status = document.getElementById("transfer-status");
+  if (!status) return;
+  status.textContent = message;
+  status.className = `transfer-status ${type}`.trim();
+}
+ 
+function portableValue(value) {
+  if (value === null || value === undefined) return value;
+  if (typeof value?.toDate === "function") return value.toDate().toISOString();
+  if (Array.isArray(value)) return value.map(portableValue);
+  if (typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, portableValue(item)]));
+  return value;
+}
+ 
+function validYearWeek(value = "") {
+  return /^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/.test(String(value).toUpperCase());
+}
+ 
+async function exportPersonWeekRecord(kid, yearWeek) {
+  const [choresDoc, tasksDoc, logsDoc, configurationDoc, ...noteDocs] = await Promise.all([
+    weekRef(yearWeek).collection("chores").doc(kid).get(),
+    weekRef(yearWeek).collection("tasks").doc(kid).get(),
+    weekRef(yearWeek).collection("logs").doc(kid).get(),
+    weekRef(yearWeek).collection("configurations").doc(kid).get(),
+    ...days.map((day, index) => weekRef(yearWeek).collection("notes").doc(noteKey(kid, index)).get())
+  ]);
+  const notes = {};
+  noteDocs.forEach((doc, index) => {
+    if (doc.exists) notes[String(index)] = portableValue(doc.data());
+  });
+  const savedConfiguration = configurationDoc.exists ? configurationDoc.data() : {};
+  return {
+    person:{id:kid, displayName:memberLabel(kid)},
+    yearWeek,
+    configuration:{
+      categories:portableValue(Array.isArray(savedConfiguration.categories) ? savedConfiguration.categories : (defaultCategoriesByKid[kid] || categoriesForKid(kid))),
+      goalBands:portableValue(Array.isArray(savedConfiguration.goalBands) ? savedConfiguration.goalBands : goalBands)
+    },
+    values:{
+      chores:portableValue(choresDoc.exists ? choresDoc.data() : {}),
+      notes,
+      tasks:portableValue(tasksDoc.exists && Array.isArray(tasksDoc.data().items) ? tasksDoc.data().items : []),
+      logs:portableValue(logsDoc.exists && Array.isArray(logsDoc.data().entries) ? logsDoc.data().entries : [])
+    }
+  };
+}
+ 
+function excelBoolean(value) {
+  if (typeof value === "boolean") return value;
+  return ["true", "yes", "1", "checked"].includes(String(value || "").trim().toLowerCase());
+}
+ 
+function excelRowsForRecords(records) {
+  const values = [];
+  const configurations = [];
+  const goalColors = [];
+  const notes = [];
+  const tasks = [];
+  const logs = [];
+  records.forEach(record => {
+    const base = {
+      "Person ID":record.person.id,
+      "Person Name":record.person.displayName,
+      "Year-Week":record.yearWeek
+    };
+    const categoryMap = Object.fromEntries((record.configuration.categories || []).map(category => [category.key, category]));
+    Object.entries(record.values.chores || {}).forEach(([key, value]) => {
+      const match = key.match(/^(\d)-(.+)$/);
+      if (!match) return;
+      const dayIndex = Number(match[1]);
+      const categoryKey = match[2];
+      const category = categoryMap[categoryKey] || {};
+      values.push({...base, "Day Number":dayIndex + 1, Day:days[dayIndex], "Category Key":categoryKey, Category:category.label || categoryKey, Kind:category.kind || "", Value:Number(value)});
+    });
+    (record.configuration.categories || []).forEach((category, order) => configurations.push({
+      ...base, Order:order + 1, "Category Key":category.key, Label:category.label, Notes:category.details, Group:category.group,
+      Kind:category.kind, Value:Number(category.amount || 0), Goal:Number(category.goal || 0), "Goal Type":category.goalType,
+      "Goal Period":category.goalPeriod, "Show Tracker":category.showProgress !== false, "Show Summary":category.showSummary !== false, Formula:category.formula || ""
+    }));
+    (record.configuration.goalBands || []).forEach((band, order) => goalColors.push({...base, Order:order + 1, Threshold:Number(band.threshold || 0), Color:band.color || "green"}));
+    Object.entries(record.values.notes || {}).forEach(([day, fields]) => {
+      Object.entries(fields || {}).forEach(([field, value]) => notes.push({...base, "Day Number":Number(day) + 1, Day:days[Number(day)], Field:field, Value:typeof value === "object" ? JSON.stringify(value) : value}));
+    });
+    (record.values.tasks || []).forEach(task => tasks.push({...base, "Task ID":task.id || "", "Day Number":Number(task.day) + 1, Day:days[Number(task.day)], Task:task.text || "", Done:!!task.done}));
+    (record.values.logs || []).forEach(log => logs.push({...base, "Log ID":log.id || "", "Day Number":Number(log.day) + 1, Day:days[Number(log.day)], Type:log.type || "", Note:log.note || "", Outcome:log.outcome || ""}));
+  });
+  return {values, configurations, goalColors, notes, tasks, logs};
+}
+ 
+function appendExcelSheet(workbook, name, rows, headers) {
+  const sheet = rows.length ? XLSX.utils.json_to_sheet(rows, {header:headers}) : XLSX.utils.aoa_to_sheet([headers]);
+  sheet["!autofilter"] = {ref:`A1:${XLSX.utils.encode_col(headers.length - 1)}${Math.max(rows.length + 1, 1)}`};
+  sheet["!freeze"] = {xSplit:0, ySplit:1};
+  sheet["!cols"] = headers.map(header => ({wch:Math.min(34, Math.max(11, String(header).length + 2))}));
+  XLSX.utils.book_append_sheet(workbook, sheet, name);
+}
+ 
+function downloadTrackerWorkbook(records, startWeek, endWeek) {
+  if (!window.XLSX) throw new Error("Excel support did not load. Check your internet connection and reopen the page.");
+  const workbook = XLSX.utils.book_new();
+  const rows = excelRowsForRecords(records);
+  const meta = [["Daily Tracker Excel Transfer"], ["Format", "daily-tracker-excel"], ["Version", 1], ["Exported At", new Date().toISOString()], ["Household", householdData?.name || "Household"], ["Start Week", startWeek], ["End Week", endWeek], ["Instructions", "Edit or add rows, keep Person ID/Name and Year-Week on every row, then import this workbook from the tracker."]];
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(meta), "Read Me");
+  appendExcelSheet(workbook, "Values", rows.values, ["Person ID", "Person Name", "Year-Week", "Day Number", "Day", "Category Key", "Category", "Kind", "Value"]);
+  appendExcelSheet(workbook, "Configuration", rows.configurations, ["Person ID", "Person Name", "Year-Week", "Order", "Category Key", "Label", "Notes", "Group", "Kind", "Value", "Goal", "Goal Type", "Goal Period", "Show Tracker", "Show Summary", "Formula"]);
+  appendExcelSheet(workbook, "Goal Colors", rows.goalColors, ["Person ID", "Person Name", "Year-Week", "Order", "Threshold", "Color"]);
+  appendExcelSheet(workbook, "Notes", rows.notes, ["Person ID", "Person Name", "Year-Week", "Day Number", "Day", "Field", "Value"]);
+  appendExcelSheet(workbook, "Tasks", rows.tasks, ["Person ID", "Person Name", "Year-Week", "Task ID", "Day Number", "Day", "Task", "Done"]);
+  appendExcelSheet(workbook, "Logs", rows.logs, ["Person ID", "Person Name", "Year-Week", "Log ID", "Day Number", "Day", "Type", "Note", "Outcome"]);
+  const scope = records.length && new Set(records.map(record => record.person.id)).size === 1 ? records[0].person.displayName.replace(/[^a-z0-9]+/gi, "-").toLowerCase() : "all-people";
+  XLSX.writeFile(workbook, `daily-tracker-${scope}-${startWeek}-to-${endWeek}.xlsx`);
+}
+ 
+async function exportTrackerExcel(allPeople = false) {
+  const person = document.getElementById("transfer-person").value || activeKid;
+  let startWeek = document.getElementById("transfer-week-start").value || currentWeek;
+  let endWeek = document.getElementById("transfer-week-end").value || currentWeek;
+  if (startWeek > endWeek) [startWeek, endWeek] = [endWeek, startWeek];
+  const weeksSnap = await householdCollection("weeks").get();
+  const weeks = [...new Set([...weeksSnap.docs.map(doc => doc.id), currentWeek])].filter(validYearWeek).sort().filter(week => week >= startWeek && week <= endWeek);
+  if (!weeks.length) return setTransferStatus("No saved weeks are available in that range.", "error");
+  setTransferStatus(`Preparing ${weeks.length} week${weeks.length === 1 ? "" : "s"}...`);
+  try {
+    const people = allPeople ? kids : [person];
+    const records = [];
+    for (const kid of people) {
+      for (const week of weeks) records.push(await exportPersonWeekRecord(kid, week));
+    }
+    downloadTrackerWorkbook(records, startWeek, endWeek);
+    setTransferStatus(`Exported ${weeks.length} week${weeks.length === 1 ? "" : "s"} for ${people.length} ${people.length === 1 ? "person" : "people"}.`, "success");
+  } catch (error) {
+    console.error("Excel export failed", error);
+    setTransferStatus(error?.message || "Excel export failed.", "error");
+  }
+}
+ 
+function workbookRows(workbook, sheetName) {
+  const sheet = workbook.Sheets[sheetName];
+  return sheet ? XLSX.utils.sheet_to_json(sheet, {defval:"", raw:true}) : [];
+}
+ 
+function workbookRecordKey(row) {
+  return `${String(row["Person ID"] || "").trim()}|${String(row["Person Name"] || "").trim()}|${String(row["Year-Week"] || "").trim().toUpperCase()}`;
+}
+ 
+function trackerPayloadFromWorkbook(workbook) {
+  const recordMap = new Map();
+  const ensureRecord = row => {
+    const personId = String(row["Person ID"] || "").trim();
+    const personName = String(row["Person Name"] || personId).trim();
+    const yearWeek = String(row["Year-Week"] || "").trim().toUpperCase();
+    const key = workbookRecordKey(row);
+    if (!recordMap.has(key)) recordMap.set(key, {person:{id:personId, displayName:personName}, yearWeek, configuration:{categories:[], goalBands:[]}, values:{chores:{}, notes:{}, tasks:[], logs:[]}});
+    return recordMap.get(key);
+  };
+  workbookRows(workbook, "Values").forEach(row => {
+    const record = ensureRecord(row);
+    const day = Number(row["Day Number"]) - 1;
+    const categoryKey = String(row["Category Key"] || "").trim();
+    if (day >= 0 && day < days.length && categoryKey) record.values.chores[`${day}-${categoryKey}`] = row.Value;
+  });
+  workbookRows(workbook, "Configuration").sort((a, b) => Number(a.Order) - Number(b.Order)).forEach(row => {
+    const record = ensureRecord(row);
+    record.configuration.categories.push({key:String(row["Category Key"] || "").trim(), label:String(row.Label || row["Category Key"] || "").trim(), details:String(row.Notes || ""), group:String(row.Group || ""), kind:String(row.Kind || "check").toLowerCase(), amount:Number(row.Value || 0), goal:Number(row.Goal || 0), goalType:String(row["Goal Type"] || "min").toLowerCase(), goalPeriod:String(row["Goal Period"] || "weekly").toLowerCase(), showProgress:excelBoolean(row["Show Tracker"]), showSummary:excelBoolean(row["Show Summary"]), formula:String(row.Formula || "")});
+  });
+  workbookRows(workbook, "Goal Colors").sort((a, b) => Number(a.Order) - Number(b.Order)).forEach(row => ensureRecord(row).configuration.goalBands.push({threshold:Number(row.Threshold || 0), color:String(row.Color || "green").toLowerCase()}));
+  workbookRows(workbook, "Notes").forEach(row => {
+    const record = ensureRecord(row);
+    const day = Number(row["Day Number"]) - 1;
+    if (day < 0 || day >= days.length || !row.Field) return;
+    record.values.notes[String(day)] = record.values.notes[String(day)] || {};
+    record.values.notes[String(day)][String(row.Field)] = row.Value;
+  });
+  workbookRows(workbook, "Tasks").forEach(row => {
+    const record = ensureRecord(row);
+    record.values.tasks.push({id:String(row["Task ID"] || makeId("task")), day:Number(row["Day Number"]) - 1, text:String(row.Task || ""), done:excelBoolean(row.Done)});
+  });
+  workbookRows(workbook, "Logs").forEach(row => {
+    const record = ensureRecord(row);
+    record.values.logs.push({id:String(row["Log ID"] || makeId("log")), day:Number(row["Day Number"]) - 1, type:String(row.Type || "good").toLowerCase(), note:String(row.Note || ""), outcome:String(row.Outcome || "")});
+  });
+  return {format:"daily-tracker-transfer", version:1, records:[...recordMap.values()]};
+}
+ 
+async function importTrackerWorkbook(file) {
+  if (!file) return;
+  if (!(await requireHouseholdAdmin("import tracker history"))) return;
+  if (!window.XLSX) return setTransferStatus("Excel support did not load. Check your connection and reopen the page.", "error");
+  setTransferStatus("Reading Excel workbook...");
+  try {
+    const workbook = XLSX.read(await file.arrayBuffer(), {type:"array"});
+    const payload = trackerPayloadFromWorkbook(workbook);
+    const count = await importTrackerPayload(payload);
+    setTransferStatus(count ? `Imported ${count} person/week ${count === 1 ? "record" : "records"}.` : "Import canceled.", count ? "success" : "");
+  } catch (error) {
+    console.error("Excel import failed", error);
+    setTransferStatus(error?.message || "Import failed. Choose a valid Daily Tracker Excel workbook.", "error");
+  } finally {
+    document.getElementById("transfer-file").value = "";
+  }
+}
+ 
+function downloadTrackerTransfer(records, yearWeek) {
+  const payload = {
+    format:"daily-tracker-transfer",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    sourceHousehold:{id:householdId, name:householdData?.name || "Household"},
+    records
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const scope = records.length === 1 ? memberLabel(records[0].person.id).replace(/[^a-z0-9]+/gi, "-").toLowerCase() : "all-people";
+  link.href = url;
+  link.download = `daily-tracker-${scope}-${yearWeek}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+ 
+async function exportTrackerData(allPeople = false) {
+  const person = document.getElementById("transfer-person").value || activeKid;
+  const yearWeek = document.getElementById("transfer-week").value || currentWeek;
+  if (!validYearWeek(yearWeek)) return setTransferStatus("Choose a valid year-week.", "error");
+  setTransferStatus("Preparing export...");
+  try {
+    const people = allPeople ? kids : [person];
+    const records = await Promise.all(people.map(kid => exportPersonWeekRecord(kid, yearWeek)));
+    downloadTrackerTransfer(records, yearWeek);
+    setTransferStatus(`Exported ${records.length} ${records.length === 1 ? "person" : "people"} for ${yearWeek}.`, "success");
+  } catch (error) {
+    console.error("Tracker export failed", error);
+    setTransferStatus("Export failed. Check your connection and permissions.", "error");
+  }
+}
+ 
+function resolveImportedPerson(person = {}) {
+  if (kids.includes(person.id)) return person.id;
+  const targetName = String(person.displayName || person.id || "").trim().toLowerCase();
+  return kids.find(kid => memberLabel(kid).trim().toLowerCase() === targetName) || "";
+}
+ 
+async function importTrackerPayload(payload) {
+  if (payload?.format !== "daily-tracker-transfer" || Number(payload?.version) !== 1 || !Array.isArray(payload?.records)) {
+    throw new Error("This is not a supported Daily Tracker export file.");
+  }
+  const prepared = payload.records.map((record, index) => {
+    const yearWeek = String(record?.yearWeek || "").toUpperCase();
+    const kid = resolveImportedPerson(record?.person);
+    if (!validYearWeek(yearWeek)) throw new Error(`Record ${index + 1} has an invalid year-week.`);
+    if (!kid) throw new Error(`No household person matches ${record?.person?.displayName || record?.person?.id || `record ${index + 1}`}.`);
+    return {record, yearWeek, kid};
+  });
+  if (!prepared.length) throw new Error("The file has no tracker records.");
+  const summary = [...new Set(prepared.map(item => `${memberLabel(item.kid)} / ${item.yearWeek}`))].join("\n");
+  if (!confirm(`Import these historical tracker records?\n\n${summary}\n\nMatching values will be updated.`)) return 0;
+  for (const {record, yearWeek, kid} of prepared) {
+    const configuration = record.configuration || {};
+    const values = record.values || {};
+    const writes = [weekRef(yearWeek).set({timestamp:new Date(), historical:true, importedAt:new Date()}, {merge:true})];
+    if (Array.isArray(configuration.categories)) {
+      writes.push(weekRef(yearWeek).collection("configurations").doc(kid).set({
+        categories:cloneCategories(configuration.categories),
+        goalBands:Array.isArray(configuration.goalBands) ? configuration.goalBands.map(normalizeGoalBand) : goalBands,
+        importedAt:new Date()
+      }));
+    }
+    if (values.chores && typeof values.chores === "object" && !Array.isArray(values.chores)) {
+      writes.push(weekRef(yearWeek).collection("chores").doc(kid).set(values.chores, {merge:true}));
+    }
+    if (Array.isArray(values.tasks)) writes.push(weekRef(yearWeek).collection("tasks").doc(kid).set({items:values.tasks, importedAt:new Date()}));
+    if (Array.isArray(values.logs)) writes.push(weekRef(yearWeek).collection("logs").doc(kid).set({entries:values.logs, importedAt:new Date()}));
+    Object.entries(values.notes || {}).forEach(([day, note]) => {
+      const dayIndex = Number(day);
+      if (Number.isInteger(dayIndex) && dayIndex >= 0 && dayIndex < days.length && note && typeof note === "object") {
+        writes.push(weekRef(yearWeek).collection("notes").doc(noteKey(kid, dayIndex)).set(note, {merge:true}));
+      }
+    });
+    await Promise.all(writes);
+  }
+  await populateWeekDropdown();
+  await loadData(currentWeek);
+  return prepared.length;
+}
+ 
+async function importTrackerFile(file) {
+  if (!file) return;
+  if (!(await requireHouseholdAdmin("import tracker history"))) return;
+  setTransferStatus("Checking import file...");
+  try {
+    const payload = JSON.parse(await file.text());
+    const count = await importTrackerPayload(payload);
+    setTransferStatus(count ? `Imported ${count} person/week ${count === 1 ? "record" : "records"}.` : "Import canceled.", count ? "success" : "");
+  } catch (error) {
+    console.error("Tracker import failed", error);
+    setTransferStatus(error?.message || "Import failed. Choose a valid tracker JSON file.", "error");
+  } finally {
+    document.getElementById("transfer-file").value = "";
+  }
+}
+ 
+function openTransferModal() {
+  const personSelect = document.getElementById("transfer-person");
+  personSelect.innerHTML = kids.map(kid => `<option value="${escapeAttr(kid)}" ${kid === activeKid ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
+  const sourceWeeks = [...document.getElementById("week-select").options].map(option => option.value).filter(validYearWeek);
+  if (!sourceWeeks.includes(currentWeek)) sourceWeeks.unshift(currentWeek);
+  const weeks = [...new Set(sourceWeeks)].sort();
+  const options = weeks.map(week => `<option value="${week}" ${week === currentWeek ? "selected" : ""}>${week}</option>`).join("");
+  document.getElementById("transfer-week-start").innerHTML = options;
+  document.getElementById("transfer-week-end").innerHTML = options;
+  setTransferStatus("");
+  openModal("transfer-modal");
+}
+ 
 function addCategoryRow(category = {label:"New", details:"Category notes", kind:"check", amount:0.25, group:"", goal:0, goalType:"min", goalPeriod:"weekly", showProgress:true, showSummary:true, formula:""}) {
   const editor = document.getElementById("category-editor");
   const row = document.createElement("div");
@@ -5931,7 +6295,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   editor.appendChild(row);
   return row;
 }
-
+ 
 function readCategoryEditor() {
   return [...document.querySelectorAll("#category-editor .category-row")].map((row, index) => {
     const label = row.querySelector('[data-field="label"]').value.trim() || `Row ${index + 1}`;
@@ -5951,53 +6315,53 @@ function readCategoryEditor() {
     };
   });
 }
-
-
+ 
+ 
 function statusLabel(status = "now") {
   return String(status || "now").replace(/^./, char => char.toUpperCase());
 }
-
+ 
 function taskDateLabel(date = "") {
   if (!date) return "";
   const [year, month, day] = String(date).split("-");
   if (!year || !month || !day) return date;
   return `${Number(month)}/${Number(day)}`;
 }
-
+ 
 function taskPeopleOptions(selected = "") {
   return kids.map(kid => `<option value="${escapeAttr(kid)}" ${kid === selected ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
 }
-
+ 
 function taskStatusOptions(selected = "now") {
   return FAMILY_TASK_STATUSES.map(status => `<option value="${status}" ${status === selected ? "selected" : ""}>${statusLabel(status)}</option>`).join("");
 }
-
+ 
 function taskCollectionRef() {
   return householdCollection("tasks");
 }
-
+ 
 function calendarConfigRef() {
   return householdCollection("calendar").doc("config");
 }
-
+ 
 function calendarEventsRef() {
   return householdCollection("calendar").doc("events");
 }
-
+ 
 function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
-
+ 
 function localDateLabel(date) {
   return date.toLocaleDateString(undefined, {weekday:"short", month:"numeric", day:"numeric"});
 }
-
+ 
 function addDays(date, count) {
   const copy = new Date(date);
   copy.setDate(copy.getDate() + count);
   return copy;
 }
-
+ 
 function calendarRangeDates(range = calendarRange) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -6022,18 +6386,18 @@ function calendarRangeDates(range = calendarRange) {
   }
   return Array.from({length:count}, (_, index) => addDays(start, index));
 }
-
+ 
 function calendarCellValue(dayKey, column) {
   return calendarEvents?.[dayKey]?.[column] || "";
 }
-
+ 
 function uniqueCalendarColumns(columns = []) {
   return columns
     .map(column => String(column || "").trim())
     .filter(Boolean)
     .filter((value, index, values) => values.findIndex(other => other.toLowerCase() === value.toLowerCase()) === index);
 }
-
+ 
 function sanitizeCalendarColorFilters(filters = []) {
   return filters
     .map(filter => ({
@@ -6042,13 +6406,13 @@ function sanitizeCalendarColorFilters(filters = []) {
     }))
     .filter(filter => filter.word);
 }
-
+ 
 function calendarCellColor(value = "") {
   const text = String(value || "").trim().toLowerCase();
   const match = calendarColorFilters.find(filter => filter.word && text.includes(filter.word.trim().toLowerCase()));
   return match?.color || "";
 }
-
+ 
 function applyCalendarColorFilters(root = document) {
   root.querySelectorAll(".calendar-cell").forEach(cell => {
     const filterColor = calendarCellColor(cell.value || cell.textContent || "");
@@ -6062,7 +6426,7 @@ function applyCalendarColorFilters(root = document) {
     }
   });
 }
-
+ 
 function pruneCalendarEvents(events = {}, columns = calendarColumns) {
   const allowed = new Set(columns);
   const pruned = {};
@@ -6075,22 +6439,22 @@ function pruneCalendarEvents(events = {}, columns = calendarColumns) {
   });
   return pruned;
 }
-
+ 
 function calendarDayTotal(dayKey) {
   return calendarColumns.reduce((total, column) => total + (calendarCellValue(dayKey, column).trim() ? 1 : 0), 0);
 }
-
+ 
   function calendarRangeTotal(range = calendarRange) {
     return calendarRangeDates(range).reduce((sum, date) => sum + calendarDayTotal(dateKey(date)), 0);
   }
-
+ 
 function formatShortDate(value = "") {
   if (!value) return "";
   const [year, month, day] = String(value).split("-");
   if (!year || !month || !day) return value;
   return `${month}/${day}/${year.slice(-2)}`;
 }
-
+ 
 function parseShortDate(value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
@@ -6102,7 +6466,7 @@ function parseShortDate(value = "") {
   const year = match[3].length === 2 ? `20${match[3]}` : match[3];
   return `${year}-${month}-${day}`;
 }
-
+ 
   function calendarTotalClass(value, min, max) {
   const number = Number(value || 0);
   if (!Number.isFinite(number)) return "summary-goal-gray";
@@ -6115,7 +6479,7 @@ function parseShortDate(value = "") {
   if (ratio >= .2) return "summary-goal-blue";
   return "summary-goal-green";
 }
-
+ 
 async function loadCalendarData() {
   try {
     const [configDoc, eventsDoc] = await Promise.all([calendarConfigRef().get(), calendarEventsRef().get()]);
@@ -6130,15 +6494,15 @@ async function loadCalendarData() {
     calendarEvents = {};
   }
 }
-
+ 
 async function saveCalendarConfig() {
   await calendarConfigRef().set({columns:calendarColumns, colorFilters:calendarColorFilters, updatedAt:new Date()});
 }
-
+ 
 async function saveCalendarEvents() {
   await calendarEventsRef().set({events:calendarEvents, updatedAt:new Date()});
 }
-
+ 
 function renderCalendar() {
   document.querySelectorAll("[data-calendar-range]").forEach(button => button.classList.toggle("active", button.dataset.calendarRange === calendarRange));
   document.querySelectorAll("[data-calendar-range-total]").forEach(node => {
@@ -6171,7 +6535,7 @@ function renderCalendar() {
   wrap.innerHTML = html;
   applyCalendarColorFilters(wrap);
 }
-
+ 
 function scrollCalendarToToday() {
   const wrap = document.getElementById("calendar-table-wrap");
   const today = wrap?.querySelector(".calendar-day.today-row");
@@ -6179,7 +6543,7 @@ function scrollCalendarToToday() {
   const top = today.offsetTop - 34;
   wrap.scrollTop = Math.max(0, top);
 }
-
+ 
 function syncCalendarCellToCache(cell) {
   const day = cell.dataset.calendarDay;
   const column = cell.dataset.calendarColumn;
@@ -6199,7 +6563,7 @@ function syncCalendarCellToCache(cell) {
     cell.style.removeProperty("background-color");
   }
 }
-
+ 
 function refreshCalendarTotals() {
   document.querySelectorAll("[data-calendar-range-total]").forEach(node => {
     node.textContent = String(calendarRangeTotal(node.dataset.calendarRangeTotal));
@@ -6220,14 +6584,14 @@ function refreshCalendarTotals() {
     node.classList.add(calendarTotalClass(total, min, max));
   });
 }
-
+ 
 async function openCalendar() {
   await loadCalendarData();
   renderCalendar();
   openMainScreen("calendar-modal", "Calendar");
   requestAnimationFrame(scrollCalendarToToday);
 }
-
+ 
 function renderCalendarColumnEditor() {
   const list = document.getElementById("calendar-column-list");
   const colorList = document.getElementById("calendar-color-list");
@@ -6250,12 +6614,12 @@ function renderCalendarColumnEditor() {
     `).join("");
   }
 }
-
+ 
 function readCalendarColumnEditor() {
   return uniqueCalendarColumns([...document.querySelectorAll("[data-calendar-column-row] input[data-calendar-column-name]")]
     .map(input => input.value.trim()));
 }
-
+ 
 function readCalendarColorEditor() {
   return sanitizeCalendarColorFilters([...document.querySelectorAll("[data-calendar-color-row]")]
     .map(row => ({
@@ -6263,7 +6627,7 @@ function readCalendarColorEditor() {
       color:row.querySelector("[data-calendar-color-value]")?.value || "#e8eaed"
     })));
 }
-
+ 
 function toggleCalendarColumnEditor(forceOpen = null) {
   const editor = document.getElementById("calendar-column-editor");
   if (!editor) return;
@@ -6271,7 +6635,7 @@ function toggleCalendarColumnEditor(forceOpen = null) {
   if (open) renderCalendarColumnEditor();
   editor.classList.toggle("collapsed", !open);
 }
-
+ 
 function addCalendarColumnRow() {
   const list = document.getElementById("calendar-column-list");
   if (!list) return;
@@ -6287,7 +6651,7 @@ function addCalendarColumnRow() {
   list.appendChild(row);
   row.querySelector("input")?.select();
 }
-
+ 
 function addCalendarColorRow() {
   const list = document.getElementById("calendar-color-list");
   if (!list) return;
@@ -6302,7 +6666,7 @@ function addCalendarColorRow() {
   list.appendChild(row);
   row.querySelector("input")?.focus();
 }
-
+ 
 async function saveCalendarColumns() {
   const oldColumns = [...calendarColumns];
   const newColumns = readCalendarColumnEditor();
@@ -6330,7 +6694,7 @@ async function saveCalendarColumns() {
   renderCalendar();
   applyCalendarColorFilters(document.getElementById("calendar-table-wrap") || document);
 }
-
+ 
 async function loadFamilyTasks() {
   const snap = await taskCollectionRef().get();
   familyTasksCache = snap.docs.map(doc => ({id:doc.id, ...doc.data()})).sort((a, b) => {
@@ -6340,15 +6704,15 @@ async function loadFamilyTasks() {
     return String(a.endDate || a.startDate || "9999").localeCompare(String(b.endDate || b.startDate || "9999"));
   });
 }
-
+ 
 function taskCountClass(count, min, max) {
   return overallSummaryClass(Number(count || 0), min, max);
 }
-
+ 
 function taskOrderLabel(field) {
   return ({project:"Project", status:"Status", who:"Who", endDate:"Date"}[field] || "Project");
 }
-
+ 
 function taskPersonColorMap() {
   const openCounts = Object.fromEntries(kids.map(kid => [kid, familyTasksCache.filter(task => !task.completed && task.who === kid).length]));
   const counts = Object.values(openCounts).map(Number);
@@ -6356,7 +6720,7 @@ function taskPersonColorMap() {
   const max = counts.length ? Math.max(...counts) : 0;
   return Object.fromEntries(kids.map(kid => [kid, taskCountClass(openCounts[kid] || 0, min, max)]));
 }
-
+ 
 function renderTaskFilters() {
   const people = document.getElementById("family-task-people");
   const statuses = document.getElementById("family-task-statuses");
@@ -6379,7 +6743,7 @@ function renderTaskFilters() {
     }
   }
 }
-
+ 
 function visibleFamilyTasks(completed = false) {
   return familyTasksCache.filter(task => {
     if (!!task.completed !== completed) return false;
@@ -6388,7 +6752,7 @@ function visibleFamilyTasks(completed = false) {
     return true;
   });
 }
-
+ 
 function renderFamilyTaskList() {
   renderTaskFilters();
   const activeList = document.getElementById("family-task-list");
@@ -6431,7 +6795,7 @@ function renderFamilyTaskList() {
     completedList.innerHTML = completed.length ? renderTable(completed.map(renderRow).join("")) : `<div class="empty-state">No completed tasks yet.</div>`;
   if (completedCount) completedCount.textContent = String(completed.length);
 }
-
+ 
 function resetFamilyTaskForm() {
   document.getElementById("family-task-project").value = "";
   document.getElementById("family-task-title").value = "";
@@ -6440,7 +6804,7 @@ function resetFamilyTaskForm() {
   document.getElementById("family-task-end").value = formatShortDate(new Date().toISOString().slice(0, 10));
   document.getElementById("family-task-note").value = "";
 }
-
+ 
 function toggleFamilyTaskForm(forceOpen = null) {
   const form = document.getElementById("family-task-form");
   if (!form) return;
@@ -6448,7 +6812,7 @@ function toggleFamilyTaskForm(forceOpen = null) {
   form.classList.toggle("collapsed", !open);
   if (open) resetFamilyTaskForm();
 }
-
+ 
 async function openFamilyTasks() {
   resetFamilyTaskForm();
   renderTaskFilters();
@@ -6457,7 +6821,7 @@ async function openFamilyTasks() {
   await loadFamilyTasks();
   renderFamilyTaskList();
 }
-
+ 
 async function addFamilyTask() {
   const title = document.getElementById("family-task-title").value.trim();
   if (!title) {
@@ -6488,7 +6852,7 @@ async function addFamilyTask() {
     alert("Task did not save. Make sure Firestore rules include households/{householdId}/tasks and this account belongs to the household.");
   }
 }
-
+ 
 async function completeFamilyTask(id, completed = true) {
   const patch = {completed, updatedAt:new Date()};
   if (completed) patch.completedAt = new Date();
@@ -6496,7 +6860,7 @@ async function completeFamilyTask(id, completed = true) {
   familyTasksCache = familyTasksCache.map(task => task.id === id ? {...task, ...patch} : task);
   renderFamilyTaskList();
 }
-
+ 
 async function addFamilyTaskNote(id) {
   const input = document.querySelector(`[data-family-task-note-input="${id}"]`);
   const text = input?.value.trim();
@@ -6508,7 +6872,7 @@ async function addFamilyTaskNote(id) {
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, notes} : item);
   renderFamilyTaskList();
 }
-
+ 
 async function updateFamilyTaskField(id, field, value) {
   const allowed = new Set(["project", "title", "who", "endDate", "status"]);
   if (!allowed.has(field)) return;
@@ -6520,7 +6884,7 @@ async function updateFamilyTaskField(id, field, value) {
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, ...patch} : item);
   renderFamilyTaskList();
 }
-
+ 
 async function promptFamilyTaskNote(id) {
   const task = familyTasksCache.find(item => item.id === id);
   if (!task) return;
@@ -6532,22 +6896,22 @@ async function promptFamilyTaskNote(id) {
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, notes} : item);
   renderFamilyTaskList();
 }
-
+ 
 async function editFamilyTask(id) {
   await promptFamilyTaskNote(id);
 }
-
+ 
 async function deleteFamilyTask(id) {
   if (!confirm("Delete this task?")) return;
   await taskCollectionRef().doc(id).delete();
   familyTasksCache = familyTasksCache.filter(task => task.id !== id);
   renderFamilyTaskList();
 }
-
+ 
 function openModal(id) {
   document.getElementById(id).style.display = "flex";
 }
-
+ 
 function closeModal(id) {
   if (currentScreen?.modalId === id) {
     showTrackerScreen();
@@ -6555,7 +6919,7 @@ function closeModal(id) {
   }
   document.getElementById(id).style.display = "none";
 }
-
+ 
 function openMainScreen(modalId, title, backLabel = "Tracker") {
   showTrackerScreen(false);
   const modal = document.getElementById(modalId);
@@ -6576,7 +6940,7 @@ function openMainScreen(modalId, title, backLabel = "Tracker") {
   document.getElementById("kid-tabs").style.display = "none";
   document.getElementById("screen-view").classList.add("active");
 }
-
+ 
 function restoreScreenModal() {
   if (!currentScreen) return;
   restoreCurrentScreenControls();
@@ -6584,7 +6948,7 @@ function restoreScreenModal() {
   currentScreen.parent.style.display = "none";
   currentScreen = null;
 }
-
+ 
 function screenRailSelector(modalId) {
   if (modalId === "summary-modal") return ".summary-controls";
   if (modalId === "category-modal") return ".category-side";
@@ -6593,7 +6957,7 @@ function screenRailSelector(modalId) {
   if (modalId === "settings-modal") return ".household-side";
   return "";
 }
-
+ 
 function moveCurrentScreenControlsToRail() {
   if (!currentScreen) return;
   const selector = screenRailSelector(currentScreen.modalId);
@@ -6605,7 +6969,7 @@ function moveCurrentScreenControlsToRail() {
   currentScreen.railNext = node.nextSibling;
   rail.replaceChildren(node);
 }
-
+ 
 function restoreCurrentScreenControls() {
   if (!currentScreen?.railNode || !currentScreen.railParent) return;
   if (currentScreen.railNext && currentScreen.railNext.parentElement === currentScreen.railParent) {
@@ -6615,7 +6979,7 @@ function restoreCurrentScreenControls() {
   }
   document.getElementById("subpage-rail")?.replaceChildren();
 }
-
+ 
 function showTrackerScreen(restore = true) {
     if (restore) restoreScreenModal();
     document.body.classList.remove("subpage-active");
@@ -6627,21 +6991,21 @@ function showTrackerScreen(restore = true) {
   document.getElementById("kid-tabs").style.display = "";
   document.getElementById("subpage-rail")?.replaceChildren();
 }
-
+ 
 function escapeHtml(text = "") {
   return text.replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
 }
-
+ 
 function escapeAttr(text = "") {
   return escapeHtml(String(text));
 }
-
+ 
 function closeActionsMenu() {
   document.getElementById("actions-menu")?.classList.remove("open");
   document.getElementById("goal-folder-items")?.classList.remove("open");
   document.getElementById("tracker-settings-folder-items")?.classList.remove("open");
 }
-
+ 
 async function startHouseholdApp() {
   showOnly("app-shell");
   householdData = (await householdRef().get()).data() || {};
@@ -6651,7 +7015,7 @@ async function startHouseholdApp() {
   await populateWeekDropdown();
   await loadData(currentWeek);
 }
-
+ 
 async function handleSignedInUser(user) {
   const token = ++authLoadToken;
   currentUser = user;
@@ -6666,7 +7030,7 @@ async function handleSignedInUser(user) {
     showOnly("household-screen");
   }
 }
-
+ 
 async function signInOrCreate(createAccount = false) {
   const email = document.getElementById("auth-email").value.trim();
   const password = document.getElementById("auth-password").value;
@@ -6686,12 +7050,12 @@ async function signInOrCreate(createAccount = false) {
     setAuthMessage(friendlyFirebaseError(error, "Sign in failed."));
   }
 }
-
+ 
 async function confirmSignOut() {
   if (!confirm("Sign out of this household?")) return;
   await auth.signOut();
 }
-
+ 
 async function createHouseholdFromSetup() {
   const name = document.getElementById("household-name").value.trim();
   const scoringMode = document.getElementById("household-scoring").value;
@@ -6719,22 +7083,22 @@ async function createHouseholdFromSetup() {
     setHouseholdMessage(error.message || "Could not create household.");
   }
 }
-
+ 
 document.getElementById("more-actions").addEventListener("click", event => {
   event.stopPropagation();
   document.getElementById("actions-menu").classList.toggle("open");
 });
-
+ 
 document.body.addEventListener("click", async event => {
   if (!event.target.closest(".menu-wrap")) closeActionsMenu();
-
+ 
   const trackerCheckbox = event.target.closest('.tracker-card input[type="checkbox"][data-kid][data-day][data-type]');
   if (trackerCheckbox) {
     event.preventDefault();
     incrementTrackerCheckbox(trackerCheckbox);
     return;
   }
-
+ 
   const trackerCell = event.target.closest(".tracker-card tbody td[data-day-cell]");
   if (trackerCell && !event.target.closest("input, button, select, textarea, a")) {
     const checkbox = trackerCell.querySelector('input[type="checkbox"][data-kid][data-day][data-type]');
@@ -6749,7 +7113,7 @@ document.body.addEventListener("click", async event => {
       return;
     }
   }
-
+ 
   const categoryPersonChoice = event.target.closest("[data-category-person-choice]");
   if (categoryPersonChoice) {
     categoriesByKid[categoryEditorKid] = readCategoryEditor().map(normalizeCategory);
@@ -6760,69 +7124,69 @@ document.body.addEventListener("click", async event => {
     renderCategoryEditor(categoryEditorKid);
     renderCategoryPersonMenu();
   }
-
+ 
   const tab = event.target.closest(".tab");
   if (tab) switchKid(tab.dataset.kid);
-
+ 
   const categoryButton = event.target.closest("[data-category-key]");
   if (categoryButton) openCategoryDetail(categoryButton.dataset.categoryKey, categoryButton.dataset.categoryKid);
-
+ 
   const dayFilterButton = event.target.closest("[data-filter-day]");
   if (dayFilterButton) applyDayFocus(dayFilterButton.dataset.filterKid, dayFilterButton.dataset.filterDay);
-
+ 
   const toggleEntryButton = event.target.closest("[data-toggle-entry]");
   if (toggleEntryButton) {
     const form = document.getElementById(toggleEntryButton.dataset.toggleEntry);
     if (form) form.classList.toggle("collapsed");
   }
-
+ 
   const taskEditButton = event.target.closest("[data-toggle-task-edit]");
   if (taskEditButton) {
     const kid = taskEditButton.dataset.toggleTaskEdit;
     taskEditMode[kid] = !taskEditMode[kid];
     renderTaskList(kid);
   }
-
+ 
   const logEditButton = event.target.closest("[data-toggle-log-edit]");
   if (logEditButton) {
     const kid = logEditButton.dataset.toggleLogEdit;
     logEditMode[kid] = !logEditMode[kid];
     renderLogList(kid);
   }
-
+ 
   const addTaskButton = event.target.closest("[data-add-task]");
   if (addTaskButton) await addTask(addTaskButton.dataset.addTask);
-
+ 
   const toggle = event.target.closest("[data-toggle-task]");
   if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.taskId);
-
+ 
   const editTaskButton = event.target.closest("[data-edit-task]");
   if (editTaskButton) await editTask(editTaskButton.dataset.editTask, editTaskButton.dataset.taskId);
-
+ 
   const deleteTaskButton = event.target.closest("[data-delete-task]");
   if (deleteTaskButton) await deleteTask(deleteTaskButton.dataset.deleteTask, deleteTaskButton.dataset.taskId);
-
+ 
   const addLogButton = event.target.closest("[data-add-log]");
   if (addLogButton) await addLog(addLogButton.dataset.addLog);
-
+ 
   const editLogButton = event.target.closest("[data-edit-log]");
   if (editLogButton) await editLog(editLogButton.dataset.editLog, editLogButton.dataset.logId);
-
+ 
   const deleteLogButton = event.target.closest("[data-delete-log]");
   if (deleteLogButton) await deleteLog(deleteLogButton.dataset.deleteLog, deleteLogButton.dataset.logId);
-
+ 
   const familyPersonFilter = event.target.closest("[data-family-task-person]");
   if (familyPersonFilter) {
     familyTaskPersonFilter = familyPersonFilter.dataset.familyTaskPerson;
     renderFamilyTaskList();
   }
-
+ 
   const familyStatusFilter = event.target.closest("[data-family-task-status]");
   if (familyStatusFilter) {
     familyTaskStatusFilter = familyStatusFilter.dataset.familyTaskStatus;
     renderFamilyTaskList();
   }
-
+ 
   const familyOrderAdd = event.target.closest("#family-task-order-add");
   if (familyOrderAdd) {
     const select = document.getElementById("family-task-order-select");
@@ -6830,35 +7194,35 @@ document.body.addEventListener("click", async event => {
     if (!familyTaskOrderBy.includes(value)) familyTaskOrderBy.push(value);
     renderFamilyTaskList();
   }
-
+ 
   const familyOrderClear = event.target.closest("#family-task-order-clear");
   if (familyOrderClear) {
     familyTaskOrderBy = ["project"];
     renderFamilyTaskList();
   }
-
+ 
   const familyOrderRemove = event.target.closest("[data-family-task-order-remove]");
   if (familyOrderRemove) {
     familyTaskOrderBy.splice(Number(familyOrderRemove.dataset.familyTaskOrderRemove), 1);
     if (!familyTaskOrderBy.length) familyTaskOrderBy = ["project"];
     renderFamilyTaskList();
   }
-
+ 
   const calendarRangeButton = event.target.closest("[data-calendar-range]");
   if (calendarRangeButton) {
     calendarRange = calendarRangeButton.dataset.calendarRange;
     renderCalendar();
   }
-
+ 
   const calendarEditColumnsButton = event.target.closest("#calendar-edit-columns");
   if (calendarEditColumnsButton) toggleCalendarColumnEditor();
-
+ 
   const calendarColumnDelete = event.target.closest("[data-calendar-column-delete]");
   if (calendarColumnDelete) calendarColumnDelete.closest("[data-calendar-column-row]")?.remove();
-
+ 
   const calendarColorDelete = event.target.closest("[data-calendar-color-delete]");
   if (calendarColorDelete) calendarColorDelete.closest("[data-calendar-color-row]")?.remove();
-
+ 
   const calendarColumnMove = event.target.closest("[data-calendar-column-move]");
   if (calendarColumnMove) {
     const row = calendarColumnMove.closest("[data-calendar-column-row]");
@@ -6869,25 +7233,25 @@ document.body.addEventListener("click", async event => {
       row.parentElement.insertBefore(row.nextElementSibling, row);
     }
   }
-
+ 
   const completeFamilyButton = event.target.closest("[data-complete-family-task]");
   if (completeFamilyButton) await completeFamilyTask(completeFamilyButton.dataset.completeFamilyTask, true);
-
+ 
   const reopenFamilyButton = event.target.closest("[data-reopen-family-task]");
   if (reopenFamilyButton) await completeFamilyTask(reopenFamilyButton.dataset.reopenFamilyTask, false);
-
+ 
   const addFamilyNoteButton = event.target.closest("[data-add-family-task-note]");
   if (addFamilyNoteButton) await addFamilyTaskNote(addFamilyNoteButton.dataset.addFamilyTaskNote);
-
+ 
   const editFamilyButton = event.target.closest("[data-edit-family-task]");
   if (editFamilyButton) await editFamilyTask(editFamilyButton.dataset.editFamilyTask);
-
+ 
   const notePromptButton = event.target.closest("[data-family-task-note-prompt]");
   if (notePromptButton) await promptFamilyTaskNote(notePromptButton.dataset.familyTaskNotePrompt);
-
+ 
   const deleteFamilyButton = event.target.closest("[data-delete-family-task]");
   if (deleteFamilyButton) await deleteFamilyTask(deleteFamilyButton.dataset.deleteFamilyTask);
-
+ 
   const moveCategoryButton = event.target.closest("[data-move-category]");
   if (moveCategoryButton) {
     const row = moveCategoryButton.closest(".category-row");
@@ -6898,13 +7262,13 @@ document.body.addEventListener("click", async event => {
       row.parentElement.insertBefore(row.nextElementSibling, row);
     }
   }
-
+ 
   if (event.target.closest(".remove-member")) event.target.closest(".category-row").remove();
   if (event.target.closest(".remove-category")) event.target.closest(".category-row").remove();
   if (event.target.closest(".remove-goal-band")) event.target.closest("[data-goal-band-row]").remove();
 });
-
-
+ 
+ 
 document.body.addEventListener("change", async event => {
   const field = event.target.closest("[data-family-task-field]");
   if (field) await updateFamilyTaskField(field.dataset.taskId, field.dataset.familyTaskField, field.value.trim ? field.value.trim() : field.value);
@@ -6915,7 +7279,7 @@ document.body.addEventListener("change", async event => {
     refreshCalendarTotals();
   }
 });
-
+ 
 let draggedCategoryRow = null;
 document.body.addEventListener("dragstart", event => {
   const handle = event.target.closest(".drag-handle");
@@ -6938,7 +7302,7 @@ document.body.addEventListener("dragover", event => {
   const after = event.clientY > rect.top + rect.height / 2;
   target.parentElement.insertBefore(draggedCategoryRow, after ? target.nextSibling : target);
 });
-
+ 
 document.getElementById("edit-categories")?.addEventListener("click", () => {
   closeActionsMenu();
   openCategoryEditor();
@@ -6972,7 +7336,7 @@ document.getElementById("calendar-color-add").addEventListener("click", addCalen
 document.getElementById("calendar-column-save").addEventListener("click", saveCalendarColumns);
 document.getElementById("family-task-toggle-form").addEventListener("click", () => toggleFamilyTaskForm());
 document.getElementById("family-task-save").addEventListener("click", addFamilyTask);
-
+ 
 function toggleMenuSection(id, closeIds = []) {
   const section = document.getElementById(id);
   if (!section) return;
@@ -6989,6 +7353,15 @@ document.getElementById("settings-open").addEventListener("click", () => {
   closeActionsMenu();
   openSettingsModal();
 });
+document.getElementById("transfer-open").addEventListener("click", () => {
+  closeActionsMenu();
+  openTransferModal();
+});
+document.getElementById("transfer-close").addEventListener("click", () => closeModal("transfer-modal"));
+document.getElementById("transfer-export").addEventListener("click", () => exportTrackerExcel(false));
+document.getElementById("transfer-export-all").addEventListener("click", () => exportTrackerExcel(true));
+document.getElementById("transfer-import").addEventListener("click", () => document.getElementById("transfer-file").click());
+document.getElementById("transfer-file").addEventListener("change", event => importTrackerWorkbook(event.target.files?.[0]));
 document.getElementById("sign-out").addEventListener("click", async () => {
   closeActionsMenu();
   await confirmSignOut();
@@ -7060,7 +7433,7 @@ document.body.addEventListener("change", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) saveData(input.dataset.kid);
 });
-
+ 
 document.body.addEventListener("input", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) updateTotals();
@@ -7070,7 +7443,7 @@ document.body.addEventListener("input", event => {
     refreshCalendarTotals();
   }
 });
-
+ 
 function focusGridElement(elements, current, columns, dx, dy) {
   const index = elements.indexOf(current);
   if (index < 0) return false;
@@ -7080,7 +7453,7 @@ function focusGridElement(elements, current, columns, dx, dy) {
   if (elements[next].select) elements[next].select();
   return true;
 }
-
+ 
 document.body.addEventListener("keydown", event => {
   const directions = {
     ArrowLeft:[-1, 0],
@@ -7104,7 +7477,7 @@ document.body.addEventListener("keydown", event => {
     focusGridElement(inputs, trackerInput, days.length, ...directions[event.key]);
   }
 });
-
+ 
 window.onload = () => {
   showOnly("auth-screen");
   auth.onAuthStateChanged(async user => {
@@ -7125,7 +7498,7 @@ window.onload = () => {
     }
   });
 };
-
+ 
 // Open compact configuration notes in a prompt instead of resizing the table row.
 document.body.addEventListener("click", event => {
   const notes = event.target.closest('#category-editor textarea[data-field="details"]');
@@ -7135,7 +7508,7 @@ document.body.addEventListener("click", event => {
   const next = prompt("Category notes:", notes.value || "");
   if (next !== null) notes.value = next;
 });
-
+ 
 document.body.addEventListener("click", event => {
   const title = event.target.closest("#subpage-rail .family-filter-title");
   if (!title || !window.matchMedia("(max-width: 899px)").matches) return;
@@ -7147,7 +7520,7 @@ document.body.addEventListener("click", event => {
   });
   block.classList.toggle("filter-open", open);
 });
-
+ 
 document.body.addEventListener("click", event => {
   if (!window.matchMedia("(max-width: 899px)").matches) return;
   const option = event.target.closest("#subpage-rail .family-filter-pill, #subpage-rail .config-nav, #subpage-rail .category-person-choice, #subpage-rail #import-categories");
@@ -7157,7 +7530,7 @@ document.body.addEventListener("click", event => {
     document.body.classList.remove("mobile-options-open");
   }, 80);
 });
-
+ 
 </script>
 </body>
 </html>

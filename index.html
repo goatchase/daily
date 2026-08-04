@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Tracker</title>
+<title>My Day</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%234285f4'/%3E%3Crect x='13' y='18' width='38' height='34' rx='7' fill='white'/%3E%3Crect x='13' y='18' width='38' height='10' rx='7' fill='%231a73e8'/%3E%3Crect x='19' y='12' width='6' height='12' rx='3' fill='%23e8f0fe'/%3E%3Crect x='39' y='12' width='6' height='12' rx='3' fill='%23e8f0fe'/%3E%3Cpath d='M23 39l6 6 13-16' fill='none' stroke='%2334a853' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="icon" type="image/svg+xml" href="daily-icon.svg">
 <link rel="shortcut icon" href="daily-icon.svg">
@@ -495,6 +495,17 @@ td input[data-negative="true"]:checked { background:var(--red); }
 .task-inline-actions { display:flex; gap:4px; }
 .task-row-actions { display:flex; align-items:center; gap:2px; }
 .task-order-button { min-width:24px; padding:2px 5px; }
+.task-source-chip {
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  padding:0 7px;
+  border-radius:999px;
+  background:#e8f0fe;
+  color:#1967d2;
+  font-size:11px;
+  white-space:nowrap;
+}
 .day-chip {
   display:inline-flex;
   align-items:center;
@@ -3907,6 +3918,11 @@ tbody tr.total-row > td:first-child {
     font-size:10pt !important;
     line-height:1.2 !important;
   }
+  .family-task-table th,
+  .family-task-table .family-task-cell {
+    box-sizing:border-box !important;
+    padding:6px 8px !important;
+  }
   .family-task-table .family-task-actions {
     height:33px !important;
   }
@@ -5031,6 +5047,7 @@ async function loadData(weekKey = currentWeek) {
       });
     });
   }));
+  await loadFamilyTasks();
   await loadWeeklyPanels();
   updateTotals();
 }
@@ -5594,6 +5611,32 @@ function orderTasksByCompletion(items = []) {
   return items.map((item, index) => ({item, index})).sort((a, b) => Number(!!a.item.done) - Number(!!b.item.done) || a.index - b.index).map(entry => entry.item);
 }
  
+function trackerWeekBounds(weekKey = currentWeek) {
+  const start = dateFromWeekKey(weekKey);
+  if (!start) return null;
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 6);
+  return {start:start.toISOString().slice(0, 10), end:end.toISOString().slice(0, 10), startDate:start};
+}
+ 
+function familyTasksForTracker(kid) {
+  const bounds = trackerWeekBounds(currentWeek);
+  if (!bounds) return [];
+  return familyTasksCache.filter(task => task.who === kid && task.endDate >= bounds.start && task.endDate <= bounds.end).map(task => {
+    const dueDate = new Date(`${task.endDate}T00:00:00Z`);
+    const day = Math.max(0, Math.min(6, Math.round((dueDate - bounds.startDate) / 86400000)));
+    return {id:task.id, day, text:task.title || task.project || "Task", done:!!task.completed, source:"family"};
+  });
+}
+ 
+function taskDateForSelectedWeek(dayIndex) {
+  const bounds = trackerWeekBounds(currentWeek);
+  if (!bounds) return "";
+  const date = new Date(bounds.startDate);
+  date.setUTCDate(date.getUTCDate() + Number(dayIndex || 0));
+  return date.toISOString().slice(0, 10);
+}
+ 
 async function saveTasks(kid) {
   await weekRef(currentWeek).set({timestamp:new Date()}, {merge:true});
   await weekRef(currentWeek).collection("tasks").doc(kid).set({items:tasksCache[kid] || [], updatedAt:new Date()});
@@ -5602,7 +5645,8 @@ async function saveTasks(kid) {
 function renderTaskList(kid) {
   const list = document.getElementById(`${kid}-tasks`);
   if (!list) return;
-  const items = tasksCache[kid] || [];
+  const weeklyItems = (tasksCache[kid] || []).map(item => ({...item, source:"weekly"}));
+  const items = orderTasksByCompletion([...weeklyItems, ...familyTasksForTracker(kid)]);
   if (!items.length) {
     list.innerHTML = `<div class="empty-state">No other tasks added yet.</div>`;
     return;
@@ -5610,8 +5654,11 @@ function renderTaskList(kid) {
   list.innerHTML = items.map((item, index) => {
     const done = item.done ? "done" : "";
     const checked = item.done ? "checked" : "";
-    const actions = `<div class="task-row-actions"><button class="mini-action task-order-button" title="Move up" aria-label="Move task up" data-move-task="${kid}" data-task-id="${item.id}" data-direction="-1" ${index === 0 ? "disabled" : ""}>↑</button><button class="mini-action task-order-button" title="Move down" aria-label="Move task down" data-move-task="${kid}" data-task-id="${item.id}" data-direction="1" ${index === items.length - 1 ? "disabled" : ""}>↓</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button></div>`;
-    return `<div class="task-item ${done}"><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}"><select class="task-inline-day" aria-label="Task day" data-auto-task-field="day" data-task-kid="${kid}" data-task-id="${item.id}">${dayOptions(Number(item.day))}</select><input class="task-inline-text" value="${escapeAttr(item.text || "")}" aria-label="Task text" data-auto-task-field="text" data-task-kid="${kid}" data-task-id="${item.id}">${actions}</div>`;
+    const localIndex = weeklyItems.findIndex(task => task.id === item.id);
+    const actions = item.source === "family"
+      ? `<span class="task-source-chip" title="Linked from Tasks">Tasks</span>`
+      : `<div class="task-row-actions"><button class="mini-action task-order-button" title="Move up" aria-label="Move task up" data-move-task="${kid}" data-task-id="${item.id}" data-direction="-1" ${localIndex <= 0 ? "disabled" : ""}>↑</button><button class="mini-action task-order-button" title="Move down" aria-label="Move task down" data-move-task="${kid}" data-task-id="${item.id}" data-direction="1" ${localIndex < 0 || localIndex === weeklyItems.length - 1 ? "disabled" : ""}>↓</button><button class="mini-action delete" title="Delete" aria-label="Delete task" data-delete-task="${kid}" data-task-id="${item.id}">×</button></div>`;
+    return `<div class="task-item ${done}" data-task-source="${item.source}"><input class="task-toggle" type="checkbox" ${checked} aria-label="Done" data-toggle-task="${kid}" data-task-id="${item.id}" data-task-source="${item.source}"><select class="task-inline-day" aria-label="Task day" data-auto-task-field="day" data-task-kid="${kid}" data-task-id="${item.id}" data-task-source="${item.source}">${dayOptions(Number(item.day))}</select><input class="task-inline-text" value="${escapeAttr(item.text || "")}" aria-label="Task text" data-auto-task-field="text" data-task-kid="${kid}" data-task-id="${item.id}" data-task-source="${item.source}">${actions}</div>`;
   }).join("");
 }
  
@@ -5628,7 +5675,14 @@ async function addTask(kid) {
   renderNoteIndicators();
 }
  
-async function toggleTask(kid, id) {
+async function toggleTask(kid, id, source = "weekly") {
+  if (source === "family") {
+    const task = familyTasksCache.find(item => item.id === id);
+    if (!task) return;
+    await completeFamilyTask(id, !task.completed);
+    renderTaskList(kid);
+    return;
+  }
   tasksCache[kid] = orderTasksByCompletion((tasksCache[kid] || []).map(task => task.id === id ? {...task, done:!task.done} : task));
   await saveTasks(kid);
   renderTaskList(kid);
@@ -5650,12 +5704,18 @@ function updateTaskAutomatically(input) {
   const kid = input.dataset.taskKid;
   const id = input.dataset.taskId;
   const field = input.dataset.autoTaskField;
+  const source = input.dataset.taskSource || "weekly";
   const value = field === "day" ? Number(input.value) : input.value;
-  tasksCache[kid] = (tasksCache[kid] || []).map(item => item.id === id ? {...item, [field]:value} : item);
-  const timerKey = `${kid}-${id}`;
+  if (source === "weekly") tasksCache[kid] = (tasksCache[kid] || []).map(item => item.id === id ? {...item, [field]:value} : item);
+  if (source === "family") {
+    const patch = field === "day" ? {endDate:taskDateForSelectedWeek(value)} : {title:value};
+    familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, ...patch} : item);
+  }
+  const timerKey = `${source}-${kid}-${id}`;
   clearTimeout(taskAutoSaveTimers[timerKey]);
   taskAutoSaveTimers[timerKey] = setTimeout(async () => {
-    await saveTasks(kid);
+    if (source === "family") await updateFamilyTaskField(id, field === "day" ? "endDate" : "title", field === "day" ? taskDateForSelectedWeek(value) : value);
+    else await saveTasks(kid);
     delete taskAutoSaveTimers[timerKey];
   }, field === "day" ? 100 : 500);
 }
@@ -6958,6 +7018,7 @@ async function completeFamilyTask(id, completed = true) {
   await taskCollectionRef().doc(id).set(patch, {merge:true});
   familyTasksCache = familyTasksCache.map(task => task.id === id ? {...task, ...patch} : task);
   renderFamilyTaskList();
+  kids.forEach(renderTaskList);
 }
  
 async function addFamilyTaskNote(id) {
@@ -6982,6 +7043,7 @@ async function updateFamilyTaskField(id, field, value) {
   await taskCollectionRef().doc(id).set(patch, {merge:true});
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, ...patch} : item);
   renderFamilyTaskList();
+  if (field === "who" || field === "endDate") kids.forEach(renderTaskList);
 }
  
 async function promptFamilyTaskNote(id) {
@@ -7250,7 +7312,7 @@ document.body.addEventListener("click", async event => {
   if (addTaskButton) await addTask(addTaskButton.dataset.addTask);
  
   const toggle = event.target.closest("[data-toggle-task]");
-  if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.taskId);
+  if (toggle) await toggleTask(toggle.dataset.toggleTask, toggle.dataset.taskId, toggle.dataset.taskSource);
  
   const moveTaskButton = event.target.closest("[data-move-task]");
   if (moveTaskButton) await moveTask(moveTaskButton.dataset.moveTask, moveTaskButton.dataset.taskId, moveTaskButton.dataset.direction);

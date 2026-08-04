@@ -529,8 +529,18 @@ td input[data-negative="true"]:checked { background:var(--red); }
   color:var(--muted);
   font-weight:700;
 }
-.task-text, .log-copy, .log-outcome { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.log-main { display:flex; align-items:center; gap:6px; min-width:0; }
+.task-text, .log-outcome { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.log-main { display:flex; align-items:flex-start; gap:6px; min-width:0; }
+.log-main .day-chip, .log-main .log-type-chip { flex:0 0 auto; }
+.log-copy {
+  flex:1 1 auto;
+  min-width:0;
+  padding-top:2px;
+  line-height:1.35;
+  white-space:normal;
+  overflow:visible;
+  overflow-wrap:anywhere;
+}
 .log-item.good .day-chip, .log-item.good .log-type-chip { background:var(--green-soft); color:var(--green); }
 .log-item.bad .day-chip, .log-item.bad .log-type-chip { background:var(--red-soft); color:var(--red); }
 .log-item.thoughts .day-chip, .log-item.thoughts .log-type-chip { background:#d3e3fd; color:#0b57d0; }
@@ -4247,7 +4257,7 @@ tbody tr.total-row > td:first-child {
       <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
-        <button class="menu-item" id="goal-folder">Goal Tracker</button>
+        <button class="menu-item" id="goal-folder">Tracker</button>
         <button class="menu-item" id="tasks-open">Tasks</button>
         <button class="menu-item" id="calendar-open">Calendar</button>
         <button class="menu-item" id="settings-open">Household</button>
@@ -4613,7 +4623,32 @@ function getYearWeek(date = new Date()) {
   tmpDate.setUTCDate(tmpDate.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(tmpDate.getUTCFullYear(), 0, 1));
   const weekNo = Math.ceil((((tmpDate - yearStart) / 86400000) + 1) / 7);
-  return `${tmpDate.getUTCFullYear()}-W${weekNo}`;
+  return `${tmpDate.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+}
+ 
+function normalizeYearWeek(value = "") {
+  const text = String(value).trim().toUpperCase();
+  const match = text.match(/^(\d{2}|\d{4})(?:\s*-?\s*)W(\d{1,2})$/);
+  if (!match) return text;
+  const year = match[1].length === 2 ? `20${match[1]}` : match[1];
+  return `${year}-W${String(Number(match[2])).padStart(2, "0")}`;
+}
+ 
+function formatYearWeek(value = "", weekOnly = false) {
+  const match = String(value).toUpperCase().match(/^(\d{4})-W(\d{1,2})$/);
+  if (!match) return String(value);
+  const week = `W${String(Number(match[2])).padStart(2, "0")}`;
+  return weekOnly ? week : `${match[1].slice(-2)} ${week}`;
+}
+ 
+function setWeekSelectLabels(expanded = false) {
+  const select = document.getElementById("week-select");
+  if (!select) return;
+  [...select.options].forEach(option => {
+    if (validYearWeek(option.value)) {
+      option.textContent = formatYearWeek(option.value, !expanded && option.selected);
+    }
+  });
 }
  
 function dollars(value) {
@@ -5396,7 +5431,7 @@ function bucketLabel(weekKey, bucket) {
   if (!date) return weekKey;
   if (bucket === "year") return String(date.getUTCFullYear());
   if (bucket === "month") return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
-  return weekKey;
+  return formatYearWeek(weekKey);
 }
  
 function periodStart(date, bucket) {
@@ -5913,25 +5948,27 @@ async function populateWeekDropdown() {
   });
   seen.add(currentWeek);
   [...seen].sort((a, b) => b.localeCompare(a, undefined, {numeric:true})).forEach(weekKey => {
-    select.appendChild(new Option(weekKey, weekKey, weekKey === currentWeek, weekKey === currentWeek));
+    select.appendChild(new Option(formatYearWeek(weekKey), weekKey, weekKey === currentWeek, weekKey === currentWeek));
   });
   select.appendChild(new Option("Add New", "__add_new__"));
+  setWeekSelectLabels(false);
 }
  
 async function ensureWeekOption(weekKey) {
   const select = document.getElementById("week-select");
   if (![...select.options].some(option => option.value === weekKey)) {
-    select.prepend(new Option(weekKey, weekKey, true, true));
+    select.prepend(new Option(formatYearWeek(weekKey), weekKey, true, true));
   }
   select.value = weekKey;
+  setWeekSelectLabels(false);
 }
  
 async function addHistoricalWeek() {
-  const entered = prompt("Week to add, like 2026-W07:", previousWeekKey());
+  const entered = prompt("Week to add, like 26 W07:", formatYearWeek(previousWeekKey()));
   if (entered === null) return;
-  const weekKey = entered.trim().toUpperCase();
-  if (!/^\d{4}-W\d{2}$/.test(weekKey)) {
-    alert("Use the format YYYY-W##.");
+  const weekKey = normalizeYearWeek(entered);
+  if (!validYearWeek(weekKey)) {
+    alert("Use the format YY W##.");
     document.getElementById("week-select").value = currentWeek;
     return;
   }
@@ -6182,7 +6219,7 @@ function excelRowsForRecords(records) {
     const base = {
       "Person ID":record.person.id,
       "Person Name":record.person.displayName,
-      "Year-Week":record.yearWeek
+      "Year-Week":formatYearWeek(record.yearWeek)
     };
     const categoryMap = Object.fromEntries((record.configuration.categories || []).map(category => [category.key, category]));
     Object.entries(record.values.chores || {}).forEach(([key, value]) => {
@@ -6220,7 +6257,7 @@ function downloadTrackerWorkbook(records, startWeek, endWeek) {
   if (!window.XLSX) throw new Error("Excel support did not load. Check your internet connection and reopen the page.");
   const workbook = XLSX.utils.book_new();
   const rows = excelRowsForRecords(records);
-  const meta = [["Daily Tracker Excel Transfer"], ["Format", "daily-tracker-excel"], ["Version", 1], ["Exported At", new Date().toISOString()], ["Household", householdData?.name || "Household"], ["Start Week", startWeek], ["End Week", endWeek], ["Instructions", "Edit or add rows, keep Person ID/Name and Year-Week on every row, then import this workbook from the tracker."]];
+  const meta = [["Daily Tracker Excel Transfer"], ["Format", "daily-tracker-excel"], ["Version", 1], ["Exported At", new Date().toISOString()], ["Household", householdData?.name || "Household"], ["Start Week", formatYearWeek(startWeek)], ["End Week", formatYearWeek(endWeek)], ["Instructions", "Edit or add rows, keep Person ID/Name and Year-Week (YY W##) on every row, then import this workbook from the tracker."]];
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(meta), "Read Me");
   appendExcelSheet(workbook, "Values", rows.values, ["Person ID", "Person Name", "Year-Week", "Day Number", "Day", "Category Key", "Category", "Kind", "Value"]);
   appendExcelSheet(workbook, "Configuration", rows.configurations, ["Person ID", "Person Name", "Year-Week", "Order", "Category Key", "Label", "Notes", "Group", "Kind", "Value", "Goal", "Goal Type", "Goal Period", "Show Tracker", "Show Summary", "Formula"]);
@@ -6261,7 +6298,7 @@ function workbookRows(workbook, sheetName) {
 }
  
 function workbookRecordKey(row) {
-  return `${String(row["Person ID"] || "").trim()}|${String(row["Person Name"] || "").trim()}|${String(row["Year-Week"] || "").trim().toUpperCase()}`;
+  return `${String(row["Person ID"] || "").trim()}|${String(row["Person Name"] || "").trim()}|${normalizeYearWeek(row["Year-Week"])}`;
 }
  
 function trackerPayloadFromWorkbook(workbook) {
@@ -6269,7 +6306,7 @@ function trackerPayloadFromWorkbook(workbook) {
   const ensureRecord = row => {
     const personId = String(row["Person ID"] || "").trim();
     const personName = String(row["Person Name"] || personId).trim();
-    const yearWeek = String(row["Year-Week"] || "").trim().toUpperCase();
+    const yearWeek = normalizeYearWeek(row["Year-Week"]);
     const key = workbookRecordKey(row);
     if (!recordMap.has(key)) recordMap.set(key, {person:{id:personId, displayName:personName}, yearWeek, configuration:{categories:[], goalBands:[]}, values:{chores:{}, notes:{}, tasks:[], logs:[]}, inferredCategories:{}});
     return recordMap.get(key);
@@ -6404,14 +6441,14 @@ async function importTrackerPayload(payload) {
     throw new Error("This is not a supported Daily Tracker export file.");
   }
   const prepared = payload.records.map((record, index) => {
-    const yearWeek = String(record?.yearWeek || "").toUpperCase();
+    const yearWeek = normalizeYearWeek(record?.yearWeek);
     const kid = resolveImportedPerson(record?.person);
     if (!validYearWeek(yearWeek)) throw new Error(`Record ${index + 1} has an invalid year-week.`);
     if (!kid) throw new Error(`No household person matches ${record?.person?.displayName || record?.person?.id || `record ${index + 1}`}.`);
     return {record, yearWeek, kid};
   });
   if (!prepared.length) throw new Error("The file has no tracker records.");
-  const summary = [...new Set(prepared.map(item => `${memberLabel(item.kid)} / ${item.yearWeek}`))].join("\n");
+  const summary = [...new Set(prepared.map(item => `${memberLabel(item.kid)} / ${formatYearWeek(item.yearWeek)}`))].join("\n");
   if (!confirm(`Import these historical tracker records?\n\n${summary}\n\nTracker values for each listed person/week will be replaced with the Excel values. Tasks, notes, and logs are imported separately.`)) return 0;
   for (const {record, yearWeek, kid} of prepared) {
     const configuration = record.configuration || {};
@@ -6467,7 +6504,7 @@ function openTransferModal() {
   const sourceWeeks = [...document.getElementById("week-select").options].map(option => option.value).filter(validYearWeek);
   if (!sourceWeeks.includes(currentWeek)) sourceWeeks.unshift(currentWeek);
   const weeks = [...new Set(sourceWeeks)].sort();
-  const options = weeks.map(week => `<option value="${week}" ${week === currentWeek ? "selected" : ""}>${week}</option>`).join("");
+  const options = weeks.map(week => `<option value="${week}" ${week === currentWeek ? "selected" : ""}>${formatYearWeek(week)}</option>`).join("");
   document.getElementById("transfer-week-start").innerHTML = options;
   document.getElementById("transfer-week-end").innerHTML = options;
   setTransferStatus("");
@@ -7644,7 +7681,11 @@ document.getElementById("week-select").addEventListener("change", async event =>
     return;
   }
   await loadData(event.target.value);
+  setWeekSelectLabels(false);
 });
+document.getElementById("week-select").addEventListener("focus", () => setWeekSelectLabels(true));
+document.getElementById("week-select").addEventListener("pointerdown", () => setWeekSelectLabels(true));
+document.getElementById("week-select").addEventListener("blur", () => setWeekSelectLabels(false));
 document.getElementById("tracker-refresh").addEventListener("click", async () => refreshTrackerData(false));
 document.body.addEventListener("change", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");

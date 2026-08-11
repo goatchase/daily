@@ -4189,6 +4189,35 @@ tbody tr.total-row > td:first-child {
   .tracker-card td input[type="checkbox"][data-count="4"]::before {
     box-shadow:0 0 0 3px #fff, 0 0 0 5px #9aa0a6, 0 0 0 8px #fff, 0 0 0 10px #c3c7cc, 0 0 0 13px #fff, 0 0 0 15px #dfe3e7 !important;
   }
+  /* Keep the compact week label visible and create tasks directly in the table. */
+  .top-controls {
+    grid-template-columns:36px minmax(64px, 1fr) 36px !important;
+    gap:4px !important;
+  }
+  #week-select {
+    min-width:64px !important;
+    padding-left:8px !important;
+    padding-right:18px !important;
+    text-overflow:clip !important;
+  }
+  .family-task-new-row td {
+    background:#f8fbff !important;
+  }
+  .family-task-new-row .family-task-cell {
+    background:transparent !important;
+  }
+  .family-task-new-actions {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:4px !important;
+  }
+  .family-task-new-actions .mini-action {
+    color:#0b57d0 !important;
+  }
+  .family-task-new-actions .mini-action.cancel {
+    color:#5f6368 !important;
+  }
     </style>
 </head>
 <body>
@@ -4579,6 +4608,7 @@ let familyTasksCache = [];
 let familyTaskPersonFilter = "all";
 let familyTaskStatusFilter = "all";
 let familyTaskOrderBy = ["project"];
+let familyTaskDraftOpen = false;
 const FAMILY_TASK_STATUSES = ["now", "next", "soon", "parked", "waiting"];
 const LOG_TYPES = [
   {value:"good", label:"Good", outcome:"Reward"},
@@ -7009,6 +7039,13 @@ function visibleFamilyTasks(completed = false) {
   });
 }
  
+function familyTaskDraftRow(personColors) {
+  const who = familyTaskPersonFilter !== "all" ? familyTaskPersonFilter : kids[0];
+  const status = familyTaskStatusFilter !== "all" ? familyTaskStatusFilter : "now";
+  const endDate = formatShortDate(new Date().toISOString().slice(0, 10));
+  return `<tr class="family-task-row family-task-new-row status-${status}" data-family-task-new-row><td class="family-task-complete-cell"></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><input class="family-task-cell family-task-title" id="new-family-task-title" value="" placeholder="Task" aria-label="New task name"></td><td><select class="family-task-cell family-task-who ${personColors[who] || "summary-goal-gray"}" id="new-family-task-who" aria-label="New task assignee">${taskPeopleOptions(who)}</select></td><td><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" inputmode="numeric" placeholder="mm/dd/yy" aria-label="New task date" value="${escapeAttr(endDate)}"></td><td><select class="family-task-cell family-task-status status-${status}" id="new-family-task-status" aria-label="New task status">${taskStatusOptions(status)}</select></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button><button class="mini-action cancel" data-cancel-new-family-task aria-label="Cancel new task" title="Cancel">×</button></div></td></tr>`;
+}
+
 function renderFamilyTaskList() {
   renderTaskFilters();
   const activeList = document.getElementById("family-task-list");
@@ -7029,7 +7066,7 @@ function renderFamilyTaskList() {
       const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">✎</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">＋</button>`;
       return `<tr class="family-task-row status-${task.status || "now"} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-complete-cell">${completeAction}</td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><input class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" value="${escapeAttr(task.title || "")}" placeholder="Task"></td><td><select class="family-task-cell family-task-who ${personColors[task.who] || "summary-goal-gray"}" data-family-task-field="who" data-task-id="${task.id}">${taskPeopleOptions(task.who || kids[0])}</select></td><td><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="mm/dd/yy" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"></td><td><select class="family-task-cell family-task-status status-${task.status || "now"}" data-family-task-field="status" data-task-id="${task.id}">${taskStatusOptions(task.status || "now")}</select></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
-    const renderTable = rows => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Who</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Status</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${rows}</tbody></table>`;
+    const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Who</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Status</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft && familyTaskDraftOpen ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
     for (const field of familyTaskOrderBy) {
       const valueA = taskOrderValue(a, field);
@@ -7047,30 +7084,24 @@ function renderFamilyTaskList() {
   const completed = visibleFamilyTasks(true);
   const primaryOrder = familyTaskOrderBy[0] || "project";
   const groupedActive = sortTasks(active).map((task, index, list) => ({...task, groupStart:index > 0 && String(taskOrderValue(task, primaryOrder)) !== String(taskOrderValue(list[index - 1], primaryOrder))}));
-    activeList.innerHTML = active.length ? renderTable(groupedActive.map(renderRow).join("")) : `<div class="empty-state">All tasks complete. Nice work.</div>`;
+    activeList.innerHTML = (active.length || familyTaskDraftOpen) ? renderTable(groupedActive.map(renderRow).join(""), true) : `<div class="empty-state">All tasks complete. Nice work.</div>`;
     completedList.innerHTML = completed.length ? renderTable(completed.map(renderRow).join("")) : `<div class="empty-state">No completed tasks yet.</div>`;
   if (completedCount) completedCount.textContent = String(completed.length);
 }
  
-function resetFamilyTaskForm() {
-  document.getElementById("family-task-project").value = "";
-  document.getElementById("family-task-title").value = "";
-  document.getElementById("family-task-who").innerHTML = taskPeopleOptions(familyTaskPersonFilter !== "all" ? familyTaskPersonFilter : kids[0]);
-  document.getElementById("family-task-status").innerHTML = taskStatusOptions(familyTaskStatusFilter !== "all" ? familyTaskStatusFilter : "now");
-  document.getElementById("family-task-end").value = formatShortDate(new Date().toISOString().slice(0, 10));
-  document.getElementById("family-task-note").value = "";
+function openFamilyTaskDraft() {
+  familyTaskDraftOpen = true;
+  renderFamilyTaskList();
+  requestAnimationFrame(() => document.getElementById("new-family-task-title")?.focus());
 }
  
-function toggleFamilyTaskForm(forceOpen = null) {
-  const form = document.getElementById("family-task-form");
-  if (!form) return;
-  const open = forceOpen === null ? form.classList.contains("collapsed") : forceOpen;
-  form.classList.toggle("collapsed", !open);
-  if (open) resetFamilyTaskForm();
+function cancelFamilyTaskDraft() {
+  familyTaskDraftOpen = false;
+  renderFamilyTaskList();
 }
  
 async function openFamilyTasks() {
-  resetFamilyTaskForm();
+  familyTaskDraftOpen = false;
   renderTaskFilters();
   renderFamilyTaskList();
   openMainScreen("tasks-modal", "Tasks");
@@ -7079,29 +7110,29 @@ async function openFamilyTasks() {
 }
  
 async function addFamilyTask() {
-  const title = document.getElementById("family-task-title").value.trim();
+  const titleInput = document.getElementById("new-family-task-title");
+  const title = titleInput?.value.trim() || "";
   if (!title) {
-    alert("Add a task name first.");
+    titleInput?.focus();
     return;
   }
   const now = new Date();
   const doc = taskCollectionRef().doc();
-  const note = document.getElementById("family-task-note").value.trim();
   const task = {
-    project:document.getElementById("family-task-project").value.trim(),
+    project:document.getElementById("new-family-task-project")?.value.trim() || "",
     title,
-    who:document.getElementById("family-task-who").value || kids[0],
-    endDate:parseShortDate(document.getElementById("family-task-end").value),
-    status:document.getElementById("family-task-status").value || "now",
+    who:document.getElementById("new-family-task-who")?.value || kids[0],
+    endDate:parseShortDate(document.getElementById("new-family-task-end")?.value || ""),
+    status:document.getElementById("new-family-task-status")?.value || "now",
     completed:false,
-    notes:note ? [{id:makeId("note"), text:note, createdAt:now.toISOString()}] : [],
+    notes:[],
     createdAt:now,
     updatedAt:now
   };
   try {
     await doc.set(task);
     familyTasksCache.push({id:doc.id, ...task});
-    toggleFamilyTaskForm(false);
+    familyTaskDraftOpen = false;
     renderFamilyTaskList();
   } catch (error) {
     console.error("Task save failed", error);
@@ -7426,6 +7457,18 @@ document.body.addEventListener("click", async event => {
   const deleteLogButton = event.target.closest("[data-delete-log]");
   if (deleteLogButton) await deleteLog(deleteLogButton.dataset.deleteLog, deleteLogButton.dataset.logId);
  
+  const saveNewFamilyTask = event.target.closest("[data-save-new-family-task]");
+  if (saveNewFamilyTask) {
+    await addFamilyTask();
+    return;
+  }
+
+  const cancelNewFamilyTask = event.target.closest("[data-cancel-new-family-task]");
+  if (cancelNewFamilyTask) {
+    cancelFamilyTaskDraft();
+    return;
+  }
+
   const familyPersonFilter = event.target.closest("[data-family-task-person]");
   if (familyPersonFilter) {
     familyTaskPersonFilter = familyPersonFilter.dataset.familyTaskPerson;
@@ -7587,8 +7630,7 @@ document.getElementById("calendar-open").addEventListener("click", async () => {
 document.getElementById("calendar-column-add").addEventListener("click", addCalendarColumnRow);
 document.getElementById("calendar-color-add").addEventListener("click", addCalendarColorRow);
 document.getElementById("calendar-column-save").addEventListener("click", saveCalendarColumns);
-document.getElementById("family-task-toggle-form").addEventListener("click", () => toggleFamilyTaskForm());
-document.getElementById("family-task-save").addEventListener("click", addFamilyTask);
+document.getElementById("family-task-toggle-form").addEventListener("click", openFamilyTaskDraft);
  
 function toggleMenuSection(id, closeIds = []) {
   const section = document.getElementById(id);
@@ -7715,6 +7757,17 @@ function focusGridElement(elements, current, columns, dx, dy) {
 }
  
 document.body.addEventListener("keydown", event => {
+  const newFamilyTaskRow = event.target.closest("[data-family-task-new-row]");
+  if (newFamilyTaskRow && event.key === "Enter") {
+    event.preventDefault();
+    addFamilyTask();
+    return;
+  }
+  if (newFamilyTaskRow && event.key === "Escape") {
+    event.preventDefault();
+    cancelFamilyTaskDraft();
+    return;
+  }
   const taskText = event.target.closest(".task-inline-text");
   if (taskText && event.key === "Enter") {
     event.preventDefault();

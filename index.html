@@ -4598,6 +4598,145 @@ tbody tr.total-row > td:first-child {
       max-width:100% !important;
     }
   }
+  /* Fit the task border to its content and use compact short dates. */
+  .family-tasks-main,
+  .family-tasks-card,
+  .family-tasks-head,
+  .family-task-list,
+  .family-task-list.completed,
+  .completed-tasks {
+    width:536px !important;
+    max-width:100% !important;
+  }
+  .family-task-list,
+  .family-task-list.completed {
+    overflow:visible !important;
+  }
+  .family-task-table {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+  .family-task-table th:nth-child(1),
+  .family-task-table td:nth-child(1) {
+    width:76px !important;
+    min-width:76px !important;
+    max-width:76px !important;
+  }
+  .family-task-owner-cell {
+    padding-left:14px !important;
+    padding-right:6px !important;
+  }
+  .family-task-owner-inline {
+    gap:6px !important;
+  }
+  .family-task-table th:nth-child(4),
+  .family-task-table td:nth-child(4) {
+    width:96px !important;
+    min-width:96px !important;
+    max-width:96px !important;
+  }
+  .family-task-date-wrap {
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 22px !important;
+    align-items:center !important;
+    width:100% !important;
+    min-height:29px !important;
+  }
+  .family-task-table .family-task-date-wrap .family-task-date {
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:29px !important;
+    min-height:29px !important;
+    padding:4px 3px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    text-align:center !important;
+    font:inherit !important;
+  }
+  .family-task-calendar-button {
+    position:relative !important;
+    display:grid !important;
+    place-items:center !important;
+    width:22px !important;
+    height:29px !important;
+    color:#5f6368 !important;
+    overflow:hidden !important;
+    cursor:pointer !important;
+  }
+  .family-task-date-picker {
+    position:absolute !important;
+    inset:0 !important;
+    width:22px !important;
+    min-width:22px !important;
+    height:29px !important;
+    min-height:29px !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    opacity:0 !important;
+    cursor:pointer !important;
+  }
+  @media (max-width:899px) {
+    .family-tasks-main,
+    .family-tasks-card,
+    .family-tasks-head,
+    .family-task-list,
+    .family-task-list.completed,
+    .completed-tasks {
+      width:100% !important;
+      max-width:100% !important;
+    }
+  }
+
+      /* Clear task group dividers, matching the calendar week separators. */
+      .family-task-table tr.group-start > td {
+        border-top: 3px solid #9aa0a6 !important;
+      }
+
+      .family-task-table tr.group-start::before,
+      .family-task-table tr.group-start::after {
+        content: none !important;
+        display: none !important;
+      }
+
+      /* Date-category color belongs only on the assignee initial bubble. */
+      .family-task-table tr.status-now > td,
+      .family-task-table tr.status-next > td,
+      .family-task-table tr.status-soon > td,
+      .family-task-table tr.status-waiting > td,
+      .family-task-table tr.status-parked > td,
+      .family-task-table tr.complete > td {
+        background: #fff !important;
+      }
+
+      .family-task-table tr.status-now .family-task-owner-picker {
+        background: #d3e3fd !important;
+        color: #0b57d0 !important;
+      }
+
+      .family-task-table tr.status-next .family-task-owner-picker {
+        background: #ceead6 !important;
+        color: #137333 !important;
+      }
+
+      .family-task-table tr.status-soon .family-task-owner-picker {
+        background: #feefc3 !important;
+        color: #8f4700 !important;
+      }
+
+      .family-task-table tr.status-waiting .family-task-owner-picker {
+        background: #fad2cf !important;
+        color: #a50e0e !important;
+      }
+
+      .family-task-table tr.status-parked .family-task-owner-picker {
+        background: #e8eaed !important;
+        color: #3c4043 !important;
+      }
     </style>
 </head>
 <body>
@@ -6985,7 +7124,7 @@ function readCategoryEditor() {
  
  
 function statusLabel(status = "now") {
-  return ({now:"This Week", next:"Next Week", soon:"Next 30 Days", parked:"Future"})[status] || "Future";
+  return ({now:"This Week", next:"Next Week", soon:"This Month", parked:"Other"})[status] || "Other";
 }
  
 function taskDateLabel(date = "") {
@@ -7143,10 +7282,10 @@ function taskStatusForDate(value = "") {
   const weekday = today.getDay() || 7;
   const thisWeekEnd = addDays(today, 7 - weekday);
   const nextWeekEnd = addDays(thisWeekEnd, 7);
-  const nextThirtyDays = addDays(today, 30);
+  const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   if (due <= thisWeekEnd) return "now";
   if (due <= nextWeekEnd) return "next";
-  if (due <= nextThirtyDays) return "soon";
+  if (due <= thisMonthEnd) return "soon";
   return "parked";
 }
  
@@ -7458,7 +7597,7 @@ function familyTaskDraftRow(personColors) {
   const endDate = new Date().toISOString().slice(0, 10);
   const status = taskStatusForDate(endDate);
   const colorClass = familyTaskColorCoding ? `status-${status}` : "";
-  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><span class="family-task-owner-picker ${personColors[who] || "summary-goal-gray"}"><span class="family-task-initial">${escapeHtml(memberTaskInitial(who))}</span><select class="family-task-who-select" id="new-family-task-who" aria-label="New task assignee">${taskPeopleOptions(who)}</select></span></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><input class="family-task-cell family-task-date" id="new-family-task-end" type="date" aria-label="New task date" value="${escapeAttr(endDate)}"></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
+  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><span class="family-task-owner-picker ${personColors[who] || "summary-goal-gray"}"><span class="family-task-initial">${escapeHtml(memberTaskInitial(who))}</span><select class="family-task-who-select" id="new-family-task-who" aria-label="New task assignee">${taskPeopleOptions(who)}</select></span></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" inputmode="numeric" placeholder="MM/DD/YY" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
 }
 
 function resizeFamilyTaskTitle(field) {
@@ -7488,7 +7627,7 @@ function renderFamilyTaskList() {
       const dateStatus = taskStatusForDate(task.endDate);
       const colorClass = familyTaskColorCoding ? `status-${dateStatus}` : "";
       const who = task.who || kids[0];
-      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<span class="family-task-owner-picker ${personColors[who] || "summary-goal-gray"}"><span class="family-task-initial">${escapeHtml(memberTaskInitial(who))}</span><select class="family-task-who-select" data-family-task-field="who" data-task-id="${task.id}" aria-label="Task assignee">${taskPeopleOptions(who)}</select></span></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><input class="family-task-cell family-task-date" type="date" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<span class="family-task-owner-picker ${personColors[who] || "summary-goal-gray"}"><span class="family-task-initial">${escapeHtml(memberTaskInitial(who))}</span><select class="family-task-who-select" data-family-task-field="who" data-task-id="${task.id}" aria-label="Task assignee">${taskPeopleOptions(who)}</select></span></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="MM/DD/YY" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
     const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
@@ -7979,6 +8118,13 @@ document.body.addEventListener("click", async event => {
  
  
 document.body.addEventListener("change", async event => {
+  const datePicker = event.target.closest(".family-task-date-picker");
+  if (datePicker) {
+    const visibleDate = datePicker.closest(".family-task-date-wrap")?.querySelector(".family-task-date");
+    if (visibleDate) visibleDate.value = formatShortDate(datePicker.value);
+    if (datePicker.dataset.taskId) await updateFamilyTaskField(datePicker.dataset.taskId, "endDate", datePicker.value);
+    return;
+  }
   const taskField = event.target.closest("[data-auto-task-field]");
   if (taskField) updateTaskAutomatically(taskField);
   const field = event.target.closest("[data-family-task-field]");

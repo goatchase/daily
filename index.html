@@ -4737,6 +4737,128 @@ tbody tr.total-row > td:first-child {
         background: #e8eaed !important;
         color: #3c4043 !important;
       }
+
+      /* Give Tasks the same rounded, clipped table-card treatment as Tracker. */
+      .family-tasks-main,
+      .family-tasks-card,
+      .family-tasks-head,
+      .family-task-list,
+      .family-task-list.completed,
+      .completed-tasks {
+        width: 656px !important;
+        max-width: 100% !important;
+      }
+
+      .family-tasks-card {
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #fff !important;
+        border: 1px solid #e6ebf1 !important;
+        border-radius: 18px !important;
+        box-shadow: none !important;
+      }
+
+      .family-tasks-head {
+        margin: 0 !important;
+        padding: 12px 14px 10px !important;
+      }
+
+      .family-task-list,
+      .family-task-list.completed {
+        border: 0 !important;
+        border-radius: 0 !important;
+        overflow: hidden !important;
+        background: #fff !important;
+      }
+
+      .family-task-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+      }
+
+      .family-task-table th,
+      .family-task-table td {
+        min-height: 32px !important;
+        padding: 3px 5px !important;
+        border-color: #e1e7ef !important;
+        background: #fff !important;
+        vertical-align: middle !important;
+      }
+
+      .family-task-table thead th {
+        color: #3c4043 !important;
+        font-weight: 600 !important;
+        background: #fff !important;
+      }
+
+      .family-task-table th:nth-child(2),
+      .family-task-table td:nth-child(2) {
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+      }
+
+      .family-task-table .family-task-owner-cell {
+        padding-left: 18px !important;
+        padding-right: 8px !important;
+      }
+
+      .family-task-table tbody tr:last-child > td {
+        border-bottom: 0 !important;
+      }
+
+      .completed-tasks {
+        border-top: 1px solid #e1e7ef !important;
+      }
+
+      @media (max-width: 699px) {
+        .family-tasks-main,
+        .family-tasks-card,
+        .family-tasks-head,
+        .family-task-list,
+        .family-task-list.completed,
+        .completed-tasks {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+
+        .family-task-table th:nth-child(2),
+        .family-task-table td:nth-child(2) {
+          width: 35% !important;
+          min-width: 0 !important;
+          max-width: none !important;
+        }
+
+        .family-task-table th:nth-child(3),
+        .family-task-table td:nth-child(3) {
+          width: auto !important;
+          min-width: 0 !important;
+          max-width: none !important;
+        }
+      }
+
+      /* Increase the Task column by 25% on desktop without affecting mobile fit. */
+      @media (min-width: 700px) {
+        .family-tasks-main,
+        .family-tasks-card,
+        .family-tasks-head,
+        .family-task-list,
+        .family-task-list.completed,
+        .completed-tasks {
+          width: 699px !important;
+        }
+
+        .family-task-table th:nth-child(3),
+        .family-task-table td:nth-child(3) {
+          width: 213px !important;
+          min-width: 213px !important;
+          max-width: 213px !important;
+        }
+      }
     </style>
 </head>
 <body>

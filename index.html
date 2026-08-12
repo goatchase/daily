@@ -4691,19 +4691,19 @@ tbody tr.total-row > td:first-child {
       max-width:100% !important;
     }
   }
- 
+
       /* Clear task group dividers, matching the calendar week separators. */
       .family-task-table tr.group-start > td {
         border-top: 3px solid #9aa0a6 !important;
       }
- 
+
       .family-task-table tr.group-start::before,
       .family-task-table tr.group-start::after {
         content: none !important;
         display: none !important;
       }
- 
-      /* Keep task rows neutral; person and date colors are applied to their own cells. */
+
+      /* Date-category color belongs only on the assignee initial bubble. */
       .family-task-table tr.status-now > td,
       .family-task-table tr.status-next > td,
       .family-task-table tr.status-soon > td,
@@ -4712,7 +4712,32 @@ tbody tr.total-row > td:first-child {
       .family-task-table tr.complete > td {
         background: #fff !important;
       }
- 
+
+      .family-task-table tr.status-now .family-task-owner-picker {
+        background: #d3e3fd !important;
+        color: #0b57d0 !important;
+      }
+
+      .family-task-table tr.status-next .family-task-owner-picker {
+        background: #ceead6 !important;
+        color: #137333 !important;
+      }
+
+      .family-task-table tr.status-soon .family-task-owner-picker {
+        background: #feefc3 !important;
+        color: #8f4700 !important;
+      }
+
+      .family-task-table tr.status-waiting .family-task-owner-picker {
+        background: #fad2cf !important;
+        color: #a50e0e !important;
+      }
+
+      .family-task-table tr.status-parked .family-task-owner-picker {
+        background: #e8eaed !important;
+        color: #3c4043 !important;
+      }
+
       /* Give Tasks the same rounded, clipped table-card treatment as Tracker. */
       .family-tasks-main,
       .family-tasks-card,
@@ -4723,7 +4748,7 @@ tbody tr.total-row > td:first-child {
         width: 656px !important;
         max-width: 100% !important;
       }
- 
+
       .family-tasks-card {
         padding: 0 !important;
         overflow: hidden !important;
@@ -4732,12 +4757,12 @@ tbody tr.total-row > td:first-child {
         border-radius: 18px !important;
         box-shadow: none !important;
       }
- 
+
       .family-tasks-head {
         margin: 0 !important;
         padding: 12px 14px 10px !important;
       }
- 
+
       .family-task-list,
       .family-task-list.completed {
         border: 0 !important;
@@ -4745,7 +4770,7 @@ tbody tr.total-row > td:first-child {
         overflow: hidden !important;
         background: #fff !important;
       }
- 
+
       .family-task-table {
         width: 100% !important;
         min-width: 0 !important;
@@ -4754,7 +4779,7 @@ tbody tr.total-row > td:first-child {
         border-collapse: separate !important;
         border-spacing: 0 !important;
       }
- 
+
       .family-task-table th,
       .family-task-table td {
         min-height: 32px !important;
@@ -4763,33 +4788,33 @@ tbody tr.total-row > td:first-child {
         background: #fff !important;
         vertical-align: middle !important;
       }
- 
+
       .family-task-table thead th {
         color: #3c4043 !important;
         font-weight: 600 !important;
         background: #fff !important;
       }
- 
+
       .family-task-table th:nth-child(2),
       .family-task-table td:nth-child(2) {
         width: 240px !important;
         min-width: 240px !important;
         max-width: 240px !important;
       }
- 
+
       .family-task-table .family-task-owner-cell {
         padding-left: 18px !important;
         padding-right: 8px !important;
       }
- 
+
       .family-task-table tbody tr:last-child > td {
         border-bottom: 0 !important;
       }
- 
+
       .completed-tasks {
         border-top: 1px solid #e1e7ef !important;
       }
- 
+
       @media (max-width: 699px) {
         .family-tasks-main,
         .family-tasks-card,
@@ -4800,14 +4825,14 @@ tbody tr.total-row > td:first-child {
           width: 100% !important;
           max-width: 100% !important;
         }
- 
+
         .family-task-table th:nth-child(2),
         .family-task-table td:nth-child(2) {
           width: 35% !important;
           min-width: 0 !important;
           max-width: none !important;
         }
- 
+
         .family-task-table th:nth-child(3),
         .family-task-table td:nth-child(3) {
           width: auto !important;
@@ -4815,7 +4840,7 @@ tbody tr.total-row > td:first-child {
           max-width: none !important;
         }
       }
- 
+
       /* Increase the Task column by 25% on desktop without affecting mobile fit. */
       @media (min-width: 700px) {
         .family-tasks-main,
@@ -4826,7 +4851,7 @@ tbody tr.total-row > td:first-child {
         .completed-tasks {
           width: 699px !important;
         }
- 
+
         .family-task-table th:nth-child(3),
         .family-task-table td:nth-child(3) {
           width: 213px !important;
@@ -4834,143 +4859,6 @@ tbody tr.total-row > td:first-child {
           max-width: 213px !important;
         }
       }
- 
-      /* Let the first and last task rows meet the card border without inset space. */
-      .family-task-list,
-      .family-task-list.completed {
-        margin: 0 !important;
-        padding: 0 !important;
-      }
- 
-      /* Stable, unique colors for assignee initials, independent of due-date status. */
-      .person-color-0 { background:#d3e3fd !important; color:#0b57d0 !important; }
-      .person-color-1 { background:#ceead6 !important; color:#137333 !important; }
-      .person-color-2 { background:#feefc3 !important; color:#8f4700 !important; }
-      .person-color-3 { background:#eadcff !important; color:#6a1b9a !important; }
-      .person-color-4 { background:#fad2cf !important; color:#a50e0e !important; }
-      .person-color-5 { background:#c4eed0 !important; color:#075e54 !important; }
-      .person-color-6 { background:#fdd6a0 !important; color:#6f3700 !important; }
-      .person-color-7 { background:#e8eaed !important; color:#3c4043 !important; }
- 
-      /* Due-date timing colors belong only in the Date column. */
-      .family-task-table tr.status-now > td:nth-child(4) { background:#d3e3fd !important; color:#0b57d0 !important; }
-      .family-task-table tr.status-next > td:nth-child(4) { background:#ceead6 !important; color:#137333 !important; }
-      .family-task-table tr.status-soon > td:nth-child(4) { background:#feefc3 !important; color:#8f4700 !important; }
-      .family-task-table tr.status-parked > td:nth-child(4) { background:#e8eaed !important; color:#3c4043 !important; }
-      .family-task-table tr[class*="status-"] .family-task-date,
-      .family-task-table tr[class*="status-"] .family-task-calendar-button {
-        color: inherit !important;
-      }
- 
-      /* Task rows run flush to the card edges, matching the Tracker table. */
-      .family-tasks-head { display:none !important; }
-      .family-tasks-card > .family-task-list:first-of-type { border-top:0 !important; }
-      .completed-tasks { margin:0 !important; border-radius:0 !important; }
-      .family-tasks-card > :last-child { margin-bottom:0 !important; }
- 
-      /* Wider stacked-assignee control and rebalanced Project/Task columns. */
-      .family-task-table th:nth-child(1),
-      .family-task-table td:nth-child(1) {
-        width:110px !important;
-        min-width:110px !important;
-        max-width:110px !important;
-      }
-      .family-task-table th:nth-child(2),
-      .family-task-table td:nth-child(2) {
-        width:144px !important;
-        min-width:144px !important;
-        max-width:144px !important;
-      }
-      .family-task-table th:nth-child(3),
-      .family-task-table td:nth-child(3) {
-        width:234px !important;
-        min-width:234px !important;
-        max-width:234px !important;
-      }
-      .family-task-table .family-task-owner-cell {
-        padding-left:12px !important;
-        padding-right:12px !important;
-      }
-      .family-task-owner-control {
-        position:relative !important;
-        display:block !important;
-        width:62px !important;
-        min-width:62px !important;
-        max-width:62px !important;
-        height:28px !important;
-        min-height:28px !important;
-        overflow:visible !important;
-        background:transparent !important;
-        color:inherit !important;
-      }
-      .family-task-owner-stack {
-        display:flex !important;
-        align-items:center !important;
-        width:62px !important;
-        padding:0 5px !important;
-      }
-      .family-task-owner-stack .family-task-initial-bubble {
-        position:relative !important;
-        display:grid !important;
-        place-items:center !important;
-        width:26px !important;
-        min-width:26px !important;
-        height:26px !important;
-        border:2px solid #fff !important;
-        border-radius:50% !important;
-        margin-left:-9px !important;
-        font-size:11px !important;
-        font-weight:700 !important;
-      }
-      .family-task-owner-stack .family-task-initial-bubble:first-child { margin-left:0 !important; }
-      .family-task-owner-toggle {
-        display:block !important;
-        width:62px !important;
-        min-width:62px !important;
-        height:28px !important;
-        margin:0 !important;
-        padding:0 !important;
-        border:1px solid transparent !important;
-        border-radius:8px !important;
-        background:transparent !important;
-        cursor:pointer !important;
-      }
-      .family-task-owner-toggle:hover,
-      .family-task-owner-control.open .family-task-owner-toggle {
-        border-color:#c9d0d6 !important;
-        background:#f8fafd !important;
-      }
-      .family-task-who-menu {
-        position:absolute !important;
-        z-index:500 !important;
-        top:32px !important;
-        left:0 !important;
-        display:none !important;
-        min-width:164px !important;
-        padding:6px !important;
-        border:1px solid #dfe3e7 !important;
-        border-radius:10px !important;
-        background:#fff !important;
-        box-shadow:0 8px 24px rgba(60,64,67,.2) !important;
-      }
-      .family-task-owner-control.open .family-task-who-menu { display:grid !important; gap:2px !important; }
-      .family-task-who-option {
-        display:grid !important;
-        grid-template-columns:18px minmax(0,1fr) !important;
-        align-items:center !important;
-        gap:8px !important;
-        min-height:32px !important;
-        padding:5px 10px !important;
-        border-radius:7px !important;
-        color:#202124 !important;
-        white-space:nowrap !important;
-        cursor:pointer !important;
-      }
-      .family-task-who-option:hover { background:#f1f3f4 !important; }
-      .family-task-who-option input { width:16px !important; height:16px !important; margin:0 !important; }
-      .family-tasks-card,
-      .family-task-list,
-      .family-task-list.completed { overflow:visible !important; }
     </style>
 </head>
 <body>
@@ -5093,6 +4981,10 @@ tbody tr.total-row > td:first-child {
             <button class="family-filter-pill" id="family-task-order-add" type="button"><span>Add Level</span><span class="filter-count">+</span></button>
             <button class="family-filter-pill" id="family-task-order-clear" type="button">Clear</button>
           </div>
+        </div>
+        <div class="family-filter-block">
+          <div class="family-filter-title">Color Coding</div>
+          <div class="family-status-list" id="family-task-color-coding"></div>
         </div>
       </aside>
       <main class="family-tasks-main">
@@ -5352,6 +5244,7 @@ let familyTasksCache = [];
 let familyTaskPersonFilter = "all";
 let familyTaskStatusFilter = "all";
 let familyTaskOrderBy = ["project"];
+let familyTaskColorCoding = localStorage.getItem("familyTaskColorCoding") !== "off";
 const FAMILY_TASK_STATUSES = ["now", "next", "soon", "parked"];
 const LOG_TYPES = [
   {value:"good", label:"Good", outcome:"Reward"},
@@ -5467,7 +5360,7 @@ function memberLabel(memberId) {
 function memberInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || "").join("") || "?";
 }
- 
+
 function memberTaskInitial(memberId) {
   const member = householdMembers.find(item => item.id === memberId);
   const configured = String(member?.initials || "").trim();
@@ -6496,7 +6389,7 @@ function trackerWeekBounds(weekKey = currentWeek) {
 function familyTasksForTracker(kid) {
   const bounds = trackerWeekBounds(currentWeek);
   if (!bounds) return [];
-  return familyTasksCache.filter(task => taskAssignees(task.who).includes(kid) && task.endDate >= bounds.start && task.endDate <= bounds.end).map(task => {
+  return familyTasksCache.filter(task => task.who === kid && task.endDate >= bounds.start && task.endDate <= bounds.end).map(task => {
     const dueDate = new Date(`${task.endDate}T00:00:00Z`);
     const day = Math.max(0, Math.min(6, Math.round((dueDate - bounds.startDate) / 86400000)));
     return {id:task.id, day, text:task.title || task.project || "Task", done:!!task.completed, source:"family"};
@@ -7353,7 +7246,7 @@ function readCategoryEditor() {
  
  
 function statusLabel(status = "now") {
-  return ({now:"This Week", next:"Next Week", soon:"This Month", parked:"Future"})[status] || "Future";
+  return ({now:"This Week", next:"Next Week", soon:"This Month", parked:"Other"})[status] || "Other";
 }
  
 function taskDateLabel(date = "") {
@@ -7363,29 +7256,8 @@ function taskDateLabel(date = "") {
   return `${Number(month)}/${Number(day)}`;
 }
  
-function taskAssignees(value) {
-  const selected = Array.isArray(value) ? value : [value];
-  return [...new Set(selected.filter(kid => kids.includes(kid)))];
-}
- 
-function taskPeopleOptions(selected = []) {
-  const selectedPeople = taskAssignees(selected);
-  return kids.map(kid => `<option value="${escapeAttr(kid)}" ${selectedPeople.includes(kid) ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
-}
- 
-function selectedTaskPeople(control) {
-  if (!control) return [];
-  if (control.matches?.("select")) return [...control.selectedOptions].map(option => option.value).filter(kid => kids.includes(kid));
-  return [...control.querySelectorAll('[data-family-task-person-check]:checked')].map(input => input.value).filter(kid => kids.includes(kid));
-}
- 
-function taskAssigneeBubbles(selected, personColors) {
-  return taskAssignees(selected).map(kid => `<span class="family-task-initial-bubble ${personColors[kid] || "person-color-7"}" title="${escapeAttr(memberLabel(kid))}">${escapeHtml(memberTaskInitial(kid))}</span>`).join("");
-}
- 
-function taskPeopleChecklist(selected = [], taskId = "") {
-  const selectedPeople = taskAssignees(selected);
-  return kids.map(kid => `<label class="family-task-who-option"><input type="checkbox" data-family-task-person-check value="${escapeAttr(kid)}" ${taskId ? `data-task-id="${escapeAttr(taskId)}"` : ""} ${selectedPeople.includes(kid) ? "checked" : ""}><span>${escapeHtml(memberLabel(kid))}</span></label>`).join("");
+function taskPeopleOptions(selected = "") {
+  return kids.map(kid => `<option value="${escapeAttr(kid)}" ${kid === selected ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
 }
  
 function taskStatusOptions(selected = "now") {
@@ -7522,7 +7394,7 @@ function parseShortDate(value = "") {
   const year = match[3].length === 2 ? `20${match[3]}` : match[3];
   return `${year}-${month}-${day}`;
 }
- 
+
 function taskStatusForDate(value = "") {
   const normalized = parseShortDate(value);
   const due = /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? new Date(`${normalized}T00:00:00`) : null;
@@ -7787,14 +7659,19 @@ function taskOrderLabel(field) {
 }
  
 function taskPersonColorMap() {
-  return Object.fromEntries(kids.map((kid, index) => [kid, `person-color-${index % 8}`]));
+  const openCounts = Object.fromEntries(kids.map(kid => [kid, familyTasksCache.filter(task => !task.completed && task.who === kid).length]));
+  const counts = Object.values(openCounts).map(Number);
+  const min = counts.length ? Math.min(...counts) : 0;
+  const max = counts.length ? Math.max(...counts) : 0;
+  return Object.fromEntries(kids.map(kid => [kid, taskCountClass(openCounts[kid] || 0, min, max)]));
 }
  
 function renderTaskFilters() {
   const people = document.getElementById("family-task-people");
   const statuses = document.getElementById("family-task-statuses");
   const order = document.getElementById("family-task-order");
-  const openCounts = Object.fromEntries(kids.map(kid => [kid, familyTasksCache.filter(task => !task.completed && taskAssignees(task.who).includes(kid)).length]));
+  const colorCoding = document.getElementById("family-task-color-coding");
+  const openCounts = Object.fromEntries(kids.map(kid => [kid, familyTasksCache.filter(task => !task.completed && task.who === kid).length]));
   const counts = Object.values(openCounts).map(Number);
   const min = counts.length ? Math.min(...counts) : 0;
   const max = counts.length ? Math.max(...counts) : 0;
@@ -7811,12 +7688,15 @@ function renderTaskFilters() {
       levels.innerHTML = familyTaskOrderBy.map((field, index) => `<div class="family-filter-pill task-order-level"><span>${index + 1}. ${taskOrderLabel(field)}</span><button class="mini-action" data-family-task-order-remove="${index}" aria-label="Remove order level">×</button></div>`).join("");
     }
   }
+  if (colorCoding) {
+    colorCoding.innerHTML = `<button class="family-filter-pill ${familyTaskColorCoding ? "active" : ""}" data-family-task-colors="on">On</button><button class="family-filter-pill ${familyTaskColorCoding ? "" : "active"}" data-family-task-colors="off">Off</button>`;
+  }
 }
  
 function visibleFamilyTasks(completed = false) {
   return familyTasksCache.filter(task => {
     if (!!task.completed !== completed) return false;
-    if (familyTaskPersonFilter !== "all" && !taskAssignees(task.who).includes(familyTaskPersonFilter)) return false;
+    if (familyTaskPersonFilter !== "all" && task.who !== familyTaskPersonFilter) return false;
     if (!completed && familyTaskStatusFilter !== "all" && taskStatusForDate(task.endDate) !== familyTaskStatusFilter) return false;
     return true;
   });
@@ -7828,26 +7708,26 @@ function taskCreatedMillis(value) {
   const parsed = new Date(value || 0).getTime();
   return Number.isFinite(parsed) ? parsed : 0;
 }
- 
+
 function lastFamilyTaskWho() {
   const latest = familyTasksCache.slice().sort((a, b) => taskCreatedMillis(b.createdAt) - taskCreatedMillis(a.createdAt))[0];
-  return taskAssignees(latest?.who)[0] || kids[0];
+  return kids.includes(latest?.who) ? latest.who : kids[0];
 }
- 
+
 function familyTaskDraftRow(personColors) {
   const who = lastFamilyTaskWho();
   const endDate = new Date().toISOString().slice(0, 10);
   const status = taskStatusForDate(endDate);
-  const colorClass = `status-${status}`;
-  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><span class="family-task-owner-control" id="new-family-task-who"><button class="family-task-owner-toggle" type="button" data-family-task-owner-toggle aria-label="Choose new task assignees" aria-expanded="false"><span class="family-task-owner-stack">${taskAssigneeBubbles([who], personColors)}</span></button><span class="family-task-who-menu">${taskPeopleChecklist([who])}</span></span></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" inputmode="numeric" placeholder="MM/DD/YY" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
+  const colorClass = familyTaskColorCoding ? `status-${status}` : "";
+  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><span class="family-task-owner-picker ${personColors[who] || "summary-goal-gray"}"><span class="family-task-initial">${escapeHtml(memberTaskInitial(who))}</span><select class="family-task-who-select" id="new-family-task-who" aria-label="New task assignee">${taskPeopleOptions(who)}</select></span></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" inputmode="numeric" placeholder="MM/DD/YY" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
 }
- 
+
 function resizeFamilyTaskTitle(field) {
   if (!field) return;
   field.style.height = "auto";
   field.style.height = `${Math.max(field.scrollHeight, 29)}px`;
 }
- 
+
 function renderFamilyTaskList() {
   renderTaskFilters();
   const activeList = document.getElementById("family-task-list");
@@ -7857,7 +7737,7 @@ function renderFamilyTaskList() {
   const personColors = taskPersonColorMap();
   const taskOrderValue = (task, field = familyTaskOrderBy[0] || "project") => {
     if (field === "status") return FAMILY_TASK_STATUSES.indexOf(taskStatusForDate(task.endDate));
-    if (field === "who") return taskAssignees(task.who).map(memberLabel).join(", ");
+    if (field === "who") return memberLabel(task.who || "");
     if (field === "endDate") return task.endDate || "9999";
     return task.project || "";
   };
@@ -7867,9 +7747,9 @@ function renderFamilyTaskList() {
       const noteTitle = escapeAttr(notes.map(note => note.text || "").filter(Boolean).join(" | "));
       const noteIcon = notes.length ? `<button class="note-indicator" data-family-task-note-prompt="${task.id}" title="${noteTitle}" aria-label="Task notes">✎</button>` : `<button class="note-indicator empty" data-family-task-note-prompt="${task.id}" aria-label="Add note">＋</button>`;
       const dateStatus = taskStatusForDate(task.endDate);
-      const colorClass = `status-${dateStatus}`;
-      const assignees = taskAssignees(task.who).length ? taskAssignees(task.who) : [kids[0]];
-      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<span class="family-task-owner-control"><button class="family-task-owner-toggle" type="button" data-family-task-owner-toggle aria-label="Choose task assignees" aria-expanded="false"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></button><span class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</span></span></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="MM/DD/YY" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      const colorClass = familyTaskColorCoding ? `status-${dateStatus}` : "";
+      const who = task.who || kids[0];
+      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<span class="family-task-owner-picker ${personColors[who] || "summary-goal-gray"}"><span class="family-task-initial">${escapeHtml(memberTaskInitial(who))}</span><select class="family-task-who-select" data-family-task-field="who" data-task-id="${task.id}" aria-label="Task assignee">${taskPeopleOptions(who)}</select></span></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="MM/DD/YY" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
     const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
@@ -7915,7 +7795,7 @@ async function addFamilyTask() {
   const task = {
     project:document.getElementById("new-family-task-project")?.value.trim() || "",
     title,
-    who:selectedTaskPeople(document.getElementById("new-family-task-who")).length ? selectedTaskPeople(document.getElementById("new-family-task-who")) : [kids[0]],
+    who:document.getElementById("new-family-task-who")?.value || kids[0],
     endDate:parseShortDate(document.getElementById("new-family-task-end")?.value || ""),
     status:taskStatusForDate(document.getElementById("new-family-task-end")?.value || ""),
     completed:false,
@@ -7964,8 +7844,7 @@ async function updateFamilyTaskField(id, field, value) {
   if (field === "endDate") patch.status = taskStatusForDate(normalized);
   await taskCollectionRef().doc(id).set(patch, {merge:true});
   familyTasksCache = familyTasksCache.map(item => item.id === id ? {...item, ...patch} : item);
-  if (field === "who") renderTaskFilters();
-  else renderFamilyTaskList();
+  renderFamilyTaskList();
   if (field === "who" || field === "endDate") kids.forEach(renderTaskList);
 }
  
@@ -8176,27 +8055,6 @@ document.getElementById("more-actions").addEventListener("click", event => {
 document.body.addEventListener("click", async event => {
   if (!event.target.closest(".menu-wrap")) closeActionsMenu();
  
-  const ownerToggle = event.target.closest("[data-family-task-owner-toggle]");
-  if (ownerToggle) {
-    const control = ownerToggle.closest(".family-task-owner-control");
-    const willOpen = !control.classList.contains("open");
-    document.querySelectorAll(".family-task-owner-control.open").forEach(item => {
-      if (item !== control) {
-        item.classList.remove("open");
-        item.querySelector("[data-family-task-owner-toggle]")?.setAttribute("aria-expanded", "false");
-      }
-    });
-    control.classList.toggle("open", willOpen);
-    ownerToggle.setAttribute("aria-expanded", String(willOpen));
-    return;
-  }
-  if (!event.target.closest(".family-task-owner-control")) {
-    document.querySelectorAll(".family-task-owner-control.open").forEach(item => {
-      item.classList.remove("open");
-      item.querySelector("[data-family-task-owner-toggle]")?.setAttribute("aria-expanded", "false");
-    });
-  }
- 
   const trackerCheckbox = event.target.closest('.tracker-card input[type="checkbox"][data-kid][data-day][data-type]');
   if (trackerCheckbox) {
     event.preventDefault();
@@ -8278,7 +8136,7 @@ document.body.addEventListener("click", async event => {
     await addFamilyTask();
     return;
   }
- 
+
   const familyPersonFilter = event.target.closest("[data-family-task-person]");
   if (familyPersonFilter) {
     familyTaskPersonFilter = familyPersonFilter.dataset.familyTaskPerson;
@@ -8291,6 +8149,14 @@ document.body.addEventListener("click", async event => {
     renderFamilyTaskList();
   }
  
+  const familyTaskColors = event.target.closest("[data-family-task-colors]");
+  if (familyTaskColors) {
+    familyTaskColorCoding = familyTaskColors.dataset.familyTaskColors !== "off";
+    localStorage.setItem("familyTaskColorCoding", familyTaskColorCoding ? "on" : "off");
+    renderFamilyTaskList();
+    return;
+  }
+
   const familyOrderAdd = event.target.closest("#family-task-order-add");
   if (familyOrderAdd) {
     const select = document.getElementById("family-task-order-select");
@@ -8374,19 +8240,6 @@ document.body.addEventListener("click", async event => {
  
  
 document.body.addEventListener("change", async event => {
-  const personCheck = event.target.closest("[data-family-task-person-check]");
-  if (personCheck) {
-    const control = personCheck.closest(".family-task-owner-control");
-    let people = selectedTaskPeople(control);
-    if (!people.length) {
-      personCheck.checked = true;
-      people = [personCheck.value];
-    }
-    const stack = control.querySelector(".family-task-owner-stack");
-    if (stack) stack.innerHTML = taskAssigneeBubbles(people, taskPersonColorMap());
-    if (personCheck.dataset.taskId) await updateFamilyTaskField(personCheck.dataset.taskId, "who", people);
-    return;
-  }
   const datePicker = event.target.closest(".family-task-date-picker");
   if (datePicker) {
     const visibleDate = datePicker.closest(".family-task-date-wrap")?.querySelector(".family-task-date");
@@ -8397,10 +8250,7 @@ document.body.addEventListener("change", async event => {
   const taskField = event.target.closest("[data-auto-task-field]");
   if (taskField) updateTaskAutomatically(taskField);
   const field = event.target.closest("[data-family-task-field]");
-  if (field) {
-    const value = field.multiple ? selectedTaskPeople(field) : (field.value.trim ? field.value.trim() : field.value);
-    await updateFamilyTaskField(field.dataset.taskId, field.dataset.familyTaskField, value);
-  }
+  if (field) await updateFamilyTaskField(field.dataset.taskId, field.dataset.familyTaskField, field.value.trim ? field.value.trim() : field.value);
   const calendarCell = event.target.closest("[data-calendar-day][data-calendar-column]");
   if (calendarCell) {
     syncCalendarCellToCache(calendarCell);

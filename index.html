@@ -4988,6 +4988,42 @@ tbody tr.total-row > td:first-child {
       .family-tasks-card,
       .family-task-list,
       .family-task-list.completed { overflow:visible !important; }
+ 
+      /* Wider task workspace with a tracker-style rounded outer rule. */
+      @media (min-width:700px) {
+        .family-tasks-main,
+        .family-tasks-card,
+        .family-tasks-head,
+        .family-task-list,
+        .family-task-list.completed,
+        .completed-tasks {
+          width:769px !important;
+        }
+        .family-task-table th:nth-child(3),
+        .family-task-table td:nth-child(3) {
+          width:304px !important;
+          min-width:304px !important;
+          max-width:304px !important;
+        }
+      }
+      .family-tasks-card {
+        position:relative !important;
+        border:0 !important;
+        border-radius:18px !important;
+        isolation:isolate !important;
+      }
+      .family-tasks-card::after {
+        content:"" !important;
+        position:absolute !important;
+        z-index:2000 !important;
+        inset:0 !important;
+        border:1px solid #dfe3e7 !important;
+        border-radius:18px !important;
+        pointer-events:none !important;
+      }
+      .family-task-table tr.group-start > td {
+        border-top:1px solid #dfe3e7 !important;
+      }
     </style>
 </head>
 <body>
@@ -6506,12 +6542,12 @@ function orderTrackerTasks(items = []) {
   return items.map((item, index) => ({item, index})).sort((a, b) => {
     const completionOrder = Number(!!a.item.done) - Number(!!b.item.done);
     if (completionOrder) return completionOrder;
-    const projectOrder = String(a.item.project || "General").localeCompare(String(b.item.project || "General"), undefined, {numeric:true});
-    if (projectOrder) return projectOrder;
     const dateOrder = String(a.item.endDate || "").localeCompare(String(b.item.endDate || ""));
     if (dateOrder) return dateOrder;
     const dayOrder = Number(a.item.day || 0) - Number(b.item.day || 0);
-    return dayOrder || a.index - b.index;
+    if (dayOrder) return dayOrder;
+    const projectOrder = String(a.item.project || "General").localeCompare(String(b.item.project || "General"), undefined, {numeric:true});
+    return projectOrder || a.index - b.index;
   }).map(entry => entry.item);
 }
  

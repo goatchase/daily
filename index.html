@@ -5074,6 +5074,42 @@ tbody tr.total-row > td:first-child {
         .family-task-table th:nth-child(7),
         .family-task-table td:nth-child(7) { width:70px !important; min-width:70px !important; max-width:70px !important; }
       }
+      .family-tasks-card {
+        overflow:visible !important;
+        background:transparent !important;
+        border:0 !important;
+        border-radius:0 !important;
+      }
+      .family-tasks-card::after { display:none !important; }
+      .family-task-section {
+        margin-bottom:14px;
+        overflow:hidden;
+        background:#fff;
+        border:1px solid #dfe3e7;
+        border-radius:14px;
+      }
+      .family-task-section .family-task-section-title {
+        margin:0;
+        padding:10px 14px;
+        border-bottom:1px solid #e6ebf1;
+        background:#f8f9fa;
+      }
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        width:100% !important;
+        margin:0;
+        border:0 !important;
+        border-radius:0 !important;
+      }
+      .family-task-section .family-task-summary { border:0; border-radius:0; }
+      .family-task-hours,
+      .family-task-cost { text-align:right !important; }
+      .family-task-header .family-task-header-cell { text-align:left !important; justify-content:flex-start !important; }
+      .family-task-summary th { text-align:left !important; }
+      .family-task-summary td:nth-child(2),
+      .family-task-summary td:nth-child(3),
+      .family-task-summary td:nth-child(4) { text-align:right !important; font-variant-numeric:tabular-nums; }
+      .family-task-summary tbody tr:last-child td { font-weight:700; }
     </style>
 </head>
 <body>
@@ -5200,14 +5236,18 @@ tbody tr.total-row > td:first-child {
       </aside>
       <main class="family-tasks-main">
         <div class="family-tasks-card">
-          <div class="family-tasks-head">
-            <h3>Tasks</h3>
-          </div>
-          <div class="family-task-list" id="family-task-list"></div>
-          <div class="family-task-section-title" id="family-parked-title">Parked <span id="family-parked-count">0</span></div>
-          <div class="family-task-list family-task-parked" id="family-parked-list"></div>
-          <div class="family-task-section-title">Summary by project</div>
-          <div class="family-task-summary-wrap" id="family-task-summary"></div>
+          <section class="family-task-section">
+            <div class="family-task-section-title">Tasks</div>
+            <div class="family-task-list" id="family-task-list"></div>
+          </section>
+          <section class="family-task-section">
+            <div class="family-task-section-title" id="family-parked-title">Parked <span id="family-parked-count">0</span></div>
+            <div class="family-task-list family-task-parked" id="family-parked-list"></div>
+          </section>
+          <section class="family-task-section">
+            <div class="family-task-section-title">Summary by project</div>
+            <div class="family-task-summary-wrap" id="family-task-summary"></div>
+          </section>
           <details class="completed-tasks" id="family-completed-wrap">
             <summary>Completed <span id="family-completed-count">0</span></summary>
             <div class="family-task-list completed" id="family-completed-list"></div>
@@ -7990,13 +8030,25 @@ function renderFamilyTaskProjectSummary(tasks) {
     host.innerHTML = `<div class="empty-state">No task data to summarize.</div>`;
     return;
   }
+  const range = field => {
+    const values = rows.map(row => Number(row[field]) || 0);
+    return {min:Math.min(...values), max:Math.max(...values)};
+  };
+  const taskRange = range("tasks");
+  const hourRange = range("hours");
+  const costRange = range("cost");
+  const heatStyle = (value, limits, rgb) => {
+    const ratio = limits.max === limits.min ? (value > 0 ? 1 : 0) : (value - limits.min) / (limits.max - limits.min);
+    const alpha = (0.09 + Math.min(1, Math.max(0, ratio)) * 0.31).toFixed(3);
+    return `background:rgba(${rgb},${alpha})`;
+  };
   const renderSummaryRow = row => {
     const minDate = row.dates.length ? row.dates.slice().sort()[0] : "";
     const maxDate = row.dates.length ? row.dates.slice().sort().at(-1) : "";
-    return `<tr><td>${escapeHtml(row.project)}</td><td>${row.tasks}</td><td>${row.hours.toFixed(2)} hrs / ${(row.hours / 8).toFixed(2)} days</td><td>$${row.cost.toFixed(2)}</td><td>${escapeHtml(formatShortDate(minDate) || "—")}</td><td>${escapeHtml(formatShortDate(maxDate) || "—")}</td></tr>`;
+    return `<tr><td>${escapeHtml(row.project)}</td><td style="${heatStyle(row.tasks, taskRange, "103,80,164")}">${row.tasks}</td><td style="${heatStyle(row.hours, hourRange, "26,115,232")}">${row.hours.toFixed(2)}</td><td style="${heatStyle(row.cost, costRange, "24,128,56")}">$${row.cost.toFixed(2)}</td><td>${escapeHtml(formatShortDate(minDate) || "—")}</td><td>${escapeHtml(formatShortDate(maxDate) || "—")}</td></tr>`;
   };
   const total = rows.reduce((sum, row) => ({project:"Total", tasks:sum.tasks + row.tasks, hours:sum.hours + row.hours, cost:sum.cost + row.cost, dates:[...sum.dates, ...row.dates]}), {tasks:0, hours:0, cost:0, dates:[]});
-  host.innerHTML = `<table class="family-task-summary"><thead><tr><th>Project</th><th>Total tasks</th><th>Total hours / days</th><th>Total $</th><th>Earliest date</th><th>Latest date</th></tr></thead><tbody>${rows.map(renderSummaryRow).join("")}${renderSummaryRow(total)}</tbody></table>`;
+  host.innerHTML = `<table class="family-task-summary"><thead><tr><th>Project</th><th>Total tasks</th><th>Total hours</th><th>Total $</th><th>Earliest date</th><th>Latest date</th></tr></thead><tbody>${rows.map(renderSummaryRow).join("")}${renderSummaryRow(total)}</tbody></table>`;
 }
  
 function renderFamilyTaskList() {

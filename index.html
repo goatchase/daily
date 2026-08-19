@@ -5024,6 +5024,56 @@ tbody tr.total-row > td:first-child {
       .family-task-table tr.group-start > td {
         border-top:1px solid #dfe3e7 !important;
       }
+ 
+      /* Task effort, cost, parked work, and project rollups. */
+      .family-task-section-title {
+        margin:16px 14px 8px;
+        color:#3c4043;
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.04em;
+        text-transform:uppercase;
+      }
+      .family-task-section-title span { color:#80868b; font-weight:600; }
+      .family-task-parked:empty { display:none; }
+      .family-task-summary-wrap { margin:16px 14px 14px; overflow:auto; }
+      .family-task-summary {
+        width:100%;
+        border-collapse:separate;
+        border-spacing:0;
+        overflow:hidden;
+        border:1px solid #dfe3e7;
+        border-radius:10px;
+        font-size:10pt;
+      }
+      .family-task-summary th,
+      .family-task-summary td { padding:7px 8px; border-right:1px solid #e6ebf1; border-bottom:1px solid #e6ebf1; text-align:right; white-space:nowrap; }
+      .family-task-summary th:first-child,
+      .family-task-summary td:first-child { text-align:left; }
+      .family-task-summary th:last-child,
+      .family-task-summary td:last-child { border-right:0; }
+      .family-task-summary tbody tr:last-child td { border-bottom:0; }
+      .family-task-summary th { background:#f8f9fa; color:#5f6368; font-weight:700; }
+      .family-task-hours,
+      .family-task-cost { text-align:right !important; font-variant-numeric:tabular-nums; }
+      @media (min-width:700px) {
+        .family-tasks-main,
+        .family-tasks-card,
+        .family-tasks-head,
+        .family-task-list,
+        .family-task-list.completed,
+        .completed-tasks { width:969px !important; }
+        .family-task-table th:nth-child(3),
+        .family-task-table td:nth-child(3) { width:304px !important; min-width:304px !important; max-width:304px !important; }
+        .family-task-table th:nth-child(4),
+        .family-task-table td:nth-child(4) { width:96px !important; min-width:96px !important; max-width:96px !important; }
+        .family-task-table th:nth-child(5),
+        .family-task-table td:nth-child(5),
+        .family-task-table th:nth-child(6),
+        .family-task-table td:nth-child(6) { width:82px !important; min-width:82px !important; max-width:82px !important; }
+        .family-task-table th:nth-child(7),
+        .family-task-table td:nth-child(7) { width:70px !important; min-width:70px !important; max-width:70px !important; }
+      }
     </style>
 </head>
 <body>
@@ -5154,6 +5204,10 @@ tbody tr.total-row > td:first-child {
             <h3>Tasks</h3>
           </div>
           <div class="family-task-list" id="family-task-list"></div>
+          <div class="family-task-section-title" id="family-parked-title">Parked <span id="family-parked-count">0</span></div>
+          <div class="family-task-list family-task-parked" id="family-parked-list"></div>
+          <div class="family-task-section-title">Summary by project</div>
+          <div class="family-task-summary-wrap" id="family-task-summary"></div>
           <details class="completed-tasks" id="family-completed-wrap">
             <summary>Completed <span id="family-completed-count">0</span></summary>
             <div class="family-task-list completed" id="family-completed-list"></div>
@@ -5163,6 +5217,7 @@ tbody tr.total-row > td:first-child {
     </div>
   </div>
 </div>
+<datalist id="family-task-date-options"><option value="Parked"></option></datalist>
  
 <div class="modal" id="calendar-modal">
   <div class="modal-content calendar-content">
@@ -7908,7 +7963,7 @@ function familyTaskDraftRow(personColors) {
   const endDate = new Date().toISOString().slice(0, 10);
   const status = taskStatusForDate(endDate);
   const colorClass = `status-${status}`;
-  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><details class="family-task-owner-control" id="new-family-task-who"><summary class="family-task-owner-toggle" aria-label="Choose new task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles([who], personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist([who])}</div></details></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" inputmode="numeric" placeholder="MM/DD/YY" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
+  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><details class="family-task-owner-control" id="new-family-task-who"><summary class="family-task-owner-toggle" aria-label="Choose new task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles([who], personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist([who])}</div></details></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" list="family-task-date-options" placeholder="MM/DD/YY or Parked" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><input class="family-task-cell family-task-hours" id="new-family-task-hours" type="number" min="0" step="0.25" placeholder="0" aria-label="New task time in hours"></td><td><input class="family-task-cell family-task-cost" id="new-family-task-cost" type="number" min="0" step="0.01" placeholder="0.00" aria-label="New task cost"></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
 }
  
 function resizeFamilyTaskTitle(field) {
@@ -7917,12 +7972,40 @@ function resizeFamilyTaskTitle(field) {
   field.style.height = `${Math.max(field.scrollHeight, 29)}px`;
 }
  
+function renderFamilyTaskProjectSummary(tasks) {
+  const host = document.getElementById("family-task-summary");
+  if (!host) return;
+  const projects = new Map();
+  tasks.forEach(task => {
+    const project = String(task.project || "Unassigned").trim() || "Unassigned";
+    const row = projects.get(project) || {project, tasks:0, hours:0, cost:0, dates:[]};
+    row.tasks += 1;
+    row.hours += Number(task.hours) || 0;
+    row.cost += Number(task.cost) || 0;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(task.endDate || "")) row.dates.push(task.endDate);
+    projects.set(project, row);
+  });
+  const rows = [...projects.values()].sort((a, b) => a.project.localeCompare(b.project));
+  if (!rows.length) {
+    host.innerHTML = `<div class="empty-state">No task data to summarize.</div>`;
+    return;
+  }
+  const renderSummaryRow = row => {
+    const minDate = row.dates.length ? row.dates.slice().sort()[0] : "";
+    const maxDate = row.dates.length ? row.dates.slice().sort().at(-1) : "";
+    return `<tr><td>${escapeHtml(row.project)}</td><td>${row.tasks}</td><td>${row.hours.toFixed(2)} hrs / ${(row.hours / 8).toFixed(2)} days</td><td>$${row.cost.toFixed(2)}</td><td>${escapeHtml(formatShortDate(minDate) || "—")}</td><td>${escapeHtml(formatShortDate(maxDate) || "—")}</td></tr>`;
+  };
+  const total = rows.reduce((sum, row) => ({project:"Total", tasks:sum.tasks + row.tasks, hours:sum.hours + row.hours, cost:sum.cost + row.cost, dates:[...sum.dates, ...row.dates]}), {tasks:0, hours:0, cost:0, dates:[]});
+  host.innerHTML = `<table class="family-task-summary"><thead><tr><th>Project</th><th>Total tasks</th><th>Total hours / days</th><th>Total $</th><th>Earliest date</th><th>Latest date</th></tr></thead><tbody>${rows.map(renderSummaryRow).join("")}${renderSummaryRow(total)}</tbody></table>`;
+}
+ 
 function renderFamilyTaskList() {
   renderTaskFilters();
   const activeList = document.getElementById("family-task-list");
+  const parkedList = document.getElementById("family-parked-list");
   const completedList = document.getElementById("family-completed-list");
   const completedCount = document.getElementById("family-completed-count");
-  if (!activeList || !completedList) return;
+  if (!activeList || !parkedList || !completedList) return;
   const personColors = taskPersonColorMap();
   const taskOrderValue = (task, field = familyTaskOrderBy[0] || "project") => {
     if (field === "status") return FAMILY_TASK_STATUSES.indexOf(taskStatusForDate(task.endDate));
@@ -7938,9 +8021,9 @@ function renderFamilyTaskList() {
       const dateStatus = taskStatusForDate(task.endDate);
       const colorClass = `status-${dateStatus}`;
       const assignees = taskAssignees(task.who).length ? taskAssignees(task.who) : [kids[0]];
-      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" inputmode="numeric" placeholder="MM/DD/YY" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" list="family-task-date-options" placeholder="MM/DD/YY or Parked" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><input class="family-task-cell family-task-hours" type="number" min="0" step="0.25" data-family-task-field="hours" data-task-id="${task.id}" value="${escapeAttr(task.hours ?? "")}" placeholder="0" aria-label="Task time in hours"></td><td><input class="family-task-cell family-task-cost" type="number" min="0" step="0.01" data-family-task-field="cost" data-task-id="${task.id}" value="${escapeAttr(task.cost ?? "")}" placeholder="0.00" aria-label="Task cost"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
-    const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
+    const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Time (hrs)</span></th><th><span class="family-task-header-cell">Cost ($)</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
     for (const field of familyTaskOrderBy) {
       const valueA = taskOrderValue(a, field);
@@ -7954,12 +8037,18 @@ function renderFamilyTaskList() {
     if (projectCompare) return projectCompare;
     return String(a.endDate || "9999").localeCompare(String(b.endDate || "9999"));
   });
-  const active = visibleFamilyTasks(false);
+  const allOpen = visibleFamilyTasks(false);
+  const active = allOpen.filter(task => taskStatusForDate(task.endDate) !== "parked");
+  const parked = allOpen.filter(task => taskStatusForDate(task.endDate) === "parked");
   const completed = visibleFamilyTasks(true);
   const primaryOrder = familyTaskOrderBy[0] || "project";
   const groupedActive = sortTasks(active).map((task, index, list) => ({...task, groupStart:index > 0 && String(taskOrderValue(task, primaryOrder)) !== String(taskOrderValue(list[index - 1], primaryOrder))}));
     activeList.innerHTML = renderTable(groupedActive.map(renderRow).join(""), true);
+    parkedList.innerHTML = parked.length ? renderTable(sortTasks(parked).map(renderRow).join("")) : `<div class="empty-state">No parked tasks.</div>`;
     completedList.innerHTML = completed.length ? renderTable(completed.map(renderRow).join("")) : `<div class="empty-state">No completed tasks yet.</div>`;
+  const parkedCount = document.getElementById("family-parked-count");
+  if (parkedCount) parkedCount.textContent = String(parked.length);
+  renderFamilyTaskProjectSummary([...allOpen, ...completed]);
   if (completedCount) completedCount.textContent = String(completed.length);
   requestAnimationFrame(() => document.querySelectorAll(".family-task-title").forEach(resizeFamilyTaskTitle));
 }
@@ -7981,12 +8070,16 @@ async function addFamilyTask() {
   }
   const now = new Date();
   const doc = taskCollectionRef().doc();
+  const requestedDate = document.getElementById("new-family-task-end")?.value || "";
+  const endDate = /^parked$/i.test(String(requestedDate).trim()) ? "" : parseShortDate(requestedDate);
   const task = {
     project:document.getElementById("new-family-task-project")?.value.trim() || "",
     title,
     who:selectedTaskPeople(document.getElementById("new-family-task-who")).length ? selectedTaskPeople(document.getElementById("new-family-task-who")) : [kids[0]],
-    endDate:parseShortDate(document.getElementById("new-family-task-end")?.value || ""),
-    status:taskStatusForDate(document.getElementById("new-family-task-end")?.value || ""),
+    endDate,
+    status:taskStatusForDate(endDate),
+    hours:Number(document.getElementById("new-family-task-hours")?.value || 0),
+    cost:Number(document.getElementById("new-family-task-cost")?.value || 0),
     completed:false,
     notes:[],
     createdAt:now,
@@ -8024,11 +8117,12 @@ async function addFamilyTaskNote(id) {
 }
  
 async function updateFamilyTaskField(id, field, value) {
-  const allowed = new Set(["project", "title", "who", "endDate", "status"]);
+  const allowed = new Set(["project", "title", "who", "endDate", "status", "hours", "cost"]);
   if (!allowed.has(field)) return;
   let normalized = value;
   if (field === "status" && !FAMILY_TASK_STATUSES.includes(value)) normalized = "parked";
-  if (field === "endDate") normalized = parseShortDate(value);
+  if (field === "endDate") normalized = /^parked$/i.test(String(value).trim()) ? "" : parseShortDate(value);
+  if (field === "hours" || field === "cost") normalized = Math.max(0, Number(value) || 0);
   const patch = {[field]:normalized, updatedAt:new Date()};
   if (field === "endDate") patch.status = taskStatusForDate(normalized);
   await taskCollectionRef().doc(id).set(patch, {merge:true});

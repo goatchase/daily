@@ -5142,9 +5142,345 @@ tbody tr.total-row > td:first-child {
       .family-task-summary-sort:hover,
       .family-task-summary-sort:focus-visible { background:#eef2f6; outline:none; }
       .family-task-summary-sort.active::after { content:attr(data-sort-arrow); margin-left:5px; }
+ 
+      /* Keep the established rail/content layout; only add the shared view switch. */
+      :root { --rail:216px; }
+      .top-controls {
+        display:grid !important;
+        grid-template-columns:36px minmax(0, 1fr) 36px !important;
+        align-items:center !important;
+        column-gap:4px !important;
+        row-gap:12px !important;
+        width:100% !important;
+      }
+      .app-switch {
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        grid-column:1 / -1;
+        min-width:0;
+        padding:2px;
+        border:1px solid #dfe3e7;
+        border-radius:999px;
+        background:#f1f3f4;
+      }
+      .app-switch-button {
+        min-width:0;
+        height:26px;
+        padding:0 4px;
+        border:0;
+        border-radius:999px;
+        background:transparent;
+        color:#5f6368;
+        font-size:10pt;
+        font-weight:500;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+      .app-switch-button.active {
+        background:#fff;
+        color:#0b57d0;
+        box-shadow:0 1px 3px rgba(60,64,67,.18);
+      }
+      #week-select {
+        grid-column:2 / -1 !important;
+        width:100% !important;
+      }
+      #screen-back { display:none !important; }
+      .family-task-section { overflow:visible !important; }
+      .family-task-list,
+      .family-task-list.completed,
+      .family-task-summary-wrap {
+        width:100% !important;
+        max-width:100% !important;
+        overflow-x:auto !important;
+        overflow-y:visible !important;
+        overscroll-behavior-x:contain;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-gutter:stable;
+      }
+      .family-task-owner-control[open] .family-task-who-menu {
+        position:fixed !important;
+        top:auto !important;
+        left:auto !important;
+        margin-top:4px !important;
+        max-height:min(280px, 55vh) !important;
+        overflow-y:auto !important;
+        z-index:60000 !important;
+      }
+      .calendar-cell { white-space:pre-wrap !important; }
+      @media (max-width:899px) {
+        .family-task-list,
+        .family-task-list.completed,
+        .family-task-summary-wrap {
+          max-height:calc(100dvh - 210px) !important;
+          overflow:auto !important;
+          touch-action:pan-x pan-y !important;
+        }
+        .family-task-table { max-width:none !important; }
+      }
+ 
+      /* One complete, large-radius frame language across primary pages. */
+      :root {
+        --radius:6px;
+        --page-frame-radius:6px;
+        --page-spacing:12px;
+      }
+      #kid-views,
+      #screen-view,
+      body.subpage-active #screen-view {
+        padding:10px 16px 16px !important;
+      }
+      .tracker-workspace,
+      .family-tasks-main,
+      .calendar-main,
+      .family-tasks-card,
+      .calendar-card {
+        margin-top:0 !important;
+      }
+      .tracker-workspace,
+      .work-grid,
+      .category-config-layout,
+      .household-layout,
+      .family-tasks-app {
+        gap:var(--page-spacing) !important;
+      }
+      @media (min-width:900px) {
+        body.subpage-active .screen-bar { display:none !important; }
+      }
+      .tracker-card,
+      .panel,
+      .summary-table-wrap,
+      .category-editor,
+      .goal-band-editor,
+      .household-content .household-main {
+        border:1px solid #dfe3e7 !important;
+        border-radius:var(--page-frame-radius) !important;
+        background:#fff !important;
+        background-clip:padding-box !important;
+      }
+      .calendar-column-editor,
+      .auth-card,
+      .modal-content {
+        border-radius:var(--page-frame-radius) !important;
+      }
+      .tracker-card {
+        overflow:hidden !important;
+      }
+      .family-task-section {
+        margin:0 0 var(--page-spacing) !important;
+        overflow:visible !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+      }
+      .family-task-section .family-task-section-title,
+      .completed-tasks > summary {
+        min-height:0 !important;
+        margin:0 !important;
+        padding:0 6px 8px !important;
+        border:0 !important;
+        background:transparent !important;
+        color:#202124 !important;
+        font-size:10pt !important;
+        font-weight:700 !important;
+        line-height:1.2 !important;
+        text-transform:none !important;
+        letter-spacing:0 !important;
+      }
+      .tracker-board-section { min-width:0 !important; }
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap,
+      .completed-tasks .family-task-list {
+        border:1px solid #dfe3e7 !important;
+        border-radius:var(--page-frame-radius) !important;
+        background:#fff !important;
+        background-clip:padding-box !important;
+      }
+      .family-task-table {
+        width:100% !important;
+        min-width:969px !important;
+        max-width:none !important;
+        border-collapse:separate !important;
+        border-spacing:0 !important;
+        table-layout:fixed !important;
+      }
+      .family-task-table th,
+      .family-task-table td {
+        border-bottom:1px solid #e6ebf1 !important;
+      }
+      .family-task-table tbody tr:last-child td {
+        border-bottom:0 !important;
+      }
+      .family-task-section .family-task-list:empty {
+        min-height:44px !important;
+      }
+      .completed-tasks {
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+      }
+      .calendar-card {
+        overflow:visible !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      .calendar-head {
+        min-height:0 !important;
+        height:auto !important;
+        margin:0 !important;
+        padding:0 !important;
+        border:0 !important;
+        background:transparent !important;
+      }
+      .calendar-table-wrap {
+        border:1px solid #dfe3e7 !important;
+        border-radius:var(--page-frame-radius) !important;
+        background:#fff !important;
+        background-clip:padding-box !important;
+        overflow:auto !important;
+      }
+      .calendar-table {
+        overflow:visible !important;
+        border-radius:calc(var(--page-frame-radius) - 1px) !important;
+      }
+      .calendar-header {
+        position:sticky !important;
+        top:0 !important;
+        inset-block-start:0 !important;
+        align-self:start !important;
+        z-index:120 !important;
+        background:#f8f9fa !important;
+      }
+      .calendar-header:nth-child(1),
+      .calendar-header:nth-child(2) {
+        z-index:140 !important;
+      }
+      .tracker-card thead th,
+      .family-task-table thead th,
+      .calendar-header {
+        background:#f8f9fa !important;
+      }
+      .calendar-header,
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell {
+        height:36px !important;
+        min-height:36px !important;
+        max-height:36px !important;
+        align-self:stretch !important;
+      }
+      .calendar-cell {
+        field-sizing:fixed;
+        overflow:hidden !important;
+        white-space:pre-wrap !important;
+        overflow-wrap:anywhere !important;
+        line-height:1.25 !important;
+      }
+      .family-task-list,
+      .family-task-list.completed {
+        overflow-x:hidden !important;
+        scrollbar-gutter:auto !important;
+      }
+      .family-task-section .family-task-list,
+      .completed-tasks .family-task-list {
+        width:100% !important;
+        padding:0 !important;
+      }
+      .family-task-table {
+        width:100% !important;
+        min-width:0 !important;
+        max-width:100% !important;
+        table-layout:fixed !important;
+        box-sizing:border-box !important;
+      }
+      .family-task-table th,
+      .family-task-table td {
+        min-width:0 !important;
+        max-width:none !important;
+      }
+      .family-task-table th:nth-child(1),
+      .family-task-table td:nth-child(1) { width:13% !important; }
+      .family-task-table th:nth-child(2),
+      .family-task-table td:nth-child(2) { width:16% !important; }
+      .family-task-table th:nth-child(3),
+      .family-task-table td:nth-child(3) { width:27% !important; }
+      .family-task-table th:nth-child(4),
+      .family-task-table td:nth-child(4) { width:11% !important; }
+      .family-task-table th:nth-child(5),
+      .family-task-table td:nth-child(5) { width:11% !important; }
+      .family-task-table th:nth-child(6),
+      .family-task-table td:nth-child(6) { width:11% !important; }
+      .family-task-table th:nth-child(7),
+      .family-task-table td:nth-child(7) { width:11% !important; }
+      .family-task-table .family-task-cell {
+        width:100% !important;
+        min-width:0 !important;
+        max-width:100% !important;
+      }
+      .family-task-table .family-task-header-cell {
+        background:#f8f9fa !important;
+        white-space:normal !important;
+        overflow-wrap:anywhere !important;
+      }
+      .family-task-table thead,
+      .family-task-table thead tr,
+      .family-task-table thead th {
+        background:#f8f9fa !important;
+      }
+      .calendar-header {
+        height:34px !important;
+        min-height:34px !important;
+        max-height:34px !important;
+      }
+      .family-task-section .family-task-summary-wrap {
+        display:inline-block !important;
+        width:min(100%, 720px) !important;
+        max-width:100% !important;
+        overflow:auto !important;
+      }
+      .family-task-summary {
+        width:100% !important;
+        min-width:620px !important;
+        max-width:720px !important;
+      }
+      @media (max-width:699px) {
+        .family-task-table th:nth-child(1),
+        .family-task-table td:nth-child(1) { width:23% !important; }
+        .family-task-table th:nth-child(2),
+        .family-task-table td:nth-child(2) { width:14% !important; }
+        .family-task-table th:nth-child(3),
+        .family-task-table td:nth-child(3) { width:23% !important; }
+        .family-task-table th:nth-child(4),
+        .family-task-table td:nth-child(4) { width:10% !important; }
+        .family-task-table th:nth-child(5),
+        .family-task-table td:nth-child(5),
+        .family-task-table th:nth-child(6),
+        .family-task-table td:nth-child(6),
+        .family-task-table th:nth-child(7),
+        .family-task-table td:nth-child(7) { width:10% !important; }
+        .family-task-owner-control,
+        .family-task-owner-toggle,
+        .family-task-owner-stack {
+          width:36px !important;
+          min-width:36px !important;
+          max-width:36px !important;
+        }
+        .family-task-table .family-task-owner-cell { padding:3px !important; }
+        .family-task-owner-inline { gap:4px !important; }
+      }
+      #site-root,
+      #site-root * {
+        font-size:9pt !important;
+      }
+      #site-root .kid-name::before {
+        font-size:9pt !important;
+      }
     </style>
 </head>
-<body>
+<body id="site-root">
 <div class="auth-screen" id="auth-screen">
   <div class="auth-card">
     <h3 class="modal-title">Daily Progress</h3>
@@ -5210,16 +5546,17 @@ tbody tr.total-row > td:first-child {
       <div class="menu-wrap">
       <button class="btn menu-button" id="more-actions" aria-label="More actions"><span></span><span></span><span></span></button>
       <div class="overflow-menu" id="actions-menu">
-        <button class="menu-item" id="goal-folder">Tracker</button>
-        <button class="menu-item" id="tasks-open">Tasks</button>
-        <button class="menu-item" id="calendar-open">Calendar</button>
         <button class="menu-item" id="settings-open">Household</button>
         <button class="menu-item" id="transfer-open">Import / Export</button>
         <button class="menu-item" id="sign-out">Sign Out</button>
       </div>
       </div>
       <select id="week-select" aria-label="Week"></select>
-      <button class="btn tracker-refresh" id="tracker-refresh" type="button" title="Refresh tracker" aria-label="Refresh tracker">↻</button>
+      <nav class="app-switch" aria-label="Primary views">
+        <button class="app-switch-button active" id="app-switch-tracker" type="button" data-app-view="tracker">Tracker</button>
+        <button class="app-switch-button" id="app-switch-tasks" type="button" data-app-view="tasks">Tasks</button>
+        <button class="app-switch-button" id="app-switch-calendar" type="button" data-app-view="calendar">Calendar</button>
+      </nav>
       </div>
       <div class="tab-container" id="kid-tabs"></div>
       <div class="tracker-nav-links" id="tracker-nav-links">
@@ -5315,9 +5652,6 @@ tbody tr.total-row > td:first-child {
     </aside>
     <main class="calendar-main">
       <div class="calendar-card">
-        <div class="calendar-head">
-          <h3>Calendar</h3>
-        </div>
         <div class="calendar-column-editor collapsed" id="calendar-column-editor">
           <div class="calendar-column-editor-head">
             <span>Edit Columns</span>
@@ -5990,7 +6324,7 @@ function buildTables() {
     const container = document.getElementById(kid);
       const kidCategories = groupCategoriesByUserOrder(categoriesForKid(kid));
     const showProgressColumn = kidCategories.some(category => category.showProgress);
-    let html = `<div class="tracker-workspace"><div class="tracker-card"><div class="table-scroll"><table><thead><tr><th></th>`;
+    let html = `<div class="tracker-workspace"><section class="tracker-board-section"><div class="tracker-card"><div class="table-scroll"><table><thead><tr><th></th>`;
     days.forEach((day, i) => {
       const highlight = i === todayIndex ? "current-day" : "";
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head"><span class="day-full">${day}</span><span class="day-short">${day.slice(0,1)}</span><span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
@@ -6019,7 +6353,7 @@ function buildTables() {
     html += `<tr class="total-row"><td>Total</td>`;
     days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
     if (showProgressColumn) html += `<td></td>`;
-    html += `</tr></tbody></table></div></div>`;
+    html += `</tr></tbody></table></div></div></section>`;
     html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Tasks</span><div class="panel-actions"><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add task">+</button></div></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
     html += `<div class="panel"><div class="panel-head"><span>Log</span><div class="panel-actions"><button class="panel-add panel-edit" data-toggle-log-edit="${kid}" aria-label="Edit log entries">✎</button><button class="panel-add" data-toggle-entry="${kid}-log-entry" aria-label="Add log entry">+</button></div></div><div class="log-compose collapsed" id="${kid}-log-entry"><select id="${kid}-log-day" aria-label="Log day">${dayOptions()}</select><select id="${kid}-log-type" aria-label="Log type">${logTypeOptions()}</select><input id="${kid}-log-note" type="text" placeholder="Note"><input id="${kid}-log-outcome" type="text" placeholder="Reward, support, or next step"><button class="btn primary" data-add-log="${kid}">Log</button></div><div class="log-list" id="${kid}-logs"></div></div></div></div>`;
     container.innerHTML = html;
@@ -7802,14 +8136,28 @@ function renderCalendar() {
     html += `<div class="calendar-total${rowClasses} ${calendarTotalClass(calendarDayTotal(key), min, max)}" data-calendar-total="${key}">${calendarDayTotal(key)}</div>`;
     html += `<div class="calendar-day${rowClasses} ${isToday ? "today" : ""}">${escapeHtml(localDateLabel(date))}</div>`;
     calendarColumns.forEach(column => {
-      const value = calendarCellValue(key, column);
+      const savedValue = calendarCellValue(key, column);
+      const autoSummary = /^projects?$/i.test(column.trim()) ? calendarTaskSummary(key) : "";
+      const value = [savedValue, autoSummary].filter(Boolean).join("\n");
       const filterColor = calendarCellColor(value);
-      html += `<textarea class="calendar-cell${rowClasses} ${value.trim() ? "has-content" : ""}${filterColor ? " color-filtered" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" placeholder=""${filterColor ? ` style="--calendar-cell-color:${escapeAttr(filterColor)}"` : ""}>${escapeHtml(value)}</textarea>`;
+      html += `<textarea class="calendar-cell${rowClasses} ${value.trim() ? "has-content" : ""}${filterColor ? " color-filtered" : ""}" data-calendar-day="${key}" data-calendar-column="${escapeAttr(column)}" data-auto-summary="${escapeAttr(autoSummary)}" title="${escapeAttr(value)}" placeholder=""${filterColor ? ` style="--calendar-cell-color:${escapeAttr(filterColor)}"` : ""}>${escapeHtml(value)}</textarea>`;
     });
   });
   html += `</div>`;
   wrap.innerHTML = html;
   applyCalendarColorFilters(wrap);
+}
+ 
+function calendarTaskSummary(dayKey) {
+  return familyTasksCache
+    .filter(task => !task.completed && parseShortDate(task.endDate || "") === dayKey)
+    .map(task => {
+      const project = String(task.project || "").trim();
+      const title = String(task.title || "").trim();
+      return project && title ? `${project} — ${title}` : (title || project);
+    })
+    .filter(Boolean)
+    .join("\n");
 }
  
 function scrollCalendarToToday() {
@@ -7823,8 +8171,10 @@ function scrollCalendarToToday() {
 function syncCalendarCellToCache(cell) {
   const day = cell.dataset.calendarDay;
   const column = cell.dataset.calendarColumn;
+  cell.title = cell.value.trim();
   calendarEvents[day] = calendarEvents[day] || {};
-  const value = cell.value.trim();
+  const automaticLines = String(cell.dataset.autoSummary || "").split("\n").map(line => line.trim()).filter(Boolean);
+  const value = cell.value.split("\n").filter(line => !automaticLines.includes(line.trim())).join("\n").trim();
   if (value) calendarEvents[day][column] = value;
   else delete calendarEvents[day][column];
   if (!Object.keys(calendarEvents[day]).length) delete calendarEvents[day];
@@ -7862,7 +8212,7 @@ function refreshCalendarTotals() {
 }
  
 async function openCalendar() {
-  await loadCalendarData();
+  await Promise.all([loadCalendarData(), loadFamilyTasks()]);
   renderCalendar();
   openMainScreen("calendar-modal", "Calendar");
   requestAnimationFrame(scrollCalendarToToday);
@@ -8089,15 +8439,19 @@ function renderFamilyTaskProjectSummary(tasks) {
       : String(valueA).localeCompare(String(valueB));
     return comparison * familyTaskSummarySort.direction;
   });
-  const heatStyle = (value, limits, rgb) => {
-    const ratio = limits.max === limits.min ? (value > 0 ? 1 : 0) : (value - limits.min) / (limits.max - limits.min);
-    const alpha = (0.09 + Math.min(1, Math.max(0, ratio)) * 0.31).toFixed(3);
-    return `background:rgba(${rgb},${alpha})`;
+  const heatStyle = (value, limits) => {
+    const ratio = limits.max === limits.min ? 0 : (value - limits.min) / (limits.max - limits.min);
+    const normalized = Math.min(1, Math.max(0, ratio));
+    const hue = Math.round(120 * (1 - normalized));
+    return `background:hsl(${hue} 64% 84%);color:#202124`;
   };
-  const renderSummaryRow = row => {
+  const renderSummaryRow = (row, isTotal = false) => {
     const minDate = row.dates.length ? row.dates.slice().sort()[0] : "";
     const maxDate = row.dates.length ? row.dates.slice().sort().at(-1) : "";
-    return `<tr><td>${escapeHtml(row.project)}</td><td style="${heatStyle(row.tasks, taskRange, "103,80,164")}">${Math.round(row.tasks)}</td><td style="${heatStyle(row.hours, hourRange, "26,115,232")}">${Math.round(row.hours)}</td><td style="${heatStyle(row.cost, costRange, "24,128,56")}">$${Math.round(row.cost)}</td><td>${escapeHtml(formatShortDate(minDate) || "—")}</td><td>${escapeHtml(formatShortDate(maxDate) || "—")}</td></tr>`;
+    const taskStyle = isTotal ? "" : heatStyle(row.tasks, taskRange);
+    const hourStyle = isTotal ? "" : heatStyle(row.hours, hourRange);
+    const costStyle = isTotal ? "" : heatStyle(row.cost, costRange);
+    return `<tr${isTotal ? ` class="summary-total-row"` : ""}><td>${escapeHtml(row.project)}</td><td style="${taskStyle}">${Math.round(row.tasks)}</td><td style="${hourStyle}">${Math.round(row.hours)}</td><td style="${costStyle}">$${Math.round(row.cost)}</td><td>${escapeHtml(formatShortDate(minDate) || "—")}</td><td>${escapeHtml(formatShortDate(maxDate) || "—")}</td></tr>`;
   };
   const total = rows.reduce((sum, row) => ({project:"Total", tasks:sum.tasks + row.tasks, hours:sum.hours + row.hours, cost:sum.cost + row.cost, dates:[...sum.dates, ...row.dates]}), {tasks:0, hours:0, cost:0, dates:[]});
   const header = (field, label) => {
@@ -8105,7 +8459,7 @@ function renderFamilyTaskProjectSummary(tasks) {
     const arrow = familyTaskSummarySort.direction === 1 ? "▲" : "▼";
     return `<th><button class="family-task-summary-sort ${active ? "active" : ""}" data-family-task-summary-sort="${field}" data-sort-arrow="${active ? arrow : ""}" type="button">${label}</button></th>`;
   };
-  host.innerHTML = `<table class="family-task-summary"><thead><tr>${header("project", "Project")}${header("tasks", "Total tasks")}${header("hours", "Total hours")}${header("cost", "Total $")}${header("minDate", "Earliest date")}${header("maxDate", "Latest date")}</tr></thead><tbody>${rows.map(renderSummaryRow).join("")}${renderSummaryRow(total)}</tbody></table>`;
+  host.innerHTML = `<table class="family-task-summary"><thead><tr>${header("project", "Project")}${header("tasks", "Total tasks")}${header("hours", "Total hours")}${header("cost", "Total $")}${header("minDate", "Earliest date")}${header("maxDate", "Latest date")}</tr></thead><tbody>${rows.map(row => renderSummaryRow(row)).join("")}${renderSummaryRow(total, true)}</tbody></table>`;
 }
  
 function renderFamilyTaskList() {
@@ -8130,7 +8484,8 @@ function renderFamilyTaskList() {
       const dateStatus = taskStatusForDate(task.endDate);
       const colorClass = `status-${dateStatus}`;
       const assignees = taskAssignees(task.who).length ? taskAssignees(task.who) : [kids[0]];
-      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" list="family-task-date-options" placeholder="MM/DD/YY or Parked" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(formatShortDate(task.endDate || ""))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><input class="family-task-cell family-task-hours" type="number" min="0" step="1" data-family-task-field="hours" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.hours) || 0))}" placeholder="0" aria-label="Task time in hours"></td><td><input class="family-task-cell family-task-cost" type="number" min="0" step="1" data-family-task-field="cost" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.cost) || 0))}" placeholder="0" aria-label="Task cost"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      const dateLabel = taskHasDate(task.endDate) ? formatShortDate(task.endDate) : "Parked";
+      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" list="family-task-date-options" placeholder="Parked" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(dateLabel)}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><input class="family-task-cell family-task-hours" type="number" min="0" step="1" data-family-task-field="hours" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.hours) || 0))}" placeholder="0" aria-label="Task time in hours"></td><td><input class="family-task-cell family-task-cost" type="number" min="0" step="1" data-family-task-field="cost" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.cost) || 0))}" placeholder="0" aria-label="Task cost"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
     const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Time (hrs)</span></th><th><span class="family-task-header-cell">Cost ($)</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
@@ -8291,6 +8646,7 @@ function openMainScreen(modalId, title, backLabel = "Tracker") {
   document.getElementById("screen-content").replaceChildren(content);
   moveCurrentScreenControlsToRail();
     document.body.classList.add("subpage-active");
+    setActiveAppView(modalId === "tasks-modal" ? "tasks" : modalId === "calendar-modal" ? "calendar" : "tracker");
     document.body.classList.remove("mobile-options-open");
     document.getElementById("kid-views").style.display = "none";
   document.getElementById("kid-tabs").style.display = "none";
@@ -8339,6 +8695,7 @@ function restoreCurrentScreenControls() {
 function showTrackerScreen(restore = true) {
     if (restore) restoreScreenModal();
     document.body.classList.remove("subpage-active");
+    setActiveAppView("tracker");
     document.body.classList.remove("mobile-options-open");
   document.getElementById("screen-view")?.classList.remove("active");
   const content = document.getElementById("screen-content");
@@ -8346,6 +8703,14 @@ function showTrackerScreen(restore = true) {
   document.getElementById("kid-views").style.display = "";
   document.getElementById("kid-tabs").style.display = "";
   document.getElementById("subpage-rail")?.replaceChildren();
+}
+ 
+function setActiveAppView(view) {
+  document.querySelectorAll("[data-app-view]").forEach(button => {
+    const active = button.dataset.appView === view;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-current", active ? "page" : "false");
+  });
 }
  
 function escapeHtml(text = "") {
@@ -8717,14 +9082,22 @@ document.getElementById("tracker-summary-link")?.addEventListener("click", async
   closeActionsMenu();
   await openSummary();
 });
-document.getElementById("tasks-open").addEventListener("click", async () => {
-  closeActionsMenu();
-  await openFamilyTasks();
-});
-document.getElementById("calendar-open").addEventListener("click", async () => {
-  closeActionsMenu();
-  await openCalendar();
-});
+document.getElementById("app-switch-tracker").addEventListener("click", () => showTrackerScreen());
+document.getElementById("app-switch-tasks").addEventListener("click", openFamilyTasks);
+document.getElementById("app-switch-calendar").addEventListener("click", openCalendar);
+document.addEventListener("toggle", event => {
+  const control = event.target.closest?.(".family-task-owner-control");
+  if (!control?.open) return;
+  requestAnimationFrame(() => {
+    const toggle = control.querySelector(".family-task-owner-toggle");
+    const menu = control.querySelector(".family-task-who-menu");
+    if (!toggle || !menu) return;
+    const rect = toggle.getBoundingClientRect();
+    const menuWidth = Math.max(164, menu.offsetWidth || 164);
+    menu.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - menuWidth - 8))}px`;
+    menu.style.top = `${Math.max(8, Math.min(rect.bottom + 4, window.innerHeight - Math.min(280, menu.scrollHeight) - 8))}px`;
+  });
+}, true);
 document.getElementById("calendar-column-add").addEventListener("click", addCalendarColumnRow);
 document.getElementById("calendar-color-add").addEventListener("click", addCalendarColorRow);
 document.getElementById("calendar-column-save").addEventListener("click", saveCalendarColumns);
@@ -8736,11 +9109,6 @@ function toggleMenuSection(id, closeIds = []) {
   closeIds.forEach(closeId => document.getElementById(closeId)?.classList.remove("open"));
   section.classList.toggle("open", shouldOpen);
 }
-document.getElementById("goal-folder").addEventListener("click", event => {
-  event.stopPropagation();
-  closeActionsMenu();
-  showTrackerScreen();
-});
 document.getElementById("settings-open").addEventListener("click", () => {
   closeActionsMenu();
   openSettingsModal();
@@ -8824,7 +9192,6 @@ document.getElementById("week-select").addEventListener("change", async event =>
 document.getElementById("week-select").addEventListener("focus", () => setWeekSelectLabels(true));
 document.getElementById("week-select").addEventListener("pointerdown", () => setWeekSelectLabels(true));
 document.getElementById("week-select").addEventListener("blur", () => setWeekSelectLabels(false));
-document.getElementById("tracker-refresh").addEventListener("click", async () => refreshTrackerData(false));
 document.body.addEventListener("change", event => {
   const input = event.target.closest("[data-kid][data-day][data-type]");
   if (input) saveData(input.dataset.kid);

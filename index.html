@@ -5478,6 +5478,32 @@ tbody tr.total-row > td:first-child {
       #site-root .kid-name::before {
         font-size:9pt !important;
       }
+      @media (max-width:899px) {
+        #site-root #screen-back {
+          display:none !important;
+          visibility:hidden !important;
+        }
+        #site-root input,
+        #site-root select,
+        #site-root textarea,
+        #site-root [contenteditable="true"] {
+          font-size:16px !important;
+        }
+      }
+      @media (max-width:899px) and (orientation:portrait) {
+        #site-root .family-task-list,
+        #site-root .family-task-list.completed {
+          overflow-x:auto !important;
+          overflow-y:auto !important;
+          touch-action:pan-x pan-y !important;
+          -webkit-overflow-scrolling:touch !important;
+        }
+        #site-root .family-task-table {
+          width:760px !important;
+          min-width:760px !important;
+          max-width:none !important;
+        }
+      }
     </style>
 </head>
 <body id="site-root">

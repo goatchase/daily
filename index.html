@@ -6549,6 +6549,84 @@ tbody tr.total-row > td:first-child {
         border-radius:12px !important;
         background:#fff !important;
       }
+      /* Configuration alignment and persistent primary navigation */
+      .app-switch {
+        grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+        gap:2px !important;
+        border-radius:12px !important;
+      }
+      .app-switch-button { width:100% !important; min-width:0 !important; }
+      .tracker-nav-links { display:none !important; }
+      #category-editor .category-header,
+      #category-editor .category-row {
+        grid-template-columns:44px 118px 220px 96px 96px 72px 68px 68px 72px 76px 172px !important;
+        align-items:start !important;
+      }
+      #category-editor .category-row > * {
+        align-self:stretch !important;
+        align-items:flex-start !important;
+        justify-content:flex-start !important;
+        padding-top:8px !important;
+      }
+      #category-editor .row-tools { align-items:flex-start !important; padding-top:7px !important; }
+      #category-editor .category-header span {
+        align-items:center !important;
+        justify-content:center !important;
+        padding-top:0 !important;
+      }
+      #category-editor input,
+      #category-editor select { align-self:start !important; }
+      #category-editor .category-show-fields {
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:6px !important;
+        min-height:72px !important;
+        padding:6px !important;
+      }
+      #category-editor .category-show-fields label {
+        min-width:0 !important;
+        display:grid !important;
+        align-content:start !important;
+        gap:3px !important;
+        color:#6e6e73 !important;
+      }
+      #category-editor .category-show-fields label span { font-size:10px !important; }
+      #category-editor .category-show-fields select {
+        width:100% !important;
+        min-width:0 !important;
+        height:28px !important;
+        min-height:28px !important;
+        padding:2px 18px 2px 5px !important;
+      }
+      body.category-note-page .category-detail-side {
+        justify-items:start !important;
+        align-items:start !important;
+      }
+      body.category-note-page .category-detail-side .field {
+        width:100% !important;
+        justify-items:start !important;
+        text-align:left !important;
+      }
+      body.category-note-page .category-detail-side input,
+      body.category-note-page .category-detail-side select {
+        text-align:left !important;
+        text-align-last:left !important;
+      }
+      #site-root #category-note-goal-purpose {
+        width:100% !important;
+        height:auto !important;
+        min-height:28px !important;
+        padding:2px 0 !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        color:#17385f !important;
+        font-size:14px !important;
+        font-weight:600 !important;
+        box-shadow:none !important;
+      }
+      #site-root #category-note-goal-purpose::placeholder { color:#71869d; font-weight:500; }
+      #site-root #category-note-goal-summary { font-size:11px !important; font-weight:500 !important; color:#55708e !important; }
     </style>
 </head>
 <body id="site-root">
@@ -6625,6 +6703,8 @@ tbody tr.total-row > td:first-child {
       <select id="week-select" aria-label="Week"></select>
       <nav class="app-switch" aria-label="Primary views">
         <button class="app-switch-button active" id="app-switch-tracker" type="button" data-app-view="tracker">Tracker</button>
+        <button class="app-switch-button" id="app-switch-summary" type="button" data-app-view="summary">Summary</button>
+        <button class="app-switch-button" id="app-switch-configuration" type="button" data-app-view="configuration">Config</button>
         <button class="app-switch-button" id="app-switch-tasks" type="button" data-app-view="tasks">Tasks</button>
         <button class="app-switch-button" id="app-switch-calendar" type="button" data-app-view="calendar">Calendar</button>
       </nav>
@@ -6759,6 +6839,7 @@ tbody tr.total-row > td:first-child {
       <section class="category-note-section" aria-label="Category notes">
         <div class="category-note-goal" id="category-note-goal">
           <span class="category-note-goal-label">Goal</span>
+          <input id="category-note-goal-purpose" type="text" placeholder="Describe the purpose of this goal" aria-label="Goal purpose">
           <strong id="category-note-goal-summary">No goal set</strong>
         </div>
         <div id="category-detail-notes" class="rich-note-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Add notes, ideas, or reminders…"></div>
@@ -7164,6 +7245,7 @@ function normalizeCategory(category, index) {
     amount:Number(category.amount || 0),
     group:(category.group || defaults.group || "").trim(),
     goal:Number(category.goal ?? defaults.goal ?? 0),
+    goalPurpose:(category.goalPurpose || "").trim(),
     goalType:category.goalType === "max" ? "max" : "min",
     goalPeriod:category.goalPeriod === "daily" ? "daily" : "weekly",
     showProgress:category.showProgress === true || category.showTarget === true || category.showWeekly === true,
@@ -7922,7 +8004,7 @@ function detailedSummaryGoal(category, bucket = "week") {
 function renderDetailedSummary(kid, detail) {
   const categories = detail.categories?.length ? detail.categories : summaryCategoriesForKid(kid);
   const bucket = detail.bucket || "week";
-  let head = `<tr><th>Item</th><th>Period</th><th>Type</th><th>Goal</th>`;
+  let head = `<tr><th>Item</th><th>Type</th><th>Goal</th>`;
   detail.labels.forEach(label => { head += `<th>${label}</th>`; });
   head += `</tr>`;
   let previousGroup = "";
@@ -7931,9 +8013,8 @@ function renderDetailedSummary(kid, detail) {
     const groupClass = group && group !== previousGroup ? "group-start" : "";
     previousGroup = group;
     const goalType = category.goalType === "min" ? "Min" : "Max";
-    const goalPeriod = category.goalPeriod === "daily" ? "D" : "W";
     const adjustedGoal = detailedSummaryGoal(category, bucket);
-    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalPeriod}</td><td>${goalType}</td><td>${formatRawValue(adjustedGoal)}</td>`;
+    let html = `<tr class="${groupClass}"><td>${escapeHtml(category.label)}</td><td>${goalType}</td><td>${formatRawValue(adjustedGoal)}</td>`;
     detail.labels.forEach(label => {
       const bucket = detail.buckets[label];
       const entryCount = bucket.values[`${category.key}__count`] || 0;
@@ -8306,6 +8387,7 @@ function openCategoryDetail(key, kid = activeKid) {
   const noteEditor = document.getElementById("category-detail-notes");
   noteEditor.innerHTML = normalizeNoteHtml(category.details || "");
   normalizeNoteChecklist(noteEditor);
+  document.getElementById("category-note-goal-purpose").value = category.goalPurpose || "";
   document.getElementById("category-detail-group").value = category.group || "";
   document.getElementById("category-detail-goal-type").value = category.goalType === "max" ? "max" : "min";
   document.getElementById("category-detail-goal").value = Number(category.goal || 0);
@@ -8337,6 +8419,7 @@ async function saveCategoryDetail({refresh = false, close = false} = {}) {
     return {
       ...category,
       details:sanitizeNoteHtml(document.getElementById("category-detail-notes").innerHTML),
+      goalPurpose:document.getElementById("category-note-goal-purpose").value.trim(),
       group:document.getElementById("category-detail-group").value.trim(),
       goalType:document.getElementById("category-detail-goal-type").value,
       goal:Number(document.getElementById("category-detail-goal").value || 0),
@@ -8446,7 +8529,7 @@ function showCategoryConfigScreen(screen) {
  
 function renderCategoryEditor(kid = categoryEditorKid) {
   const editor = document.getElementById("category-editor");
-  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Tracker</span><span>Summary</span></div>`;
+  editor.innerHTML = `<div class="category-header"><span></span><span>Item</span><span>Notes</span><span>Group</span><span>Formula</span><span>Kind</span><span>Value</span><span>Goal</span><span>Type</span><span>Period</span><span>Show</span></div>`;
   const groupedCategories = groupCategoriesByUserOrder(categoriesForKid(kid));
   let previousGroup = null;
   groupedCategories.forEach(category => {
@@ -8951,6 +9034,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   row.className = "category-row";
   row.dataset.key = category.key || "";
   row.dataset.showSummary = category.showSummary === false ? "false" : "true";
+  row.dataset.goalPurpose = category.goalPurpose || "";
   const showProgress = category.showProgress === true || category.showTarget === true || category.showWeekly === true;
   row.innerHTML = `
     <div class="row-tools"><span class="drag-handle" draggable="true" aria-label="Drag row">☰</span><button class="icon-btn remove-category" type="button" aria-label="Remove">x</button></div>
@@ -8973,14 +9057,10 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
       <option value="weekly" ${category.goalPeriod === "daily" ? "" : "selected"}>Weekly</option>
       <option value="daily" ${category.goalPeriod === "daily" ? "selected" : ""}>Daily</option>
     </select>
-    <select aria-label="Show in tracker" data-field="showProgress">
-      <option value="false" ${showProgress ? "" : "selected"}>Hide</option>
-      <option value="true" ${showProgress ? "selected" : ""}>Show</option>
-    </select>
-    <select aria-label="Show in summary" data-field="showSummary">
-      <option value="false" ${category.showSummary === false ? "selected" : ""}>Hide</option>
-      <option value="true" ${category.showSummary === false ? "" : "selected"}>Show</option>
-    </select>
+    <div class="category-show-fields">
+      <label><span>Tracker</span><select aria-label="Show in tracker" data-field="showProgress"><option value="false" ${showProgress ? "" : "selected"}>Hide</option><option value="true" ${showProgress ? "selected" : ""}>Show</option></select></label>
+      <label><span>Summary</span><select aria-label="Show in summary" data-field="showSummary"><option value="false" ${category.showSummary === false ? "selected" : ""}>Hide</option><option value="true" ${category.showSummary === false ? "" : "selected"}>Show</option></select></label>
+    </div>
   `;
   editor.appendChild(row);
   return row;
@@ -8997,6 +9077,7 @@ function readCategoryEditor() {
       amount:Number(row.querySelector('[data-field="amount"]').value || 0),
       group:row.querySelector('[data-field="group"]').value.trim(),
       goal:Number(row.querySelector('[data-field="goal"]').value || 0),
+      goalPurpose:row.dataset.goalPurpose || "",
       goalType:row.querySelector('[data-field="goalType"]').value,
       goalPeriod:row.querySelector('[data-field="goalPeriod"]').value,
       showProgress:row.querySelector('[data-field="showProgress"]').value === "true",
@@ -9770,7 +9851,7 @@ function openMainScreen(modalId, title, backLabel = "Tracker") {
   document.getElementById("screen-content").replaceChildren(content);
   moveCurrentScreenControlsToRail();
     document.body.classList.add("subpage-active");
-    setActiveAppView(modalId === "tasks-modal" ? "tasks" : modalId === "calendar-modal" ? "calendar" : "tracker");
+    setActiveAppView(modalId === "tasks-modal" ? "tasks" : modalId === "calendar-modal" ? "calendar" : modalId === "summary-modal" ? "summary" : modalId === "category-modal" ? "configuration" : "tracker");
     document.body.classList.remove("mobile-options-open");
     document.getElementById("kid-views").style.display = "none";
   document.getElementById("kid-tabs").style.display = "none";
@@ -10308,9 +10389,26 @@ document.getElementById("tracker-summary-link")?.addEventListener("click", async
   closeActionsMenu();
   await openSummary();
 });
-document.getElementById("app-switch-tracker").addEventListener("click", () => showTrackerScreen());
-document.getElementById("app-switch-tasks").addEventListener("click", openFamilyTasks);
-document.getElementById("app-switch-calendar").addEventListener("click", openCalendar);
+document.getElementById("app-switch-tracker").addEventListener("click", async () => {
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail({refresh:true});
+  showTrackerScreen();
+});
+document.getElementById("app-switch-summary").addEventListener("click", async () => {
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
+  await openSummary();
+});
+document.getElementById("app-switch-configuration").addEventListener("click", async () => {
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
+  openCategoryEditor();
+});
+document.getElementById("app-switch-tasks").addEventListener("click", async () => {
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
+  await openFamilyTasks();
+});
+document.getElementById("app-switch-calendar").addEventListener("click", async () => {
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
+  await openCalendar();
+});
 document.addEventListener("toggle", event => {
   const control = event.target.closest?.(".family-task-owner-control");
   if (!control?.open) return;
@@ -10397,7 +10495,7 @@ document.getElementById("close-category-detail").addEventListener("click", async
   else closeModal("category-detail-modal");
 });
 document.getElementById("category-detail-modal").addEventListener("input", event => {
-  if (event.target.matches("#category-detail-notes, #category-detail-group, #category-detail-goal")) scheduleCategoryDetailSave();
+  if (event.target.matches("#category-detail-notes, #category-note-goal-purpose, #category-detail-group, #category-detail-goal")) scheduleCategoryDetailSave();
   if (event.target.matches("#category-detail-goal")) updateCategoryGoalSummary();
 });
 document.getElementById("category-detail-modal").addEventListener("change", event => {

@@ -6766,6 +6766,72 @@ tbody tr.total-row > td:first-child {
           z-index:40 !important;
         }
       }
+      /* Configuration as a simple table */
+      #category-editor.category-editor {
+        border:1px solid #c9c9ce !important;
+        border-radius:12px !important;
+        background:#fff !important;
+        box-shadow:none !important;
+      }
+      #category-editor .category-header,
+      #category-editor .category-row {
+        grid-template-columns:44px 118px 220px 96px 110px 76px 72px 72px 76px 80px 82px !important;
+        width:max-content !important;
+        min-width:max-content !important;
+        gap:0 !important;
+      }
+      #category-editor .category-header {
+        min-height:36px !important;
+        background:#ededf1 !important;
+        border-bottom:1px solid #bfc0c5 !important;
+      }
+      #category-editor .category-row {
+        min-height:64px !important;
+        background:#fff !important;
+        border-bottom:1px solid #d8d8dd !important;
+      }
+      #category-editor .category-row:nth-child(odd) { background:#fafafa !important; }
+      #category-editor .category-row:hover { background:#f2f6fb !important; }
+      #category-editor .category-row > *,
+      #category-editor .category-header > span {
+        min-height:inherit !important;
+        height:auto !important;
+        margin:0 !important;
+        border:0 !important;
+        border-right:1px solid #d8d8dd !important;
+        border-radius:0 !important;
+        box-shadow:none !important;
+      }
+      #category-editor .category-row > :last-child,
+      #category-editor .category-header > :last-child { border-right:0 !important; }
+      #category-editor .category-row > input,
+      #category-editor .category-row > select {
+        width:100% !important;
+        min-width:0 !important;
+        padding:7px 8px !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        line-height:1.25 !important;
+      }
+      #category-editor .category-row > input:focus,
+      #category-editor .category-row > select:focus {
+        background:#fff !important;
+        box-shadow:inset 0 0 0 2px rgba(0,113,227,.28) !important;
+      }
+      #category-editor .config-note-editor {
+        min-height:64px !important;
+        padding:7px 8px !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      #category-editor .row-tools {
+        min-height:64px !important;
+        padding:7px 4px !important;
+        background:transparent !important;
+      }
+      #category-editor .category-show-fields { display:none !important; }
     </style>
 </head>
 <body id="site-root">
@@ -9160,6 +9226,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   row.dataset.showSummary = category.showSummary === false ? "false" : "true";
   row.dataset.goalPurpose = category.goalPurpose || "";
   const showProgress = category.showProgress === true || category.showTarget === true || category.showWeekly === true;
+  const showBoth = showProgress && category.showSummary !== false;
   row.innerHTML = `
     <div class="row-tools"><span class="drag-handle" draggable="true" aria-label="Drag row">☰</span><button class="icon-btn remove-category" type="button" aria-label="Remove">x</button></div>
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
@@ -9181,10 +9248,10 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
       <option value="weekly" ${category.goalPeriod === "daily" ? "" : "selected"}>Weekly</option>
       <option value="daily" ${category.goalPeriod === "daily" ? "selected" : ""}>Daily</option>
     </select>
-    <div class="category-show-fields">
-      <label><span>Tracker</span><select aria-label="Show in tracker" data-field="showProgress"><option value="false" ${showProgress ? "" : "selected"}>Hide</option><option value="true" ${showProgress ? "selected" : ""}>Show</option></select></label>
-      <label><span>Summary</span><select aria-label="Show in summary" data-field="showSummary"><option value="false" ${category.showSummary === false ? "selected" : ""}>Hide</option><option value="true" ${category.showSummary === false ? "" : "selected"}>Show</option></select></label>
-    </div>
+    <select aria-label="Show in tracker and summary" data-field="showBoth">
+      <option value="false" ${showBoth ? "" : "selected"}>Hide</option>
+      <option value="true" ${showBoth ? "selected" : ""}>Show</option>
+    </select>
   `;
   editor.appendChild(row);
   return row;
@@ -9204,8 +9271,8 @@ function readCategoryEditor() {
       goalPurpose:row.dataset.goalPurpose || "",
       goalType:row.querySelector('[data-field="goalType"]').value,
       goalPeriod:row.querySelector('[data-field="goalPeriod"]').value,
-      showProgress:row.querySelector('[data-field="showProgress"]').value === "true",
-      showSummary:row.querySelector('[data-field="showSummary"]').value === "true",
+      showProgress:row.querySelector('[data-field="showBoth"]').value === "true",
+      showSummary:row.querySelector('[data-field="showBoth"]').value === "true",
       formula:row.querySelector('[data-field="formula"]').value.trim()
     };
   });
@@ -10739,7 +10806,6 @@ document.body.addEventListener("keydown", event => {
 });
  
 window.onload = () => {
-  showOnly("auth-screen");
   clearInterval(trackerRefreshTimer);
   trackerRefreshTimer = setInterval(() => refreshTrackerData(true), 5 * 60 * 1000);
   auth.onAuthStateChanged(async user => {

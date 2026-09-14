@@ -6705,6 +6705,67 @@ tbody tr.total-row > td:first-child {
         padding:2px 0 !important;
         line-height:20px !important;
       }
+      /* Mobile person selector: show the full initial and total. */
+      @media (max-width:899px) {
+        #kid-tabs.tab-container {
+          min-height:52px !important;
+          padding-top:5px !important;
+          padding-bottom:5px !important;
+          overflow:visible !important;
+        }
+        #site-root #kid-tabs .tab {
+          height:46px !important;
+          min-height:46px !important;
+          padding:4px 5px !important;
+          gap:2px !important;
+          overflow:visible !important;
+          justify-content:center !important;
+        }
+        #site-root #kid-tabs .kid-name {
+          height:16px !important;
+          min-height:16px !important;
+          line-height:16px !important;
+          overflow:visible !important;
+        }
+        #site-root #kid-tabs .kid-name::before {
+          font-size:12px !important;
+          line-height:16px !important;
+        }
+        #site-root #kid-tabs .rank-circle {
+          display:inline-flex !important;
+          height:20px !important;
+          min-height:20px !important;
+          width:auto !important;
+          min-width:32px !important;
+          padding:0 5px !important;
+          line-height:20px !important;
+          overflow:visible !important;
+        }
+      }
+      /* Freeze the calendar header while its rows scroll. */
+      .calendar-table-wrap {
+        position:relative !important;
+        overflow:auto !important;
+      }
+      .calendar-table { overflow:visible !important; }
+      .calendar-table > .calendar-header {
+        position:sticky !important;
+        top:0 !important;
+        z-index:30 !important;
+        background:#f2f2f5 !important;
+        box-shadow:0 1px 0 rgba(60,60,67,.18) !important;
+      }
+      @media (max-width:899px) {
+        .calendar-table-wrap {
+          max-height:calc(100dvh - 150px) !important;
+          overflow:auto !important;
+          overscroll-behavior:contain;
+        }
+        .calendar-table > .calendar-header {
+          top:0 !important;
+          z-index:40 !important;
+        }
+      }
     </style>
 </head>
 <body id="site-root">

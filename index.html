@@ -5504,6 +5504,1051 @@ tbody tr.total-row > td:first-child {
           max-width:none !important;
         }
       }
+ 
+      /* Clearer, calmer workspace hierarchy and inline rich notes. */
+      :root {
+        --bg:#f6f8fb;
+        --surface-soft:#f8fafc;
+        --line:#d9e0e8;
+        --line-strong:#b9c4d0;
+        --page-frame-radius:14px;
+      }
+      body { background:linear-gradient(135deg, #f8faff 0%, #f4f7fb 48%, #f7f9fc 100%); }
+      .top-bar {
+        border-right-color:#d8e0e9 !important;
+        box-shadow:8px 0 28px rgba(31, 47, 70, .035);
+      }
+      .tracker-card,
+      .panel,
+      .summary-table-wrap,
+      .category-editor,
+      .goal-band-editor,
+      .household-content .household-main,
+      .calendar-card,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        border-color:#d8e0e9 !important;
+        box-shadow:0 1px 2px rgba(31, 47, 70, .05), 0 10px 30px rgba(31, 47, 70, .045) !important;
+      }
+      .panel-head, .tracker-card thead th, .family-task-table th, .summary-table th {
+        background:#f8fafc !important;
+        color:#465364 !important;
+      }
+      .btn.primary {
+        background:#1769d2 !important;
+        border-color:#1769d2 !important;
+        box-shadow:0 1px 2px rgba(23,105,210,.2) !important;
+      }
+      .btn:focus-visible, .icon-btn:focus-visible, [contenteditable="true"]:focus-visible {
+        outline:2px solid rgba(26,115,232,.3) !important;
+        outline-offset:2px;
+      }
+ 
+      #category-detail-modal {
+        pointer-events:auto;
+        background:rgba(26, 34, 45, .28);
+        backdrop-filter:blur(6px);
+      }
+      #category-detail-modal .category-detail-content {
+        width:min(760px, 94vw) !important;
+        padding:0 !important;
+        overflow:hidden;
+        border:1px solid rgba(205,214,224,.95) !important;
+        border-radius:18px !important;
+        box-shadow:0 24px 80px rgba(31,47,70,.22) !important;
+      }
+      .category-detail-heading { padding:20px 22px 14px; border-bottom:1px solid #e4e9ef; }
+      .category-detail-kicker {
+        display:block;
+        margin-bottom:5px;
+        color:#1769d2;
+        font-size:9px !important;
+        font-weight:700;
+        letter-spacing:.1em;
+        text-transform:uppercase;
+      }
+      #category-detail-title { font-size:17px !important; letter-spacing:-.01em; }
+      .category-detail-layout { display:grid; grid-template-columns:minmax(0, 1fr) 172px; min-height:360px; }
+      .category-note-section { min-width:0; padding:18px 20px 22px; border-right:1px solid #e4e9ef; }
+      .note-toolbar { display:flex; gap:5px; margin-bottom:10px; }
+      .note-toolbar button {
+        width:32px;
+        height:30px;
+        border:1px solid #dce3eb;
+        border-radius:8px;
+        background:#fff;
+        color:#465364;
+      }
+      .note-toolbar button:hover { background:#eef4fc; border-color:#b8c9df; }
+      .rich-note-editor {
+        width:100%;
+        min-height:268px;
+        max-height:55vh;
+        overflow:auto;
+        padding:15px 16px;
+        border:1px solid #dce3eb;
+        border-radius:12px;
+        background:#fbfcfe;
+        color:#202124;
+        line-height:1.6;
+        white-space:pre-wrap;
+        overflow-wrap:anywhere;
+      }
+      .rich-note-editor:focus { border-color:#8ab4f8; background:#fff; box-shadow:0 0 0 3px rgba(26,115,232,.11); outline:0 !important; }
+      .rich-note-editor:empty::before, .config-note-editor:empty::before { content:attr(data-placeholder); color:#9aa3ae; pointer-events:none; }
+      .category-detail-side { padding:18px; display:flex; flex-direction:column; gap:12px; background:#f8fafc; }
+      .category-detail-side .field { gap:6px; color:#5c6775; font-size:9px !important; text-transform:uppercase; letter-spacing:.06em; }
+      .category-detail-side input, .category-detail-side select { width:100%; background:#fff; text-transform:none; letter-spacing:0; }
+      .category-detail-actions { display:grid; gap:8px; margin-top:auto; }
+      .category-detail-actions .btn { width:100%; border-radius:9px; }
+ 
+      #category-editor .category-row {
+        min-height:72px !important;
+        align-items:stretch !important;
+      }
+      #category-editor .category-row > * {
+        height:auto !important;
+        min-height:72px !important;
+      }
+      #category-editor .config-note-editor {
+        display:block !important;
+        min-height:72px !important;
+        max-height:140px !important;
+        overflow:auto !important;
+        padding:9px 10px !important;
+        border-right:1px solid #e1e7ef !important;
+        background:#fbfcfe !important;
+        line-height:1.45 !important;
+        white-space:pre-wrap !important;
+        overflow-wrap:anywhere !important;
+        text-align:left !important;
+      }
+      #category-editor .config-note-editor:focus { background:#fff !important; box-shadow:inset 0 0 0 2px rgba(26,115,232,.18) !important; outline:0 !important; }
+      @media (max-width:700px) {
+        #category-detail-modal { padding:10px; }
+        .category-detail-layout { grid-template-columns:1fr; }
+        .category-note-section { border-right:0; border-bottom:1px solid #e4e9ef; }
+        .rich-note-editor { min-height:220px; }
+        .category-detail-side { display:grid; grid-template-columns:1fr 1fr; }
+        .category-detail-actions { grid-column:1 / -1; grid-template-columns:1fr 1fr; }
+      }
+ 
+      /* Final seamless surfaces. Scrolling remains available without visual rails. */
+      * { scrollbar-width:none; }
+      *::-webkit-scrollbar { width:0; height:0; display:none; }
+      body { color:#1d232d; }
+      input, select, textarea {
+        border-color:#d9e0e8;
+        border-radius:9px;
+        transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+      }
+      .tracker-card, .panel, .category-editor, .goal-band-editor,
+      .household-content .household-main, .calendar-card,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        box-shadow:0 1px 2px rgba(25,39,58,.045), 0 8px 24px rgba(25,39,58,.035) !important;
+      }
+      .config-nav, .family-filter-pill, .btn, .icon-btn, .panel-add, .mini-action {
+        transition:background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+      }
+      .btn:active, .icon-btn:active, .panel-add:active, .mini-action:active { transform:scale(.97); }
+ 
+      #category-detail-modal { background:rgba(42,50,61,.16); backdrop-filter:blur(10px) saturate(110%); }
+      #category-detail-modal .category-detail-content {
+        width:min(720px, 94vw) !important;
+        border-color:rgba(209,217,227,.86) !important;
+        border-radius:22px !important;
+        box-shadow:0 28px 90px rgba(24,35,52,.18), 0 2px 8px rgba(24,35,52,.08) !important;
+      }
+      .category-detail-heading {
+        min-height:64px;
+        padding:18px 22px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:16px;
+        border-bottom:0;
+      }
+      #category-detail-title { font-size:18px !important; font-weight:650 !important; }
+      .category-save-status { color:#8a929d; font-size:9px !important; }
+      .category-detail-layout { min-height:330px; grid-template-columns:minmax(0,1fr) 164px; border-top:1px solid #edf0f4; }
+      .category-note-section { padding:12px 18px 18px; border-right:0; }
+      .note-toolbar { margin:0 0 8px; }
+      .note-toolbar .checklist-button {
+        width:auto;
+        height:29px;
+        padding:0 10px;
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        border:0;
+        border-radius:8px;
+        background:transparent;
+        color:#6d7682;
+        font-size:9px !important;
+        font-weight:600;
+      }
+      .note-toolbar .checklist-button:hover { background:#f1f4f8; border-color:transparent; color:#263445; }
+      .checklist-icon { width:15px; height:15px; display:grid; place-items:center; border:1px solid #9aa5b1; border-radius:4px; font-size:8px !important; }
+      .rich-note-editor {
+        min-height:250px;
+        padding:10px 8px;
+        border:0;
+        border-radius:8px;
+        background:transparent;
+        font-size:10pt !important;
+        line-height:1.65;
+      }
+      .rich-note-editor:focus { border:0; background:#fafbfd; box-shadow:none; outline:0 !important; }
+      .note-check-item { display:grid; grid-template-columns:20px minmax(0,1fr); align-items:start; gap:4px; min-height:27px; }
+      .note-check-item input[type="checkbox"] {
+        appearance:none;
+        width:16px;
+        min-width:16px;
+        height:16px;
+        min-height:16px;
+        margin:4px 0 0;
+        padding:0;
+        border:1.5px solid #9aa5b1;
+        border-radius:5px;
+        background:#fff;
+      }
+      .note-check-item input[type="checkbox"]:checked { border-color:#1769d2; background:#1769d2; }
+      .note-check-item input[type="checkbox"]:checked::after { content:"✓"; display:grid; place-items:center; color:#fff; font-size:10px; line-height:14px; }
+      .note-check-item:has(input:checked) span { color:#8a929d; text-decoration:line-through; }
+      .note-header {
+        min-height:30px;
+        margin:12px 0 4px;
+        padding:3px 0;
+        color:#182230;
+        font-size:11pt !important;
+        line-height:1.35;
+      }
+      .note-header:first-child { margin-top:0; }
+      .note-header strong { font-weight:700; }
+      .category-detail-side { margin:12px 12px 12px 0; padding:14px; border-radius:14px; background:#f6f8fb; }
+      .category-detail-actions .btn { min-height:36px; background:#fff; }
+ 
+      .tracker-card tbody tr.total-row > td { background:transparent !important; }
+      .total-bubble, .tracker-card .goal-progress-cell .goal-percent {
+        display:inline-flex !important;
+        align-items:center;
+        justify-content:center;
+        min-width:38px;
+        min-height:23px;
+        padding:3px 7px;
+        border-radius:999px !important;
+        font-weight:600 !important;
+        font-variant-numeric:tabular-nums;
+        line-height:1;
+      }
+      .tracker-card .goal-progress-cell .goal-percent.summary-goal-blue { background:#7daaf0 !important; color:#082c60 !important; }
+      .tracker-card .goal-progress-cell .goal-percent.summary-goal-green { background:#75c58d !important; color:#083b19 !important; }
+      .tracker-card .goal-progress-cell .goal-percent.summary-goal-yellow { background:#f3d36e !important; color:#584000 !important; }
+      .tracker-card .goal-progress-cell .goal-percent.summary-goal-orange { background:#efb86e !important; color:#5b2d00 !important; }
+      .tracker-card .goal-progress-cell .goal-percent.summary-goal-red { background:#e9857d !important; color:#59120e !important; }
+      .tracker-card .goal-progress-cell .goal-percent.summary-goal-gray { background:#cfd5dc !important; color:#303842 !important; }
+ 
+      /* Stronger neutral separation without making the interface heavy. */
+      :root {
+        --bg:#eef2f6;
+        --surface-soft:#f3f5f8;
+        --line:#cbd3dc;
+        --line-strong:#aeb9c5;
+        --muted:#505a66;
+      }
+      .site-container { background:#eef2f6 !important; }
+      .top-bar { border-right-color:#c5ced8 !important; }
+      .tracker-card, .panel, .summary-table-wrap, .category-editor,
+      .goal-band-editor, .household-content .household-main, .calendar-card,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        border-color:#c7d0da !important;
+        box-shadow:0 1px 2px rgba(25,39,58,.08), 0 9px 26px rgba(25,39,58,.06) !important;
+      }
+      .tracker-card th, .tracker-card td,
+      .family-task-table th, .family-task-table td,
+      .summary-table th, .summary-table td {
+        border-color:#d0d7df !important;
+      }
+      .panel-head, .tracker-card thead th, .family-task-table th, .summary-table th {
+        background:#edf1f5 !important;
+      }
+      .category-side .config-nav, .category-side .side-field,
+      .category-side .import-bubble, .family-filter-block {
+        border-color:#c7d0da !important;
+      }
+      @media (max-width:700px) {
+        .category-detail-layout { grid-template-columns:1fr; }
+        .category-note-section { border-bottom:0; }
+        .category-detail-side { margin:0 12px 12px; grid-template-columns:1fr 1fr; }
+        .category-detail-actions { grid-template-columns:1fr; }
+      }
+      /* Unified Apple-inspired interface */
+      :root {
+        --bg:#f5f5f7;
+        --surface:#ffffff;
+        --surface-soft:#f7f7f9;
+        --ink:#1d1d1f;
+        --muted:#6e6e73;
+        --line:#d2d2d7;
+        --line-strong:#aeb0b5;
+        --blue:#0071e3;
+        --blue-soft:#e8f2ff;
+        --radius:14px;
+        --page-frame-radius:14px;
+        --page-spacing:16px;
+        --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      }
+      html, body, button, input, select, textarea, table { font-family:var(--font) !important; }
+      body {
+        background:#f5f5f7 !important;
+        color:#1d1d1f !important;
+        letter-spacing:-.006em;
+      }
+      .site-container { background:#f5f5f7 !important; }
+      .top-bar {
+        background:rgba(250,250,252,.88) !important;
+        border-right:1px solid rgba(60,60,67,.18) !important;
+        box-shadow:none !important;
+        backdrop-filter:saturate(180%) blur(22px);
+      }
+      .menu-button, .profile-button, .icon-btn, .panel-add, .mini-action {
+        border-color:transparent !important;
+        background:transparent !important;
+      }
+      .menu-button:hover, .profile-button:hover, .icon-btn:hover, .panel-add:hover, .mini-action:hover {
+        background:rgba(118,118,128,.12) !important;
+      }
+      #week-select, .app-switch {
+        border-color:rgba(60,60,67,.18) !important;
+        background:rgba(118,118,128,.09) !important;
+      }
+      .app-switch-button.active {
+        background:#fff !important;
+        color:#1d1d1f !important;
+        box-shadow:0 1px 4px rgba(0,0,0,.14) !important;
+      }
+      .tab-container { gap:4px !important; }
+      .tab {
+        min-height:38px !important;
+        border:0 !important;
+        border-radius:10px !important;
+        color:#515154 !important;
+        background:transparent !important;
+      }
+      .tab:hover { background:rgba(118,118,128,.09) !important; }
+      .tab.active {
+        background:#e8e8ed !important;
+        color:#1d1d1f !important;
+        box-shadow:none !important;
+      }
+      .config-nav, .family-filter-pill {
+        border:0 !important;
+        border-radius:10px !important;
+        background:transparent !important;
+      }
+      .config-nav:hover, .family-filter-pill:hover { background:#ededf0 !important; }
+      .config-nav.active, .family-filter-pill.active { background:#e8f2ff !important; color:#0066cc !important; }
+      #kid-views, #screen-view, body.subpage-active #screen-view { padding:18px 22px 24px !important; }
+      .tracker-workspace, .work-grid, .category-config-layout, .household-layout, .family-tasks-app { gap:16px !important; }
+      .tracker-card, .panel, .summary-table-wrap, .category-editor,
+      .goal-band-editor, .household-content .household-main, .calendar-card,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        border:1px solid rgba(60,60,67,.16) !important;
+        border-radius:14px !important;
+        background:#fff !important;
+        box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.035) !important;
+      }
+      .panel { padding:16px !important; }
+      .panel-head, .tracker-card thead th, .family-task-table th, .summary-table th {
+        background:#f7f7f9 !important;
+        color:#515154 !important;
+      }
+      .tracker-card th, .tracker-card td,
+      .family-task-table th, .family-task-table td,
+      .summary-table th, .summary-table td {
+        border-color:rgba(60,60,67,.14) !important;
+      }
+      .tracker-card tbody tr:hover td { background:#fafafa !important; }
+      input, select, textarea {
+        border:1px solid rgba(60,60,67,.22) !important;
+        border-radius:9px !important;
+        background:#fff !important;
+        color:#1d1d1f !important;
+        box-shadow:none !important;
+      }
+      input:focus, select:focus, textarea:focus {
+        border-color:#0071e3 !important;
+        box-shadow:0 0 0 3px rgba(0,113,227,.14) !important;
+      }
+      .btn {
+        min-height:34px !important;
+        border:0 !important;
+        border-radius:999px !important;
+        background:#e8e8ed !important;
+        color:#1d1d1f !important;
+        font-weight:600 !important;
+        box-shadow:none !important;
+      }
+      .btn:hover { background:#dddde2 !important; }
+      .btn.primary {
+        background:#0071e3 !important;
+        color:#fff !important;
+        border-color:#0071e3 !important;
+        box-shadow:none !important;
+      }
+      .btn.primary:hover { background:#0077ed !important; }
+      .category-side .config-nav, .category-side .side-field,
+      .category-side .import-bubble, .family-filter-block {
+        border-color:rgba(60,60,67,.16) !important;
+        background:#fff !important;
+      }
+      #category-detail-modal {
+        background:rgba(0,0,0,.18) !important;
+        backdrop-filter:saturate(150%) blur(18px) !important;
+      }
+      #category-detail-modal .category-detail-content {
+        border:1px solid rgba(255,255,255,.7) !important;
+        border-radius:22px !important;
+        background:rgba(255,255,255,.96) !important;
+        box-shadow:0 28px 80px rgba(0,0,0,.22) !important;
+        backdrop-filter:blur(28px) saturate(170%);
+      }
+      .category-detail-heading { border-bottom:1px solid rgba(60,60,67,.12) !important; }
+      .category-detail-layout { border-top:0 !important; }
+      .category-detail-side { background:#f5f5f7 !important; }
+      .rich-note-editor:focus { background:#fafafa !important; box-shadow:none !important; }
+      .note-check-item input[type="checkbox"] { border-color:#8e8e93 !important; }
+      .note-check-item input[type="checkbox"]:checked { border-color:#0071e3 !important; background:#0071e3 !important; }
+      .total-bubble, .tracker-card .goal-progress-cell .goal-percent {
+        box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);
+      }
+      @media (max-width:899px) {
+        #kid-views, #screen-view, body.subpage-active #screen-view { padding:12px !important; }
+        .tracker-workspace, .work-grid, .category-config-layout, .household-layout, .family-tasks-app { gap:12px !important; }
+      }
+      /* Apple-style precision pass: unified type, rhythm, geometry, and depth. */
+      :root {
+        --control-height:36px;
+        --compact-height:32px;
+        --content-radius:16px;
+        --apple-shadow:0 2px 6px rgba(0,0,0,.06), 0 14px 38px rgba(0,0,0,.07);
+      }
+      #site-root, #site-root * { font-size:13px !important; }
+      #site-root .modal-title,
+      #site-root .family-tasks-head h3 { font-size:19px !important; line-height:1.2 !important; letter-spacing:-.025em !important; }
+      #site-root .screen-bar h2,
+      #site-root .screen-title { font-size:20px !important; line-height:1.2 !important; letter-spacing:-.025em !important; }
+      #site-root .panel-head,
+      #site-root .goal-band-head,
+      #site-root .family-filter-title { font-size:13px !important; font-weight:650 !important; letter-spacing:-.01em !important; }
+      #site-root th,
+      #site-root .field,
+      #site-root .side-field > span,
+      #site-root .import-bubble > span { font-size:12px !important; font-weight:600 !important; letter-spacing:-.005em !important; }
+      #site-root td,
+      #site-root input,
+      #site-root select,
+      #site-root textarea,
+      #site-root button,
+      #site-root [contenteditable="true"] { font-size:13px !important; line-height:1.35 !important; }
+      #site-root input:not([type="checkbox"]),
+      #site-root select,
+      #site-root .btn,
+      #site-root .config-nav,
+      #site-root .family-filter-pill {
+        height:var(--control-height) !important;
+        min-height:var(--control-height) !important;
+      }
+      #site-root .icon-btn,
+      #site-root .panel-add,
+      #site-root .mini-action {
+        width:var(--compact-height) !important;
+        min-width:var(--compact-height) !important;
+        height:var(--compact-height) !important;
+        min-height:var(--compact-height) !important;
+        padding:0 !important;
+      }
+      #kid-views, #screen-view, body.subpage-active #screen-view {
+        padding:24px 28px 30px !important;
+      }
+      .tracker-workspace, .work-grid, .category-config-layout,
+      .household-layout, .family-tasks-app { gap:18px !important; }
+      .tracker-card, .panel, .summary-table-wrap, .category-editor,
+      .goal-band-editor, .household-content .household-main, .calendar-card,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        border:1px solid rgba(60,60,67,.2) !important;
+        border-radius:var(--content-radius) !important;
+        box-shadow:var(--apple-shadow) !important;
+      }
+      .panel { padding:18px !important; }
+      .panel-head { min-height:38px !important; padding:0 2px 10px !important; }
+      .tracker-card thead th { height:46px !important; min-height:46px !important; vertical-align:middle !important; }
+      .tracker-card tbody td { height:42px !important; min-height:42px !important; vertical-align:middle !important; }
+      .tracker-card th:first-child,
+      .tracker-card td:first-child { padding-left:14px !important; padding-right:12px !important; }
+      .tracker-card th:not(:first-child),
+      .tracker-card td:not(:first-child) { text-align:center !important; }
+      .category-label { min-height:30px !important; display:flex !important; align-items:center !important; }
+      .top-controls { gap:8px !important; row-gap:14px !important; }
+      .tab-container { gap:6px !important; }
+      .tab { min-height:42px !important; padding:6px 10px !important; }
+ 
+      /* Totals use the entire cell on both axes. */
+      .tracker-card tbody tr.total-row > td,
+      .tracker-card td.goal-progress-cell {
+        border-radius:0 !important;
+        font-weight:650 !important;
+        font-variant-numeric:tabular-nums;
+      }
+      .tracker-card tbody tr.total-row > td.summary-goal-blue,
+      .tracker-card td.goal-progress-cell.summary-goal-blue { background:#9ec5ff !important; color:#05336d !important; }
+      .tracker-card tbody tr.total-row > td.summary-goal-green,
+      .tracker-card td.goal-progress-cell.summary-goal-green { background:#9bd8aa !important; color:#0b4420 !important; }
+      .tracker-card tbody tr.total-row > td.summary-goal-yellow,
+      .tracker-card td.goal-progress-cell.summary-goal-yellow { background:#ffe58a !important; color:#5c4500 !important; }
+      .tracker-card tbody tr.total-row > td.summary-goal-orange,
+      .tracker-card td.goal-progress-cell.summary-goal-orange { background:#ffc982 !important; color:#603400 !important; }
+      .tracker-card tbody tr.total-row > td.summary-goal-red,
+      .tracker-card td.goal-progress-cell.summary-goal-red { background:#ffaaa4 !important; color:#631713 !important; }
+      .tracker-card tbody tr.total-row > td.summary-goal-gray,
+      .tracker-card td.goal-progress-cell.summary-goal-gray { background:#d9d9de !important; color:#3a3a3c !important; }
+      .tracker-card tbody tr.total-row > td:first-child {
+        background:#e8e8ed !important;
+        color:#1d1d1f !important;
+      }
+ 
+      /* More dimensional, Apple-like surfaces and controls. */
+      .top-bar {
+        background:rgba(248,248,250,.9) !important;
+        box-shadow:1px 0 0 rgba(255,255,255,.75), 8px 0 30px rgba(0,0,0,.045) !important;
+      }
+      .tracker-card, .panel, .calendar-card,
+      .household-content .household-main { background:linear-gradient(180deg,#fff 0%,#fdfdfd 100%) !important; }
+      .tracker-card thead th, .family-task-table th, .summary-table th {
+        background:linear-gradient(180deg,#fafafa 0%,#f2f2f5 100%) !important;
+      }
+      .btn.primary {
+        background:linear-gradient(180deg,#0a84ff 0%,#0071e3 100%) !important;
+        box-shadow:0 1px 1px rgba(255,255,255,.28) inset, 0 4px 12px rgba(0,113,227,.2) !important;
+      }
+      .btn:not(.primary) { box-shadow:0 1px 1px rgba(255,255,255,.8) inset !important; }
+      #category-detail-modal .category-detail-content {
+        box-shadow:0 32px 90px rgba(0,0,0,.25), 0 2px 10px rgba(0,0,0,.1) !important;
+      }
+      @media (max-width:899px) {
+        #kid-views, #screen-view, body.subpage-active #screen-view { padding:14px !important; }
+        .tracker-workspace, .work-grid, .category-config-layout,
+        .household-layout, .family-tasks-app { gap:12px !important; }
+      }
+      /* Integrated category note page */
+      body.category-note-page #screen-view {
+        display:block !important;
+        padding:20px 28px 32px !important;
+      }
+      body.category-note-page .screen-bar {
+        display:flex !important;
+        width:min(100%, 980px) !important;
+        min-height:44px !important;
+        margin:0 auto 14px !important;
+        align-items:center !important;
+      }
+      body.category-note-page #screen-back {
+        display:inline-flex !important;
+        visibility:visible !important;
+        align-items:center !important;
+        justify-content:center !important;
+        width:auto !important;
+        height:36px !important;
+        min-height:36px !important;
+        padding:0 14px !important;
+        border:1px solid rgba(60,60,67,.16) !important;
+        border-radius:999px !important;
+        background:#fff !important;
+        color:#1d1d1f !important;
+        box-shadow:0 1px 3px rgba(0,0,0,.06) !important;
+      }
+      body.category-note-page #screen-back::before { content:"‹"; margin-right:6px; font-size:19px !important; line-height:1; }
+      body.category-note-page #screen-content {
+        display:block !important;
+        width:100% !important;
+      }
+      body.category-note-page #screen-content > .category-detail-content {
+        display:block !important;
+        width:min(100%, 980px) !important;
+        max-width:980px !important;
+        min-height:calc(100vh - 132px) !important;
+        max-height:none !important;
+        margin:0 auto !important;
+        padding:0 !important;
+        overflow:hidden !important;
+        border:1px solid rgba(60,60,67,.16) !important;
+        border-radius:18px !important;
+        background:#fff !important;
+        box-shadow:0 2px 5px rgba(0,0,0,.05), 0 18px 50px rgba(0,0,0,.06) !important;
+      }
+      body.category-note-page .category-detail-heading {
+        min-height:72px !important;
+        padding:18px 24px !important;
+        border-bottom:1px solid rgba(60,60,67,.12) !important;
+      }
+      body.category-note-page #category-detail-title { font-size:22px !important; }
+      body.category-note-page .category-save-status {
+        padding:5px 9px;
+        border-radius:999px;
+        background:#f2f2f4;
+        color:#6e6e73;
+      }
+      body.category-note-page .category-detail-layout {
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) 224px !important;
+        min-height:calc(100vh - 205px) !important;
+        border:0 !important;
+      }
+      body.category-note-page .category-note-section {
+        min-width:0 !important;
+        padding:24px 28px 34px !important;
+        border:0 !important;
+      }
+      body.category-note-page .rich-note-editor {
+        min-height:calc(100vh - 280px) !important;
+        max-height:none !important;
+        padding:8px 10px !important;
+        border:0 !important;
+        border-radius:12px !important;
+        background:#fff !important;
+        font-size:14px !important;
+        line-height:1.7 !important;
+      }
+      body.category-note-page .rich-note-editor:focus { background:#fafafa !important; }
+      body.category-note-page .category-detail-side {
+        align-self:stretch !important;
+        margin:0 !important;
+        padding:24px 20px !important;
+        gap:16px !important;
+        border-left:1px solid rgba(60,60,67,.12) !important;
+        border-radius:0 !important;
+        background:#f8f8fa !important;
+      }
+      body.category-note-page .category-detail-side .field {
+        gap:7px !important;
+        color:#6e6e73 !important;
+        font-size:11px !important;
+        letter-spacing:.01em !important;
+        text-transform:none !important;
+      }
+      body.category-note-page .category-detail-side input,
+      body.category-note-page .category-detail-side select {
+        width:100% !important;
+        height:38px !important;
+        min-height:38px !important;
+        padding:0 11px !important;
+        border-color:rgba(60,60,67,.18) !important;
+        background:#fff !important;
+      }
+      body.category-note-page .category-detail-actions { display:none !important; }
+ 
+      /* Tracker companion panels share one exact rhythm and frame. */
+      .tracker-workspace { align-items:start !important; }
+      .work-grid {
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) !important;
+        align-items:stretch !important;
+        gap:18px !important;
+        width:100% !important;
+        margin:0 !important;
+        padding:0 !important;
+      }
+      .work-grid .panel {
+        width:100% !important;
+        min-width:0 !important;
+        margin:0 !important;
+        padding:18px !important;
+        border-radius:16px !important;
+      }
+      .work-grid .panel-head {
+        width:100% !important;
+        min-height:36px !important;
+        margin:0 !important;
+        padding:0 0 12px !important;
+      }
+      .work-grid .task-list,
+      .work-grid .log-list,
+      .work-grid .entry-row,
+      .work-grid .log-compose { width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+      @media (max-width:760px) {
+        body.category-note-page #screen-view { padding:12px !important; }
+        body.category-note-page .screen-bar { margin-bottom:10px !important; }
+        body.category-note-page #screen-content > .category-detail-content { min-height:calc(100vh - 98px) !important; border-radius:15px !important; }
+        body.category-note-page .category-detail-layout { grid-template-columns:1fr !important; }
+        body.category-note-page .category-note-section { padding:18px !important; }
+        body.category-note-page .category-detail-side {
+          display:grid !important;
+          grid-template-columns:1fr 1fr !important;
+          padding:18px !important;
+          border-left:0 !important;
+          border-top:1px solid rgba(60,60,67,.12) !important;
+        }
+      }
+      /* Consistent geometry and spacing system */
+      :root {
+        --ui-row:36px;
+        --ui-header:40px;
+        --ui-control:34px;
+        --ui-pill:28px;
+        --ui-gap:16px;
+        --ui-page-inset:24px;
+      }
+      body.category-note-page #kid-tabs {
+        display:grid !important;
+        visibility:visible !important;
+      }
+      #kid-views, #screen-view, body.subpage-active #screen-view {
+        padding:var(--ui-page-inset) !important;
+      }
+      .tracker-workspace, .work-grid, .category-config-layout,
+      .household-layout, .family-tasks-app { gap:var(--ui-gap) !important; }
+ 
+      #site-root table th {
+        height:var(--ui-header) !important;
+        min-height:var(--ui-header) !important;
+        padding:5px 8px !important;
+        line-height:1.2 !important;
+        vertical-align:middle !important;
+      }
+      #site-root table td {
+        height:var(--ui-row) !important;
+        min-height:var(--ui-row) !important;
+        padding:4px 8px !important;
+        line-height:1.25 !important;
+        vertical-align:middle !important;
+      }
+      #site-root input:not([type="checkbox"]):not([type="color"]),
+      #site-root select,
+      #site-root .btn,
+      #site-root .config-nav,
+      #site-root .family-filter-pill {
+        height:var(--ui-control) !important;
+        min-height:var(--ui-control) !important;
+      }
+      #site-root .rank-circle,
+      #site-root .goal-percent,
+      #site-root .total-bubble,
+      #site-root .family-task-status,
+      #site-root .family-task-who,
+      #site-root .person-bubble {
+        min-height:var(--ui-pill) !important;
+        height:var(--ui-pill) !important;
+        padding-top:0 !important;
+        padding-bottom:0 !important;
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        line-height:1 !important;
+      }
+      #site-root .icon-btn,
+      #site-root .panel-add,
+      #site-root .mini-action {
+        width:var(--ui-control) !important;
+        min-width:var(--ui-control) !important;
+        height:var(--ui-control) !important;
+        min-height:var(--ui-control) !important;
+      }
+      #site-root .tab {
+        height:var(--ui-header) !important;
+        min-height:var(--ui-header) !important;
+        padding:0 11px !important;
+        display:flex !important;
+        align-items:center !important;
+      }
+      #site-root .category-row:not(:has(.config-note-editor)),
+      #site-root #member-editor .category-row {
+        min-height:var(--ui-row) !important;
+      }
+      #site-root #member-editor .category-row > * {
+        height:var(--ui-row) !important;
+        min-height:var(--ui-row) !important;
+      }
+ 
+      .tracker-workspace {
+        width:100% !important;
+        margin:0 auto !important;
+        align-items:start !important;
+      }
+      .work-grid {
+        align-self:center !important;
+        gap:var(--ui-gap) !important;
+        padding:0 !important;
+      }
+      .work-grid .panel {
+        padding:0 !important;
+        overflow:hidden !important;
+      }
+      .work-grid .panel-head {
+        box-sizing:border-box !important;
+        width:100% !important;
+        height:48px !important;
+        min-height:48px !important;
+        margin:0 !important;
+        padding:0 16px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:space-between !important;
+        border-bottom:1px solid rgba(60,60,67,.12) !important;
+        background:#f8f8fa !important;
+      }
+      .work-grid .task-list,
+      .work-grid .log-list {
+        width:100% !important;
+        margin:0 !important;
+        padding:12px 16px 16px !important;
+      }
+      .work-grid .entry-row,
+      .work-grid .log-compose {
+        width:auto !important;
+        margin:12px 16px 0 !important;
+        padding:0 !important;
+      }
+      .work-grid .empty-state {
+        min-height:var(--ui-row) !important;
+        padding:10px 0 !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+      }
+      body.category-note-page .screen-bar,
+      body.category-note-page #screen-content > .category-detail-content {
+        width:min(100%, 980px) !important;
+      }
+      body.category-note-page .screen-bar { padding:0 !important; }
+      @media (max-width:899px) {
+        :root { --ui-page-inset:12px; --ui-gap:12px; }
+        .work-grid { align-self:stretch !important; }
+      }
+      .category-note-goal {
+        min-height:64px;
+        margin:0 0 18px;
+        padding:13px 16px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        gap:4px;
+        border:1px solid rgba(0,113,227,.18);
+        border-radius:14px;
+        background:linear-gradient(145deg, #f4f9ff 0%, #eaf3ff 100%);
+        box-shadow:0 5px 18px rgba(0,113,227,.07);
+      }
+      #site-root .category-note-goal-label {
+        color:#0071e3;
+        font-size:11px !important;
+        font-weight:650;
+        letter-spacing:.02em;
+        text-transform:uppercase;
+      }
+      #site-root #category-note-goal-summary {
+        color:#17385f;
+        font-size:15px !important;
+        font-weight:650;
+        letter-spacing:-.012em;
+      }
+      /* Compact Apple density pass */
+      :root {
+        --ui-row:32px;
+        --ui-header:36px;
+        --ui-control:32px;
+        --ui-pill:24px;
+        --ui-gap:12px;
+        --ui-page-inset:16px;
+        --content-radius:13px;
+      }
+      #site-root, #site-root * { font-size:12px !important; }
+      #site-root .modal-title,
+      #site-root .family-tasks-head h3 { font-size:17px !important; }
+      #site-root .screen-bar h2,
+      #site-root .screen-title { font-size:18px !important; }
+      #site-root .panel-head,
+      #site-root .goal-band-head,
+      #site-root .family-filter-title { font-size:12px !important; }
+      #site-root th,
+      #site-root .field,
+      #site-root .side-field > span,
+      #site-root .import-bubble > span { font-size:11px !important; }
+      #site-root td,
+      #site-root input,
+      #site-root select,
+      #site-root textarea,
+      #site-root button,
+      #site-root [contenteditable="true"] { font-size:12px !important; }
+ 
+      #site-root .app-switch-button,
+      #site-root .tab,
+      #site-root .config-nav,
+      #site-root .family-filter-pill,
+      #site-root .btn,
+      #site-root input:not([type="checkbox"]):not([type="color"]),
+      #site-root select {
+        height:var(--ui-control) !important;
+        min-height:var(--ui-control) !important;
+      }
+      #site-root .app-switch-button,
+      #site-root .tab,
+      #site-root .config-nav,
+      #site-root .family-filter-pill {
+        padding-top:0 !important;
+        padding-bottom:0 !important;
+        display:flex !important;
+        align-items:center !important;
+      }
+      #site-root .app-switch-button { justify-content:center !important; }
+      #site-root .icon-btn,
+      #site-root .panel-add,
+      #site-root .mini-action {
+        width:28px !important;
+        min-width:28px !important;
+        height:28px !important;
+        min-height:28px !important;
+      }
+      #site-root table th {
+        height:var(--ui-header) !important;
+        min-height:var(--ui-header) !important;
+        padding:4px 7px !important;
+      }
+      #site-root table td {
+        height:var(--ui-row) !important;
+        min-height:var(--ui-row) !important;
+        padding:3px 7px !important;
+      }
+      #kid-views, #screen-view, body.subpage-active #screen-view {
+        padding:var(--ui-page-inset) !important;
+      }
+      .tracker-workspace, .work-grid, .category-config-layout,
+      .household-layout, .family-tasks-app { gap:var(--ui-gap) !important; }
+      .tracker-card, .panel, .summary-table-wrap, .category-editor,
+      .goal-band-editor, .household-content .household-main,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap,
+      .calendar-card {
+        border-radius:var(--content-radius) !important;
+        box-shadow:0 1px 3px rgba(0,0,0,.055), 0 8px 22px rgba(0,0,0,.045) !important;
+      }
+      .work-grid { gap:var(--ui-gap) !important; }
+      .work-grid .panel-head {
+        height:40px !important;
+        min-height:40px !important;
+        padding:0 12px !important;
+      }
+      .work-grid .task-list,
+      .work-grid .log-list { padding:8px 12px 12px !important; }
+      .work-grid .entry-row,
+      .work-grid .log-compose { margin:8px 12px 0 !important; }
+ 
+      /* One continuous task header band. */
+      .family-task-table {
+        border-collapse:separate !important;
+        border-spacing:0 !important;
+      }
+      .family-task-table thead,
+      .family-task-table .family-task-header {
+        background:linear-gradient(180deg,#f8f8fa 0%,#ededf1 100%) !important;
+      }
+      .family-task-table .family-task-header th,
+      .family-task-table .family-task-header-cell {
+        height:var(--ui-header) !important;
+        min-height:var(--ui-header) !important;
+        margin:0 !important;
+        padding:0 7px !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        display:flex !important;
+        align-items:center !important;
+      }
+      .family-task-table .family-task-header th {
+        display:table-cell !important;
+        vertical-align:middle !important;
+      }
+      .family-task-table .family-task-header-cell {
+        display:flex !important;
+        width:100% !important;
+      }
+ 
+      /* The calendar uses a single outer frame. */
+      .calendar-card {
+        overflow:hidden !important;
+        border:1px solid rgba(60,60,67,.18) !important;
+        background:#fff !important;
+      }
+      .calendar-table-wrap {
+        border:0 !important;
+        border-radius:0 !important;
+        box-shadow:none !important;
+        background:transparent !important;
+      }
+      .calendar-table { border:0 !important; border-radius:0 !important; }
+      .calendar-header {
+        height:var(--ui-header) !important;
+        min-height:var(--ui-header) !important;
+      }
+      .calendar-total, .calendar-day, .calendar-cell {
+        min-height:var(--ui-row) !important;
+        padding:3px 7px !important;
+      }
+ 
+      body.category-note-page .category-detail-heading {
+        min-height:58px !important;
+        padding:12px 18px !important;
+      }
+      body.category-note-page #category-detail-title { font-size:19px !important; }
+      body.category-note-page .category-note-section { padding:18px 20px 24px !important; }
+      body.category-note-page .category-detail-side { padding:18px 16px !important; gap:12px !important; }
+      .category-note-goal { min-height:54px !important; margin-bottom:12px !important; padding:10px 13px !important; }
+      @media (max-width:899px) {
+        :root { --ui-page-inset:10px; --ui-gap:10px; }
+      }
+      /* Shared page origin and top alignment */
+      .tracker-workspace { align-items:start !important; }
+      .tracker-workspace > .tracker-board-section,
+      .tracker-workspace > .work-grid {
+        align-self:start !important;
+        margin-top:0 !important;
+      }
+      .work-grid { justify-self:stretch !important; }
+ 
+      body.category-note-page .screen-bar {
+        width:min(100%, 980px) !important;
+        margin:0 0 10px !important;
+      }
+      body.category-note-page #screen-content > .category-detail-content {
+        width:min(100%, 980px) !important;
+        margin:0 !important;
+      }
+      body.category-note-page #screen-content { margin:0 !important; }
+ 
+      /* Calendar grid without a surrounding card. */
+      .calendar-card {
+        overflow:visible !important;
+        padding:0 !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      .calendar-table-wrap {
+        overflow:auto !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      .calendar-table {
+        overflow:hidden !important;
+        border:1px solid rgba(60,60,67,.18) !important;
+        border-radius:12px !important;
+        background:#fff !important;
+      }
     </style>
 </head>
 <body id="site-root">
@@ -5705,20 +6750,28 @@ tbody tr.total-row > td:first-child {
 </div>
  
 <div class="modal" id="category-detail-modal">
-  <div class="modal-content">
-    <h3 class="modal-title" id="category-detail-title">Category</h3>
-    <div class="category-detail-form">
-      <label class="field">Notes<textarea id="category-detail-notes" placeholder="Notes, bullets, or reminders"></textarea></label>
-      <div class="category-detail-meta">
+  <div class="modal-content category-detail-content">
+    <div class="category-detail-heading">
+      <h3 class="modal-title" id="category-detail-title">Category</h3>
+      <span class="category-save-status" id="category-save-status" role="status" aria-live="polite">Saved</span>
+    </div>
+    <div class="category-detail-layout">
+      <section class="category-note-section" aria-label="Category notes">
+        <div class="category-note-goal" id="category-note-goal">
+          <span class="category-note-goal-label">Goal</span>
+          <strong id="category-note-goal-summary">No goal set</strong>
+        </div>
+        <div id="category-detail-notes" class="rich-note-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Add notes, ideas, or reminders…"></div>
+      </section>
+      <aside class="category-detail-side">
         <label class="field">Group<input id="category-detail-group" type="text"></label>
         <label class="field">Type<select id="category-detail-goal-type"><option value="min">Min</option><option value="max">Max</option></select></label>
         <label class="field">Goal<input id="category-detail-goal" type="number" step="1"></label>
-      </div>
-      <label class="field">Period<select id="category-detail-goal-period"><option value="daily">Daily</option><option value="weekly">Weekly</option></select></label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" id="close-category-detail">Close</button>
-      <button class="btn primary" id="save-category-detail">Save</button>
+        <label class="field">Period<select id="category-detail-goal-period"><option value="daily">Daily</option><option value="weekly">Weekly</option></select></label>
+        <div class="category-detail-actions">
+          <button class="btn" id="close-category-detail">Close</button>
+        </div>
+      </aside>
     </div>
   </div>
 </div>
@@ -5914,6 +6967,9 @@ let logEditMode = {};
 let activeKid = kids[0];
 let activeCategory = null;
 let activeCategoryKid = null;
+let categoryDetailSaveTimer = null;
+let categoryDetailSavePending = false;
+let categoryDetailSaveVersion = 0;
 let categoryEditorKid = kids[0];
 let goalBands = [
   {threshold:150, color:"blue"},
@@ -6373,11 +7429,11 @@ function buildTables() {
           html += `<td data-day-cell="${i}"><input type="checkbox" data-count="0" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
-      if (showProgressColumn) html += `<td class="goal-progress-cell" id="${kid}-week-${category.key}">${category.showProgress ? "<span class=\"goal-percent summary-goal-red\">0%</span>" : ""}</td>`;
+      if (showProgressColumn) html += `<td class="goal-progress-cell ${category.showProgress ? "summary-goal-red" : ""}" id="${kid}-week-${category.key}">${category.showProgress ? "0%" : ""}</td>`;
       html += `</tr>`;
     });
     html += `<tr class="total-row"><td>Total</td>`;
-    days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" data-day-cell="${i}">$0</td>`; });
+    days.forEach((day, i) => { html += `<td id="${kid}-total-${i}" class="summary-goal-gray" data-day-cell="${i}">$0</td>`; });
     if (showProgressColumn) html += `<td></td>`;
     html += `</tr></tbody></table></div></div></section>`;
     html += `<div class="work-grid"><div class="panel"><div class="panel-head"><span>Tasks</span><div class="panel-actions"><button class="panel-add" data-toggle-entry="${kid}-task-entry" aria-label="Add task">+</button></div></div><div class="entry-row collapsed" id="${kid}-task-entry"><select id="${kid}-task-day" aria-label="Task day">${dayOptions()}</select><input id="${kid}-task-text" type="text" placeholder="Add task"><button class="btn primary" data-add-task="${kid}">Add</button></div><div class="task-list" id="${kid}-tasks"></div></div>`;
@@ -6658,14 +7714,15 @@ function updateTotals() {
     categoriesForKid(kid).forEach(category => {
       const weekNode = document.getElementById(`${kid}-week-${category.key}`);
       if (weekNode) {
-        weekNode.classList.remove("summary-goal-blue", "summary-goal-green", "summary-goal-yellow", "summary-goal-orange", "summary-goal-red", "summary-goal-gray");
         if (category.showProgress && (weeklyCounts[category.key] || 0) > 0) {
           const value = weeklyRaw[category.key] || 0;
           const count = category.goalPeriod === "daily" ? weeklyCounts[category.key] || 1 : 1;
+          weekNode.classList.remove("summary-goal-blue", "summary-goal-green", "summary-goal-yellow", "summary-goal-orange", "summary-goal-red", "summary-goal-gray");
           weekNode.classList.add(goalClass(category, value, count));
           weekNode.textContent = `${goalPercent(category, value, count)}%`;
         } else {
-          weekNode.textContent = "";
+          weekNode.classList.remove("summary-goal-blue", "summary-goal-green", "summary-goal-yellow", "summary-goal-orange", "summary-goal-red", "summary-goal-gray");
+          weekNode.replaceChildren();
         }
       }
     });
@@ -7246,21 +8303,40 @@ function openCategoryDetail(key, kid = activeKid) {
   activeCategory = key;
   activeCategoryKid = kid;
   document.getElementById("category-detail-title").textContent = category.label;
-  document.getElementById("category-detail-notes").value = category.details || "";
+  const noteEditor = document.getElementById("category-detail-notes");
+  noteEditor.innerHTML = normalizeNoteHtml(category.details || "");
+  normalizeNoteChecklist(noteEditor);
   document.getElementById("category-detail-group").value = category.group || "";
   document.getElementById("category-detail-goal-type").value = category.goalType === "max" ? "max" : "min";
   document.getElementById("category-detail-goal").value = Number(category.goal || 0);
   document.getElementById("category-detail-goal-period").value = category.goalPeriod === "daily" ? "daily" : "weekly";
-  openModal("category-detail-modal");
+  updateCategoryGoalSummary();
+  document.getElementById("category-save-status").textContent = "Saved";
+  openMainScreen("category-detail-modal", category.label, "Tracker");
+  document.body.classList.add("category-note-page");
+  document.getElementById("kid-tabs").style.display = "";
 }
  
-async function saveCategoryDetail() {
+function updateCategoryGoalSummary() {
+  const summary = document.getElementById("category-note-goal-summary");
+  if (!summary) return;
+  const goal = Number(document.getElementById("category-detail-goal")?.value || 0);
+  const type = document.getElementById("category-detail-goal-type")?.value === "max" ? "At most" : "At least";
+  const period = document.getElementById("category-detail-goal-period")?.value === "daily" ? "day" : "week";
+  summary.textContent = goal > 0 ? `${type} ${formatRawValue(goal)} per ${period}` : "No goal set";
+}
+ 
+async function saveCategoryDetail({refresh = false, close = false} = {}) {
   if (!activeCategory || !activeCategoryKid) return;
+  const saveVersion = categoryDetailSaveVersion;
+  clearTimeout(categoryDetailSaveTimer);
+  categoryDetailSaveTimer = null;
+  normalizeNoteChecklist(document.getElementById("category-detail-notes"), true);
   const updated = categoriesForKid(activeCategoryKid).map(category => {
     if (category.key !== activeCategory) return category;
     return {
       ...category,
-      details:document.getElementById("category-detail-notes").value.trim(),
+      details:sanitizeNoteHtml(document.getElementById("category-detail-notes").innerHTML),
       group:document.getElementById("category-detail-group").value.trim(),
       goalType:document.getElementById("category-detail-goal-type").value,
       goal:Number(document.getElementById("category-detail-goal").value || 0),
@@ -7268,10 +8344,32 @@ async function saveCategoryDetail() {
     };
   });
   categoriesByKid[activeCategoryKid] = updated;
-  await saveCategoriesForKid(activeCategoryKid, updated);
-  buildShell();
-  await loadData(currentWeek);
-  closeModal("category-detail-modal");
+  const status = document.getElementById("category-save-status");
+  if (status) status.textContent = "Saving…";
+  try {
+    await saveCategoriesForKid(activeCategoryKid, updated);
+    if (saveVersion === categoryDetailSaveVersion) {
+      categoryDetailSavePending = false;
+      if (status) status.textContent = "Saved";
+    }
+    if (refresh) {
+      buildShell();
+      await loadData(currentWeek);
+    }
+    if (close) closeModal("category-detail-modal");
+  } catch (error) {
+    if (status) status.textContent = "Not saved";
+    throw error;
+  }
+}
+ 
+function scheduleCategoryDetailSave() {
+  categoryDetailSaveVersion += 1;
+  categoryDetailSavePending = true;
+  const status = document.getElementById("category-save-status");
+  if (status) status.textContent = "Unsaved";
+  clearTimeout(categoryDetailSaveTimer);
+  categoryDetailSaveTimer = setTimeout(() => saveCategoryDetail().catch(console.error), 650);
 }
  
 async function populateWeekDropdown() {
@@ -7857,7 +8955,7 @@ function addCategoryRow(category = {label:"New", details:"Category notes", kind:
   row.innerHTML = `
     <div class="row-tools"><span class="drag-handle" draggable="true" aria-label="Drag row">☰</span><button class="icon-btn remove-category" type="button" aria-label="Remove">x</button></div>
     <input aria-label="Label" data-field="label" placeholder="Label" value="${escapeAttr(category.label || "")}">
-    <textarea aria-label="Notes" data-field="details" placeholder="Tap notes">${escapeHtml(category.details || "")}</textarea>
+    <div class="config-note-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Notes" data-field="details" data-placeholder="Add notes">${normalizeNoteHtml(category.details || "")}</div>
     <input aria-label="Group" data-field="group" placeholder="Group" value="${escapeAttr(category.group || "")}">
     <input aria-label="Formula" data-field="formula" placeholder="Formula" value="${escapeAttr(category.formula || "")}">
     <select aria-label="Type" data-field="kind">
@@ -7894,7 +8992,7 @@ function readCategoryEditor() {
     return {
       key:row.dataset.key || label,
       label,
-      details:row.querySelector('[data-field="details"]').value.trim(),
+      details:sanitizeNoteHtml(row.querySelector('[data-field="details"]').innerHTML),
       kind:row.querySelector('[data-field="kind"]').value,
       amount:Number(row.querySelector('[data-field="amount"]').value || 0),
       group:row.querySelector('[data-field="group"]').value.trim(),
@@ -8721,6 +9819,7 @@ function restoreCurrentScreenControls() {
 function showTrackerScreen(restore = true) {
     if (restore) restoreScreenModal();
     document.body.classList.remove("subpage-active");
+    document.body.classList.remove("category-note-page");
     setActiveAppView("tracker");
     document.body.classList.remove("mobile-options-open");
   document.getElementById("screen-view")?.classList.remove("active");
@@ -8745,6 +9844,107 @@ function escapeHtml(text = "") {
  
 function escapeAttr(text = "") {
   return escapeHtml(String(text));
+}
+ 
+function sanitizeNoteHtml(value = "") {
+  const template = document.createElement("template");
+  template.innerHTML = String(value);
+  const allowed = new Set(["B", "STRONG", "I", "EM", "U", "BR", "DIV", "P", "UL", "OL", "LI", "INPUT", "SPAN"]);
+  [...template.content.querySelectorAll("*")].reverse().forEach(node => {
+    if (["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED"].includes(node.tagName)) {
+      node.remove();
+      return;
+    }
+    if (!allowed.has(node.tagName)) {
+      node.replaceWith(...node.childNodes);
+      return;
+    }
+    const checklistInput = node.tagName === "INPUT" && node.getAttribute("type") === "checkbox";
+    const checklistRow = node.tagName === "DIV" && node.classList.contains("note-check-item");
+    const noteHeader = node.tagName === "DIV" && node.classList.contains("note-header");
+    [...node.attributes].forEach(attribute => node.removeAttribute(attribute.name));
+    if (checklistInput) {
+      node.setAttribute("type", "checkbox");
+      node.setAttribute("contenteditable", "false");
+      if (node.checked) node.setAttribute("checked", "");
+    }
+    if (checklistRow) node.className = "note-check-item";
+    if (noteHeader) node.className = "note-header";
+  });
+  return template.innerHTML.trim();
+}
+ 
+function normalizeNoteHtml(value = "") {
+  const text = String(value || "");
+  const containsRichText = /<\/?(?:b|strong|i|em|u|br|div|p|ul|ol|li|input|span)\b/i.test(text);
+  return containsRichText ? sanitizeNoteHtml(text) : escapeHtml(text).replace(/\r?\n/g, "<br>");
+}
+ 
+function noteCaretOffset(root) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !root.contains(selection.anchorNode)) return null;
+  const range = selection.getRangeAt(0).cloneRange();
+  range.selectNodeContents(root);
+  range.setEnd(selection.anchorNode, selection.anchorOffset);
+  return range.toString().length;
+}
+ 
+function restoreNoteCaret(root, offset) {
+  if (offset === null) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let remaining = offset;
+  let node;
+  while ((node = walker.nextNode())) {
+    if (remaining <= node.textContent.length) {
+      const range = document.createRange();
+      range.setStart(node, remaining);
+      range.collapse(true);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return;
+    }
+    remaining -= node.textContent.length;
+  }
+}
+ 
+function normalizeNoteChecklist(editor, preserveCaret = false) {
+  if (!editor) return;
+  const caret = preserveCaret ? noteCaretOffset(editor) : null;
+  const lines = [];
+  let inlineNodes = [];
+  const flushInline = () => {
+    if (!inlineNodes.length) return;
+    const holder = document.createElement("div");
+    inlineNodes.forEach(node => holder.appendChild(node.cloneNode(true)));
+    lines.push({html:holder.innerHTML, bold:!!holder.querySelector("b,strong"), checked:false});
+    inlineNodes = [];
+  };
+  [...editor.childNodes].forEach(node => {
+    if (node.nodeName === "BR") {
+      flushInline();
+      return;
+    }
+    if (node.nodeType === Node.ELEMENT_NODE && ["DIV", "P", "LI"].includes(node.tagName)) {
+      flushInline();
+      const content = node.classList.contains("note-check-item") ? node.querySelector("span") : node;
+      lines.push({
+        html:content?.innerHTML || "",
+        bold:node.classList.contains("note-header") || !!content?.querySelector("b,strong") || content?.matches?.("b,strong"),
+        checked:!!node.querySelector('input[type="checkbox"]:checked')
+      });
+      return;
+    }
+    inlineNodes.push(node);
+  });
+  flushInline();
+  const meaningful = lines.filter((line, index) => line.html.replace(/&nbsp;|<br\s*\/?>/gi, "").trim() || index === lines.length - 1);
+  editor.innerHTML = meaningful.map(line => {
+    const safe = sanitizeNoteHtml(line.html) || "<br>";
+    if (line.bold) return `<div class="note-header"><strong>${safe.replace(/^<(?:b|strong)>|<\/(?:b|strong)>$/gi, "")}</strong></div>`;
+    return `<div class="note-check-item"><input type="checkbox" contenteditable="false"${line.checked ? " checked" : ""}><span>${safe}</span></div>`;
+  }).join("");
+  restoreNoteCaret(editor, caret);
 }
  
 function closeActionsMenu() {
@@ -9152,7 +10352,12 @@ document.getElementById("sign-out").addEventListener("click", async () => {
   closeActionsMenu();
   await confirmSignOut();
 });
-document.getElementById("screen-back").addEventListener("click", () => showTrackerScreen());
+document.getElementById("screen-back").addEventListener("click", async () => {
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) {
+    await saveCategoryDetail({refresh:true});
+  }
+  showTrackerScreen();
+});
 document.getElementById("subpage-options-toggle").addEventListener("click", () => {
   document.body.classList.toggle("mobile-options-open");
 });
@@ -9187,8 +10392,25 @@ document.getElementById("category-person").addEventListener("change", event => {
 });
 document.getElementById("close-categories")?.addEventListener("click", () => closeModal("category-modal"));
 document.getElementById("save-categories").addEventListener("click", saveCategories);
-document.getElementById("close-category-detail").addEventListener("click", () => closeModal("category-detail-modal"));
-document.getElementById("save-category-detail").addEventListener("click", saveCategoryDetail);
+document.getElementById("close-category-detail").addEventListener("click", async () => {
+  if (categoryDetailSavePending) await saveCategoryDetail({refresh:true, close:true});
+  else closeModal("category-detail-modal");
+});
+document.getElementById("category-detail-modal").addEventListener("input", event => {
+  if (event.target.matches("#category-detail-notes, #category-detail-group, #category-detail-goal")) scheduleCategoryDetailSave();
+  if (event.target.matches("#category-detail-goal")) updateCategoryGoalSummary();
+});
+document.getElementById("category-detail-modal").addEventListener("change", event => {
+  if (event.target.matches("#category-detail-goal-type, #category-detail-goal-period")) {
+    updateCategoryGoalSummary();
+    scheduleCategoryDetailSave();
+  }
+  const checkbox = event.target.closest('.rich-note-editor input[type="checkbox"]');
+  if (checkbox) {
+    checkbox.toggleAttribute("checked", checkbox.checked);
+    scheduleCategoryDetailSave();
+  }
+});
 document.getElementById("archive-week")?.addEventListener("click", async () => {
   closeActionsMenu();
   await weekRef(currentWeek).set({archived:true, timestamp:new Date()}, {merge:true});
@@ -9320,14 +10542,23 @@ window.onload = () => {
   });
 };
  
-// Open compact configuration notes in a prompt instead of resizing the table row.
-document.body.addEventListener("click", event => {
-  const notes = event.target.closest('#category-editor textarea[data-field="details"]');
-  if (!notes) return;
+document.getElementById("category-detail-notes").addEventListener("keydown", event => {
+  if (event.key !== "Enter" || event.shiftKey) return;
   event.preventDefault();
-  notes.blur();
-  const next = prompt("Category notes:", notes.value || "");
-  if (next !== null) notes.value = next;
+  normalizeNoteChecklist(event.currentTarget, true);
+  const selection = window.getSelection();
+  const currentLine = selection?.anchorNode?.parentElement?.closest(".note-check-item, .note-header");
+  const nextLine = document.createElement("div");
+  nextLine.className = "note-check-item";
+  nextLine.innerHTML = '<input type="checkbox" contenteditable="false"><span><br></span>';
+  (currentLine || event.currentTarget.lastElementChild)?.after(nextLine);
+  if (!currentLine && !event.currentTarget.lastElementChild) event.currentTarget.appendChild(nextLine);
+  const range = document.createRange();
+  range.selectNodeContents(nextLine.querySelector("span"));
+  range.collapse(true);
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+  scheduleCategoryDetailSave();
 });
  
 document.body.addEventListener("click", event => {

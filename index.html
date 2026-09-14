@@ -6627,6 +6627,36 @@ tbody tr.total-row > td:first-child {
       }
       #site-root #category-note-goal-purpose::placeholder { color:#71869d; font-weight:500; }
       #site-root #category-note-goal-summary { font-size:11px !important; font-weight:500 !important; color:#55708e !important; }
+      /* Secondary tracker navigation below person names */
+      .app-switch { grid-template-columns:repeat(3, minmax(0,1fr)) !important; }
+      .tracker-nav-links,
+      body.subpage-active #tracker-nav-links {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:3px !important;
+        margin:6px 0 0 !important;
+        padding:4px !important;
+        border:1px solid rgba(60,60,67,.14) !important;
+        border-radius:12px !important;
+        background:rgba(255,255,255,.72) !important;
+        box-shadow:none !important;
+      }
+      .tracker-nav-link {
+        width:100% !important;
+        height:30px !important;
+        min-height:30px !important;
+        padding:0 10px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        border:0 !important;
+        border-radius:8px !important;
+        background:transparent !important;
+        color:#515154 !important;
+        text-align:left !important;
+      }
+      .tracker-nav-link:hover { background:#ededf0 !important; }
+      .tracker-nav-link.active { background:#e8f2ff !important; color:#0066cc !important; font-weight:600 !important; }
     </style>
 </head>
 <body id="site-root">
@@ -6703,8 +6733,6 @@ tbody tr.total-row > td:first-child {
       <select id="week-select" aria-label="Week"></select>
       <nav class="app-switch" aria-label="Primary views">
         <button class="app-switch-button active" id="app-switch-tracker" type="button" data-app-view="tracker">Tracker</button>
-        <button class="app-switch-button" id="app-switch-summary" type="button" data-app-view="summary">Summary</button>
-        <button class="app-switch-button" id="app-switch-configuration" type="button" data-app-view="configuration">Config</button>
         <button class="app-switch-button" id="app-switch-tasks" type="button" data-app-view="tasks">Tasks</button>
         <button class="app-switch-button" id="app-switch-calendar" type="button" data-app-view="calendar">Calendar</button>
       </nav>
@@ -9917,6 +9945,8 @@ function setActiveAppView(view) {
     button.classList.toggle("active", active);
     button.setAttribute("aria-current", active ? "page" : "false");
   });
+  document.getElementById("tracker-summary-link")?.classList.toggle("active", view === "summary");
+  document.getElementById("tracker-config-link")?.classList.toggle("active", view === "configuration");
 }
  
 function escapeHtml(text = "") {
@@ -10373,8 +10403,9 @@ document.getElementById("edit-categories")?.addEventListener("click", () => {
   closeActionsMenu();
   openCategoryEditor();
 });
-document.getElementById("tracker-config-link")?.addEventListener("click", () => {
+document.getElementById("tracker-config-link")?.addEventListener("click", async () => {
   closeActionsMenu();
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
   openCategoryEditor();
 });
 document.getElementById("tracker-open")?.addEventListener("click", () => {
@@ -10387,19 +10418,12 @@ document.getElementById("summary-open")?.addEventListener("click", async () => {
 });
 document.getElementById("tracker-summary-link")?.addEventListener("click", async () => {
   closeActionsMenu();
+  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
   await openSummary();
 });
 document.getElementById("app-switch-tracker").addEventListener("click", async () => {
   if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail({refresh:true});
   showTrackerScreen();
-});
-document.getElementById("app-switch-summary").addEventListener("click", async () => {
-  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
-  await openSummary();
-});
-document.getElementById("app-switch-configuration").addEventListener("click", async () => {
-  if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();
-  openCategoryEditor();
 });
 document.getElementById("app-switch-tasks").addEventListener("click", async () => {
   if (currentScreen?.modalId === "category-detail-modal" && categoryDetailSavePending) await saveCategoryDetail();

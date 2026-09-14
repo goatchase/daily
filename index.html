@@ -6657,6 +6657,54 @@ tbody tr.total-row > td:first-child {
       }
       .tracker-nav-link:hover { background:#ededf0 !important; }
       .tracker-nav-link.active { background:#e8f2ff !important; color:#0066cc !important; font-weight:600 !important; }
+      /* Stable note rows and single-purpose goal field */
+      .category-note-goal {
+        min-height:44px !important;
+        margin-bottom:14px !important;
+        padding:8px 13px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+      }
+      #site-root #category-note-goal-purpose {
+        height:28px !important;
+        min-height:28px !important;
+        margin:0 !important;
+        padding:0 !important;
+        line-height:28px !important;
+      }
+      .rich-note-editor .note-check-item {
+        display:grid !important;
+        grid-template-columns:18px minmax(0,1fr) !important;
+        align-items:start !important;
+        column-gap:7px !important;
+        min-height:26px !important;
+        margin:0 !important;
+        padding:2px 0 !important;
+        line-height:20px !important;
+      }
+      .rich-note-editor .note-check-item input[type="checkbox"] {
+        width:16px !important;
+        min-width:16px !important;
+        height:16px !important;
+        min-height:16px !important;
+        margin:2px 0 0 !important;
+        align-self:start !important;
+      }
+      .rich-note-editor .note-check-item > span {
+        display:block !important;
+        min-height:20px !important;
+        margin:0 !important;
+        padding:0 !important;
+        line-height:20px !important;
+        overflow-wrap:anywhere;
+      }
+      .rich-note-editor .note-header {
+        min-height:26px !important;
+        margin:8px 0 2px !important;
+        padding:2px 0 !important;
+        line-height:20px !important;
+      }
     </style>
 </head>
 <body id="site-root">
@@ -6866,9 +6914,7 @@ tbody tr.total-row > td:first-child {
     <div class="category-detail-layout">
       <section class="category-note-section" aria-label="Category notes">
         <div class="category-note-goal" id="category-note-goal">
-          <span class="category-note-goal-label">Goal</span>
-          <input id="category-note-goal-purpose" type="text" placeholder="Describe the purpose of this goal" aria-label="Goal purpose">
-          <strong id="category-note-goal-summary">No goal set</strong>
+          <input id="category-note-goal-purpose" type="text" placeholder="What is the goal?" aria-label="Goal purpose">
         </div>
         <div id="category-detail-notes" class="rich-note-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Add notes, ideas, or reminders…"></div>
       </section>
@@ -8420,20 +8466,10 @@ function openCategoryDetail(key, kid = activeKid) {
   document.getElementById("category-detail-goal-type").value = category.goalType === "max" ? "max" : "min";
   document.getElementById("category-detail-goal").value = Number(category.goal || 0);
   document.getElementById("category-detail-goal-period").value = category.goalPeriod === "daily" ? "daily" : "weekly";
-  updateCategoryGoalSummary();
   document.getElementById("category-save-status").textContent = "Saved";
   openMainScreen("category-detail-modal", category.label, "Tracker");
   document.body.classList.add("category-note-page");
   document.getElementById("kid-tabs").style.display = "";
-}
- 
-function updateCategoryGoalSummary() {
-  const summary = document.getElementById("category-note-goal-summary");
-  if (!summary) return;
-  const goal = Number(document.getElementById("category-detail-goal")?.value || 0);
-  const type = document.getElementById("category-detail-goal-type")?.value === "max" ? "At most" : "At least";
-  const period = document.getElementById("category-detail-goal-period")?.value === "daily" ? "day" : "week";
-  summary.textContent = goal > 0 ? `${type} ${formatRawValue(goal)} per ${period}` : "No goal set";
 }
  
 async function saveCategoryDetail({refresh = false, close = false} = {}) {
@@ -8441,7 +8477,6 @@ async function saveCategoryDetail({refresh = false, close = false} = {}) {
   const saveVersion = categoryDetailSaveVersion;
   clearTimeout(categoryDetailSaveTimer);
   categoryDetailSaveTimer = null;
-  normalizeNoteChecklist(document.getElementById("category-detail-notes"), true);
   const updated = categoriesForKid(activeCategoryKid).map(category => {
     if (category.key !== activeCategory) return category;
     return {
@@ -10520,11 +10555,12 @@ document.getElementById("close-category-detail").addEventListener("click", async
 });
 document.getElementById("category-detail-modal").addEventListener("input", event => {
   if (event.target.matches("#category-detail-notes, #category-note-goal-purpose, #category-detail-group, #category-detail-goal")) scheduleCategoryDetailSave();
-  if (event.target.matches("#category-detail-goal")) updateCategoryGoalSummary();
 });
 document.getElementById("category-detail-modal").addEventListener("change", event => {
+  if (event.target.matches("#category-note-goal-purpose")) {
+    saveCategoryDetail().catch(console.error);
+  }
   if (event.target.matches("#category-detail-goal-type, #category-detail-goal-period")) {
-    updateCategoryGoalSummary();
     scheduleCategoryDetailSave();
   }
   const checkbox = event.target.closest('.rich-note-editor input[type="checkbox"]');
@@ -10667,9 +10703,13 @@ window.onload = () => {
 document.getElementById("category-detail-notes").addEventListener("keydown", event => {
   if (event.key !== "Enter" || event.shiftKey) return;
   event.preventDefault();
-  normalizeNoteChecklist(event.currentTarget, true);
-  const selection = window.getSelection();
-  const currentLine = selection?.anchorNode?.parentElement?.closest(".note-check-item, .note-header");
+  let selection = window.getSelection();
+  let currentLine = selection?.anchorNode?.parentElement?.closest(".note-check-item, .note-header");
+  if (!currentLine) {
+    normalizeNoteChecklist(event.currentTarget, true);
+    selection = window.getSelection();
+    currentLine = selection?.anchorNode?.parentElement?.closest(".note-check-item, .note-header");
+  }
   const nextLine = document.createElement("div");
   nextLine.className = "note-check-item";
   nextLine.innerHTML = '<input type="checkbox" contenteditable="false"><span><br></span>';

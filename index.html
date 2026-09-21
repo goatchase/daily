@@ -6832,6 +6832,35 @@ tbody tr.total-row > td:first-child {
         background:transparent !important;
       }
       #category-editor .category-show-fields { display:none !important; }
+ 
+      /* Compact working tables while retaining usable controls. */
+      .tracker-card thead th { height:38px !important; min-height:38px !important; padding-top:5px !important; padding-bottom:5px !important; }
+      .tracker-card tbody td { height:34px !important; min-height:34px !important; padding-top:3px !important; padding-bottom:3px !important; }
+      .tracker-card td.goal-progress-cell,
+      .tracker-card tbody tr.total-row > td,
+      .family-task-summary .summary-total-row td { font-weight:400 !important; }
+      .family-task-table th,
+      .family-task-table td,
+      .family-task-summary th,
+      .family-task-summary td { height:34px !important; min-height:34px !important; padding-top:3px !important; padding-bottom:3px !important; }
+      .family-task-table .family-task-cell { min-height:28px !important; height:28px !important; padding-top:3px !important; padding-bottom:3px !important; }
+      .calendar-header,
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell { height:30px !important; min-height:30px !important; max-height:30px !important; padding-top:3px !important; padding-bottom:3px !important; }
+ 
+      /* Use a calmer, straight menu glyph. */
+      .menu-button::before { content:"\2261" !important; font-size:22px !important; font-weight:600 !important; }
+ 
+      /* Summary and configuration belong to the Tasks workspace only. */
+      .tracker-nav-links,
+      body.subpage-active #tracker-nav-links { display:none !important; }
+      body[data-active-view="tasks"] #tracker-nav-links { display:grid !important; }
+ 
+      /* Keep the return path visible on compact screens. */
+      @media (max-width:899px) {
+        body.subpage-active #screen-back { display:inline-flex !important; visibility:visible !important; }
+      }
     </style>
 </head>
 <body id="site-root">
@@ -7694,7 +7723,7 @@ function buildTables() {
       const highlight = i === todayIndex ? "current-day" : "";
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head"><span class="day-full">${day}</span><span class="day-short">${day.slice(0,1)}</span><span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
-    if (showProgressColumn) html += `<th class="goal-progress-cell">Total</th>`;
+    if (showProgressColumn) html += `<th class="goal-progress-cell">Total (%)</th>`;
     html += `</tr></thead><tbody>`;
     let previousGroup = "";
     kidCategories.forEach(category => {
@@ -7712,7 +7741,7 @@ function buildTables() {
           html += `<td data-day-cell="${i}"><input type="checkbox" data-count="0" data-negative="${negative}" data-kid="${kid}" data-day="${i}" data-type="${category.key}"></td>`;
         }
       });
-      if (showProgressColumn) html += `<td class="goal-progress-cell ${category.showProgress ? "summary-goal-red" : ""}" id="${kid}-week-${category.key}">${category.showProgress ? "0%" : ""}</td>`;
+      if (showProgressColumn) html += `<td class="goal-progress-cell ${category.showProgress ? "summary-goal-red" : ""}" id="${kid}-week-${category.key}">${category.showProgress ? "0" : ""}</td>`;
       html += `</tr>`;
     });
     html += `<tr class="total-row"><td>Total</td>`;
@@ -8002,7 +8031,7 @@ function updateTotals() {
           const count = category.goalPeriod === "daily" ? weeklyCounts[category.key] || 1 : 1;
           weekNode.classList.remove("summary-goal-blue", "summary-goal-green", "summary-goal-yellow", "summary-goal-orange", "summary-goal-red", "summary-goal-gray");
           weekNode.classList.add(goalClass(category, value, count));
-          weekNode.textContent = `${goalPercent(category, value, count)}%`;
+          weekNode.textContent = String(goalPercent(category, value, count));
         } else {
           weekNode.classList.remove("summary-goal-blue", "summary-goal-green", "summary-goal-yellow", "summary-goal-orange", "summary-goal-red", "summary-goal-gray");
           weekNode.replaceChildren();
@@ -10103,6 +10132,7 @@ function showTrackerScreen(restore = true) {
 }
  
 function setActiveAppView(view) {
+  document.body.dataset.activeView = view;
   document.querySelectorAll("[data-app-view]").forEach(button => {
     const active = button.dataset.appView === view;
     button.classList.toggle("active", active);
@@ -10681,10 +10711,10 @@ document.getElementById("close-category-detail").addEventListener("click", async
   if (categoryDetailSavePending) await saveCategoryDetail({refresh:true, close:true});
   else closeModal("category-detail-modal");
 });
-document.getElementById("category-detail-modal").addEventListener("input", event => {
+document.addEventListener("input", event => {
   if (event.target.matches("#category-detail-notes, #category-note-goal-purpose, #category-detail-group, #category-detail-goal")) scheduleCategoryDetailSave();
 });
-document.getElementById("category-detail-modal").addEventListener("change", event => {
+document.addEventListener("change", event => {
   if (event.target.matches("#category-note-goal-purpose")) {
     saveCategoryDetail().catch(console.error);
   }

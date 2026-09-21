@@ -6863,6 +6863,25 @@ tbody tr.total-row > td:first-child {
       .log-item,
       .note-check-item { box-sizing:border-box !important; min-height:var(--workspace-table-row) !important; }
  
+      /* Calendar entries need more room than the compact data tables. */
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell {
+        height:calc(var(--workspace-table-row) * 1.5) !important;
+        min-height:calc(var(--workspace-table-row) * 1.5) !important;
+        max-height:calc(var(--workspace-table-row) * 1.5) !important;
+      }
+      .calendar-table > .calendar-header:nth-child(1),
+      .calendar-table > .calendar-header:nth-child(2) {
+        position:sticky !important;
+        top:0 !important;
+        z-index:60 !important;
+        background:#f2f2f5 !important;
+        box-shadow:0 1px 0 rgba(60,60,67,.18) !important;
+      }
+ 
+      .family-task-assignee-name { display:none; }
+ 
       /* Use a calmer, straight menu glyph. */
       .menu-button::before { content:"\2261" !important; font-size:22px !important; font-weight:600 !important; }
  
@@ -6875,12 +6894,52 @@ tbody tr.total-row > td:first-child {
  
       /* Keep the return path visible on compact screens. */
       @media (max-width:899px) {
-        body.category-note-page.subpage-active .screen-bar { display:flex !important; visibility:visible !important; }
-        body.category-note-page.subpage-active #screen-back {
+        body#site-root.category-note-page.subpage-active .screen-bar {
+          display:flex !important;
+          visibility:visible !important;
+          gap:6px !important;
+        }
+        body#site-root.category-note-page.subpage-active #screen-back {
           display:inline-flex !important;
           visibility:visible !important;
           opacity:1 !important;
           pointer-events:auto !important;
+        }
+ 
+        /* Mobile Tasks shows only completion, assignee name, and task text. */
+        #site-root .family-task-table {
+          width:100% !important;
+          min-width:0 !important;
+          max-width:100% !important;
+          table-layout:fixed !important;
+        }
+        #site-root .family-task-table th:nth-child(2),
+        #site-root .family-task-table td:nth-child(2),
+        #site-root .family-task-table th:nth-child(4),
+        #site-root .family-task-table td:nth-child(4),
+        #site-root .family-task-table th:nth-child(5),
+        #site-root .family-task-table td:nth-child(5),
+        #site-root .family-task-table th:nth-child(6),
+        #site-root .family-task-table td:nth-child(6),
+        #site-root .family-task-table th:nth-child(7),
+        #site-root .family-task-table td:nth-child(7) { display:none !important; }
+        #site-root .family-task-table th:nth-child(1),
+        #site-root .family-task-table td:nth-child(1) { width:42% !important; }
+        #site-root .family-task-table th:nth-child(3),
+        #site-root .family-task-table td:nth-child(3) { width:58% !important; }
+        #site-root .family-task-table .family-task-owner-inline { gap:6px !important; }
+        #site-root .family-task-table .family-task-owner-control,
+        #site-root .family-task-table .family-task-owner-toggle,
+        #site-root .family-task-table .family-task-owner-stack {
+          width:auto !important;
+          min-width:0 !important;
+          max-width:100% !important;
+        }
+        #site-root .family-task-assignee-name {
+          display:inline !important;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          white-space:nowrap;
         }
       }
     </style>
@@ -9358,7 +9417,7 @@ function selectedTaskPeople(control) {
 }
  
 function taskAssigneeBubbles(selected, personColors) {
-  return taskAssignees(selected).map(kid => `<span class="family-task-initial-bubble ${personColors[kid] || "person-color-7"}" title="${escapeAttr(memberLabel(kid))}">${escapeHtml(memberTaskInitial(kid))}</span>`).join("");
+  return taskAssignees(selected).map(kid => `<span class="family-task-initial-bubble ${personColors[kid] || "person-color-7"}" title="${escapeAttr(memberLabel(kid))}">${escapeHtml(memberTaskInitial(kid))}</span><span class="family-task-assignee-name">${escapeHtml(memberLabel(kid))}</span>`).join("");
 }
  
 function taskPeopleChecklist(selected = [], taskId = "") {
@@ -9934,7 +9993,7 @@ function renderFamilyTaskList() {
       const dateLabel = taskHasDate(task.endDate) ? formatShortDate(task.endDate) : "Parked";
       return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" list="family-task-date-options" placeholder="Parked" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(dateLabel)}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><input class="family-task-cell family-task-hours" type="number" min="0" step="1" data-family-task-field="hours" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.hours) || 0))}" placeholder="0" aria-label="Task time in hours"></td><td><input class="family-task-cell family-task-cost" type="number" min="0" step="1" data-family-task-field="cost" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.cost) || 0))}" placeholder="0" aria-label="Task cost"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
-    const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell"></span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Time (hrs)</span></th><th><span class="family-task-header-cell">Cost ($)</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
+    const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell">Name</span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Time (hrs)</span></th><th><span class="family-task-header-cell">Cost ($)</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
     for (const field of familyTaskOrderBy) {
       const valueA = taskOrderValue(a, field);

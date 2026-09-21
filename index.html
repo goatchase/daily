@@ -6833,33 +6833,55 @@ tbody tr.total-row > td:first-child {
       }
       #category-editor .category-show-fields { display:none !important; }
  
-      /* Compact working tables while retaining usable controls. */
-      .tracker-card thead th { height:38px !important; min-height:38px !important; padding-top:5px !important; padding-bottom:5px !important; }
-      .tracker-card tbody td { height:34px !important; min-height:34px !important; padding-top:3px !important; padding-bottom:3px !important; }
+      /* Compact working tables with one shared row rhythm across every workspace. */
+      :root { --workspace-table-row:30px; --workspace-table-header:34px; }
+      #site-root table th,
+      .calendar-header { box-sizing:border-box !important; height:var(--workspace-table-header) !important; min-height:var(--workspace-table-header) !important; max-height:var(--workspace-table-header) !important; padding-top:3px !important; padding-bottom:3px !important; }
+      #site-root table td,
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell { box-sizing:border-box !important; height:var(--workspace-table-row) !important; min-height:var(--workspace-table-row) !important; max-height:var(--workspace-table-row) !important; padding-top:3px !important; padding-bottom:3px !important; }
+      .family-task-table .family-task-header-cell {
+        box-sizing:border-box !important;
+        height:var(--workspace-table-header) !important;
+        min-height:var(--workspace-table-header) !important;
+        max-height:var(--workspace-table-header) !important;
+      }
+      #site-root table td input:not([type="checkbox"]):not([type="color"]),
+      #site-root table td select,
+      #site-root table td textarea {
+        box-sizing:border-box !important;
+        height:24px !important;
+        min-height:24px !important;
+        max-height:24px !important;
+      }
       .tracker-card td.goal-progress-cell,
       .tracker-card tbody tr.total-row > td,
       .family-task-summary .summary-total-row td { font-weight:400 !important; }
-      .family-task-table th,
-      .family-task-table td,
-      .family-task-summary th,
-      .family-task-summary td { height:34px !important; min-height:34px !important; padding-top:3px !important; padding-bottom:3px !important; }
-      .family-task-table .family-task-cell { min-height:28px !important; height:28px !important; padding-top:3px !important; padding-bottom:3px !important; }
-      .calendar-header,
-      .calendar-total,
-      .calendar-day,
-      .calendar-cell { height:30px !important; min-height:30px !important; max-height:30px !important; padding-top:3px !important; padding-bottom:3px !important; }
+      .family-task-table .family-task-cell { box-sizing:border-box !important; min-height:24px !important; height:24px !important; padding-top:2px !important; padding-bottom:2px !important; }
+      .task-item,
+      .log-item,
+      .note-check-item { box-sizing:border-box !important; min-height:var(--workspace-table-row) !important; }
  
       /* Use a calmer, straight menu glyph. */
       .menu-button::before { content:"\2261" !important; font-size:22px !important; font-weight:600 !important; }
  
-      /* Summary and configuration belong to the Tasks workspace only. */
+      /* Summary and configuration belong to the Tracker workspace. */
       .tracker-nav-links,
       body.subpage-active #tracker-nav-links { display:none !important; }
-      body[data-active-view="tasks"] #tracker-nav-links { display:grid !important; }
+      body[data-active-view="tracker"] #tracker-nav-links,
+      body[data-active-view="summary"] #tracker-nav-links,
+      body[data-active-view="configuration"] #tracker-nav-links { display:grid !important; }
  
       /* Keep the return path visible on compact screens. */
       @media (max-width:899px) {
-        body.subpage-active #screen-back { display:inline-flex !important; visibility:visible !important; }
+        body.category-note-page.subpage-active .screen-bar { display:flex !important; visibility:visible !important; }
+        body.category-note-page.subpage-active #screen-back {
+          display:inline-flex !important;
+          visibility:visible !important;
+          opacity:1 !important;
+          pointer-events:auto !important;
+        }
       }
     </style>
 </head>
@@ -7723,7 +7745,7 @@ function buildTables() {
       const highlight = i === todayIndex ? "current-day" : "";
       html += `<th class="${highlight}" data-kid="${kid}" data-day="${i}" data-day-cell="${i}"><span class="day-head"><span class="day-full">${day}</span><span class="day-short">${day.slice(0,1)}</span><span class="note-dots" id="${kid}-dots-${i}"></span></span></th>`;
     });
-    if (showProgressColumn) html += `<th class="goal-progress-cell">Total (%)</th>`;
+    if (showProgressColumn) html += `<th class="goal-progress-cell">%</th>`;
     html += `</tr></thead><tbody>`;
     let previousGroup = "";
     kidCategories.forEach(category => {

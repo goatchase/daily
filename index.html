@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#4285f4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   color-scheme: light;
@@ -4696,18 +4696,18 @@ tbody tr.total-row > td:first-child {
       max-width:100% !important;
     }
   }
- 
+
       /* Clear task group dividers, matching the calendar week separators. */
       .family-task-table tr.group-start > td {
         border-top: 3px solid #9aa0a6 !important;
       }
- 
+
       .family-task-table tr.group-start::before,
       .family-task-table tr.group-start::after {
         content: none !important;
         display: none !important;
       }
- 
+
       /* Keep task rows neutral; person and date colors are applied to their own cells. */
       .family-task-table tr.status-now > td,
       .family-task-table tr.status-next > td,
@@ -4717,7 +4717,7 @@ tbody tr.total-row > td:first-child {
       .family-task-table tr.complete > td {
         background: #fff !important;
       }
- 
+
       /* Give Tasks the same rounded, clipped table-card treatment as Tracker. */
       .family-tasks-main,
       .family-tasks-card,
@@ -4728,7 +4728,7 @@ tbody tr.total-row > td:first-child {
         width: 656px !important;
         max-width: 100% !important;
       }
- 
+
       .family-tasks-card {
         padding: 0 !important;
         overflow: hidden !important;
@@ -4737,12 +4737,12 @@ tbody tr.total-row > td:first-child {
         border-radius: 18px !important;
         box-shadow: none !important;
       }
- 
+
       .family-tasks-head {
         margin: 0 !important;
         padding: 12px 14px 10px !important;
       }
- 
+
       .family-task-list,
       .family-task-list.completed {
         border: 0 !important;
@@ -4750,7 +4750,7 @@ tbody tr.total-row > td:first-child {
         overflow: hidden !important;
         background: #fff !important;
       }
- 
+
       .family-task-table {
         width: 100% !important;
         min-width: 0 !important;
@@ -4759,7 +4759,7 @@ tbody tr.total-row > td:first-child {
         border-collapse: separate !important;
         border-spacing: 0 !important;
       }
- 
+
       .family-task-table th,
       .family-task-table td {
         min-height: 32px !important;
@@ -4768,33 +4768,33 @@ tbody tr.total-row > td:first-child {
         background: #fff !important;
         vertical-align: middle !important;
       }
- 
+
       .family-task-table thead th {
         color: #3c4043 !important;
         font-weight: 600 !important;
         background: #fff !important;
       }
- 
+
       .family-task-table th:nth-child(2),
       .family-task-table td:nth-child(2) {
         width: 240px !important;
         min-width: 240px !important;
         max-width: 240px !important;
       }
- 
+
       .family-task-table .family-task-owner-cell {
         padding-left: 18px !important;
         padding-right: 8px !important;
       }
- 
+
       .family-task-table tbody tr:last-child > td {
         border-bottom: 0 !important;
       }
- 
+
       .completed-tasks {
         border-top: 1px solid #e1e7ef !important;
       }
- 
+
       @media (max-width: 699px) {
         .family-tasks-main,
         .family-tasks-card,
@@ -4805,14 +4805,14 @@ tbody tr.total-row > td:first-child {
           width: 100% !important;
           max-width: 100% !important;
         }
- 
+
         .family-task-table th:nth-child(2),
         .family-task-table td:nth-child(2) {
           width: 35% !important;
           min-width: 0 !important;
           max-width: none !important;
         }
- 
+
         .family-task-table th:nth-child(3),
         .family-task-table td:nth-child(3) {
           width: auto !important;
@@ -4820,7 +4820,7 @@ tbody tr.total-row > td:first-child {
           max-width: none !important;
         }
       }
- 
+
       /* Increase the Task column by 25% on desktop without affecting mobile fit. */
       @media (min-width: 700px) {
         .family-tasks-main,
@@ -4831,7 +4831,7 @@ tbody tr.total-row > td:first-child {
         .completed-tasks {
           width: 699px !important;
         }
- 
+
         .family-task-table th:nth-child(3),
         .family-task-table td:nth-child(3) {
           width: 213px !important;
@@ -4839,14 +4839,14 @@ tbody tr.total-row > td:first-child {
           max-width: 213px !important;
         }
       }
- 
+
       /* Let the first and last task rows meet the card border without inset space. */
       .family-task-list,
       .family-task-list.completed {
         margin: 0 !important;
         padding: 0 !important;
       }
- 
+
       /* Stable, unique colors for assignee initials, independent of due-date status. */
       .person-color-0 { background:#d3e3fd !important; color:#0b57d0 !important; }
       .person-color-1 { background:#ceead6 !important; color:#137333 !important; }
@@ -4856,7 +4856,7 @@ tbody tr.total-row > td:first-child {
       .person-color-5 { background:#c4eed0 !important; color:#075e54 !important; }
       .person-color-6 { background:#fdd6a0 !important; color:#6f3700 !important; }
       .person-color-7 { background:#e8eaed !important; color:#3c4043 !important; }
- 
+
       /* Due-date timing colors belong only in the Date column. */
       .family-task-table tr.status-now > td:nth-child(4) { background:#d3e3fd !important; color:#0b57d0 !important; }
       .family-task-table tr.status-next > td:nth-child(4) { background:#ceead6 !important; color:#137333 !important; }
@@ -4866,13 +4866,13 @@ tbody tr.total-row > td:first-child {
       .family-task-table tr[class*="status-"] .family-task-calendar-button {
         color: inherit !important;
       }
- 
+
       /* Task rows run flush to the card edges, matching the Tracker table. */
       .family-tasks-head { display:none !important; }
       .family-tasks-card > .family-task-list:first-of-type { border-top:0 !important; }
       .completed-tasks { margin:0 !important; border-radius:0 !important; }
       .family-tasks-card > :last-child { margin-bottom:0 !important; }
- 
+
       /* Wider stacked-assignee control and rebalanced Project/Task columns. */
       .family-task-table th:nth-child(1),
       .family-task-table td:nth-child(1) {
@@ -4988,7 +4988,7 @@ tbody tr.total-row > td:first-child {
       .family-tasks-card,
       .family-task-list,
       .family-task-list.completed { overflow:visible !important; }
- 
+
       /* Wider task workspace with a tracker-style rounded outer rule. */
       @media (min-width:700px) {
         .family-tasks-main,
@@ -5024,7 +5024,7 @@ tbody tr.total-row > td:first-child {
       .family-task-table tr.group-start > td {
         border-top:1px solid #dfe3e7 !important;
       }
- 
+
       /* Task effort, cost, parked work, and project rollups. */
       .family-task-section-title {
         margin:16px 14px 8px;
@@ -5142,7 +5142,7 @@ tbody tr.total-row > td:first-child {
       .family-task-summary-sort:hover,
       .family-task-summary-sort:focus-visible { background:#eef2f6; outline:none; }
       .family-task-summary-sort.active::after { content:attr(data-sort-arrow); margin-left:5px; }
- 
+
       /* Keep the established rail/content layout; only add the shared view switch. */
       :root { --rail:216px; }
       .top-controls {
@@ -5219,7 +5219,7 @@ tbody tr.total-row > td:first-child {
         }
         .family-task-table { max-width:none !important; }
       }
- 
+
       /* One complete, large-radius frame language across primary pages. */
       :root {
         --radius:6px;
@@ -5504,7 +5504,7 @@ tbody tr.total-row > td:first-child {
           max-width:none !important;
         }
       }
- 
+
       /* Clearer, calmer workspace hierarchy and inline rich notes. */
       :root {
         --bg:#f6f8fb;
@@ -5543,7 +5543,7 @@ tbody tr.total-row > td:first-child {
         outline:2px solid rgba(26,115,232,.3) !important;
         outline-offset:2px;
       }
- 
+
       #category-detail-modal {
         pointer-events:auto;
         background:rgba(26, 34, 45, .28);
@@ -5601,7 +5601,7 @@ tbody tr.total-row > td:first-child {
       .category-detail-side input, .category-detail-side select { width:100%; background:#fff; text-transform:none; letter-spacing:0; }
       .category-detail-actions { display:grid; gap:8px; margin-top:auto; }
       .category-detail-actions .btn { width:100%; border-radius:9px; }
- 
+
       #category-editor .category-row {
         min-height:72px !important;
         align-items:stretch !important;
@@ -5632,7 +5632,7 @@ tbody tr.total-row > td:first-child {
         .category-detail-side { display:grid; grid-template-columns:1fr 1fr; }
         .category-detail-actions { grid-column:1 / -1; grid-template-columns:1fr 1fr; }
       }
- 
+
       /* Final seamless surfaces. Scrolling remains available without visual rails. */
       * { scrollbar-width:none; }
       *::-webkit-scrollbar { width:0; height:0; display:none; }
@@ -5652,7 +5652,7 @@ tbody tr.total-row > td:first-child {
         transition:background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
       }
       .btn:active, .icon-btn:active, .panel-add:active, .mini-action:active { transform:scale(.97); }
- 
+
       #category-detail-modal { background:rgba(42,50,61,.16); backdrop-filter:blur(10px) saturate(110%); }
       #category-detail-modal .category-detail-content {
         width:min(720px, 94vw) !important;
@@ -5728,7 +5728,7 @@ tbody tr.total-row > td:first-child {
       .note-header strong { font-weight:700; }
       .category-detail-side { margin:12px 12px 12px 0; padding:14px; border-radius:14px; background:#f6f8fb; }
       .category-detail-actions .btn { min-height:36px; background:#fff; }
- 
+
       .tracker-card tbody tr.total-row > td { background:transparent !important; }
       .total-bubble, .tracker-card .goal-progress-cell .goal-percent {
         display:inline-flex !important;
@@ -5748,7 +5748,7 @@ tbody tr.total-row > td:first-child {
       .tracker-card .goal-progress-cell .goal-percent.summary-goal-orange { background:#efb86e !important; color:#5b2d00 !important; }
       .tracker-card .goal-progress-cell .goal-percent.summary-goal-red { background:#e9857d !important; color:#59120e !important; }
       .tracker-card .goal-progress-cell .goal-percent.summary-goal-gray { background:#cfd5dc !important; color:#303842 !important; }
- 
+
       /* Stronger neutral separation without making the interface heavy. */
       :root {
         --bg:#eef2f6;
@@ -5996,7 +5996,7 @@ tbody tr.total-row > td:first-child {
       .top-controls { gap:8px !important; row-gap:14px !important; }
       .tab-container { gap:6px !important; }
       .tab { min-height:42px !important; padding:6px 10px !important; }
- 
+
       /* Totals use the entire cell on both axes. */
       .tracker-card tbody tr.total-row > td,
       .tracker-card td.goal-progress-cell {
@@ -6020,7 +6020,7 @@ tbody tr.total-row > td:first-child {
         background:#e8e8ed !important;
         color:#1d1d1f !important;
       }
- 
+
       /* More dimensional, Apple-like surfaces and controls. */
       .top-bar {
         background:rgba(248,248,250,.9) !important;
@@ -6150,7 +6150,7 @@ tbody tr.total-row > td:first-child {
         background:#fff !important;
       }
       body.category-note-page .category-detail-actions { display:none !important; }
- 
+
       /* Tracker companion panels share one exact rhythm and frame. */
       .tracker-workspace { align-items:start !important; }
       .work-grid {
@@ -6211,7 +6211,7 @@ tbody tr.total-row > td:first-child {
       }
       .tracker-workspace, .work-grid, .category-config-layout,
       .household-layout, .family-tasks-app { gap:var(--ui-gap) !important; }
- 
+
       #site-root table th {
         height:var(--ui-header) !important;
         min-height:var(--ui-header) !important;
@@ -6272,7 +6272,7 @@ tbody tr.total-row > td:first-child {
         height:var(--ui-row) !important;
         min-height:var(--ui-row) !important;
       }
- 
+
       .tracker-workspace {
         width:100% !important;
         margin:0 auto !important;
@@ -6382,7 +6382,7 @@ tbody tr.total-row > td:first-child {
       #site-root textarea,
       #site-root button,
       #site-root [contenteditable="true"] { font-size:12px !important; }
- 
+
       #site-root .app-switch-button,
       #site-root .tab,
       #site-root .config-nav,
@@ -6444,7 +6444,7 @@ tbody tr.total-row > td:first-child {
       .work-grid .log-list { padding:8px 12px 12px !important; }
       .work-grid .entry-row,
       .work-grid .log-compose { margin:8px 12px 0 !important; }
- 
+
       /* One continuous task header band. */
       .family-task-table {
         border-collapse:separate !important;
@@ -6474,7 +6474,7 @@ tbody tr.total-row > td:first-child {
         display:flex !important;
         width:100% !important;
       }
- 
+
       /* The calendar uses a single outer frame. */
       .calendar-card {
         overflow:hidden !important;
@@ -6496,7 +6496,7 @@ tbody tr.total-row > td:first-child {
         min-height:var(--ui-row) !important;
         padding:3px 7px !important;
       }
- 
+
       body.category-note-page .category-detail-heading {
         min-height:58px !important;
         padding:12px 18px !important;
@@ -6516,7 +6516,7 @@ tbody tr.total-row > td:first-child {
         margin-top:0 !important;
       }
       .work-grid { justify-self:stretch !important; }
- 
+
       body.category-note-page .screen-bar {
         width:min(100%, 980px) !important;
         margin:0 0 10px !important;
@@ -6526,7 +6526,7 @@ tbody tr.total-row > td:first-child {
         margin:0 !important;
       }
       body.category-note-page #screen-content { margin:0 !important; }
- 
+
       /* Calendar grid without a surrounding card. */
       .calendar-card {
         overflow:visible !important;
@@ -6832,7 +6832,7 @@ tbody tr.total-row > td:first-child {
         background:transparent !important;
       }
       #category-editor .category-show-fields { display:none !important; }
- 
+
       /* Compact working tables with one shared row rhythm across every workspace. */
       :root { --workspace-table-row:30px; --workspace-table-header:34px; }
       #site-root table th,
@@ -6862,7 +6862,7 @@ tbody tr.total-row > td:first-child {
       .task-item,
       .log-item,
       .note-check-item { box-sizing:border-box !important; min-height:var(--workspace-table-row) !important; }
- 
+
       /* Calendar entries need more room than the compact data tables. */
       .calendar-total,
       .calendar-day,
@@ -6879,19 +6879,19 @@ tbody tr.total-row > td:first-child {
         background:#f2f2f5 !important;
         box-shadow:0 1px 0 rgba(60,60,67,.18) !important;
       }
- 
+
       .family-task-assignee-name { display:none; }
- 
+
       /* Use a calmer, straight menu glyph. */
       .menu-button::before { content:"\2261" !important; font-size:22px !important; font-weight:600 !important; }
- 
+
       /* Summary and configuration belong to the Tracker workspace. */
       .tracker-nav-links,
       body.subpage-active #tracker-nav-links { display:none !important; }
       body[data-active-view="tracker"] #tracker-nav-links,
       body[data-active-view="summary"] #tracker-nav-links,
       body[data-active-view="configuration"] #tracker-nav-links { display:grid !important; }
- 
+
       /* Keep the return path visible on compact screens. */
       @media (max-width:899px) {
         body#site-root.category-note-page.subpage-active .screen-bar {
@@ -6905,7 +6905,7 @@ tbody tr.total-row > td:first-child {
           opacity:1 !important;
           pointer-events:auto !important;
         }
- 
+
         /* Mobile Tasks shows only completion, assignee name, and task text. */
         #site-root .family-task-table {
           width:100% !important;
@@ -6942,9 +6942,1003 @@ tbody tr.total-row > td:first-child {
           white-space:nowrap;
         }
       }
+
+      /* Final visual system: Apple-like type, predictable geometry, and persistent tracker tools. */
+      :root {
+        --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, "Helvetica Neue", Arial, sans-serif;
+        --control-radius:10px;
+        --section-radius:14px;
+      }
+      #site-root,
+      #site-root button,
+      #site-root input,
+      #site-root select,
+      #site-root textarea,
+      #site-root table,
+      #site-root [contenteditable="true"] {
+        font-family:var(--font) !important;
+        letter-spacing:-.008em;
+      }
+      #site-root input:not([type="checkbox"]):not([type="color"]),
+      #site-root select,
+      #site-root textarea,
+      #site-root .btn,
+      #site-root .menu-item,
+      #site-root .app-switch,
+      #site-root .app-switch-button,
+      #site-root .tab,
+      #site-root .config-nav,
+      #site-root .family-filter-pill,
+      #site-root .tracker-nav-link,
+      #site-root .overflow-menu {
+        border-radius:var(--control-radius) !important;
+      }
+      #site-root .tracker-card,
+      #site-root .panel,
+      #site-root .summary-table-wrap,
+      #site-root .category-editor,
+      #site-root .goal-band-editor,
+      #site-root .family-filter-block,
+      #site-root .household-content .household-main,
+      #site-root .family-task-section .family-task-list,
+      #site-root .family-task-section .family-task-summary-wrap,
+      #site-root .calendar-table,
+      #site-root .category-detail-content {
+        border-radius:var(--section-radius) !important;
+      }
+      #site-root .icon-btn,
+      #site-root .panel-add,
+      #site-root .mini-action,
+      #site-root .menu-button,
+      #site-root .tracker-refresh {
+        border-radius:var(--control-radius) !important;
+      }
+      #tracker-nav-links,
+      body.subpage-active #tracker-nav-links,
+      body[data-active-view="tracker"] #tracker-nav-links,
+      body[data-active-view="tasks"] #tracker-nav-links,
+      body[data-active-view="calendar"] #tracker-nav-links,
+      body[data-active-view="summary"] #tracker-nav-links,
+      body[data-active-view="configuration"] #tracker-nav-links {
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:4px !important;
+        padding:4px !important;
+        border-radius:var(--section-radius) !important;
+      }
+      .tracker-nav-title {
+        grid-column:1 / -1;
+        padding:5px 7px 3px;
+        color:#6e6e73;
+        font-size:10px !important;
+        font-weight:600;
+        letter-spacing:.02em !important;
+        text-transform:uppercase;
+      }
+      #site-root .tracker-nav-link {
+        justify-content:center !important;
+        padding:0 7px !important;
+        background:transparent !important;
+      }
+      #site-root .tracker-nav-link.active {
+        background:#fff !important;
+        color:#1d1d1f !important;
+        box-shadow:0 1px 3px rgba(0,0,0,.12) !important;
+      }
+      body.category-note-page #tracker-nav-links { display:none !important; }
+
+      /* Baseline polish: one system font stack and a restrained radius scale. */
+      :root {
+        --font:ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --control-radius:10px;
+        --section-radius:12px;
+      }
+      #site-root .btn,
+      #site-root .icon-btn,
+      #site-root .panel-add,
+      #site-root .mini-action,
+      #site-root .menu-button,
+      #site-root .tracker-refresh,
+      #site-root .app-switch,
+      #site-root .app-switch-button,
+      #site-root .tab,
+      #site-root .tracker-nav-link,
+      #site-root .config-nav,
+      #site-root .family-filter-pill,
+      #site-root input:not([type="checkbox"]):not([type="color"]),
+      #site-root select,
+      #site-root textarea {
+        border-radius:var(--control-radius) !important;
+      }
+      #site-root .tracker-card,
+      #site-root .panel,
+      #site-root .summary-table-wrap,
+      #site-root .family-task-list,
+      #site-root .family-task-summary-wrap,
+      #site-root .calendar-table,
+      #site-root .goal-band-editor,
+      #site-root .family-filter-block,
+      #site-root .category-detail-content {
+        border-radius:var(--section-radius) !important;
+      }
+
+      /* Summary and Configuration are Tracker options, directly below People. */
+      #tracker-nav-links,
+      body.subpage-active #tracker-nav-links,
+      body[data-active-view="tracker"] #tracker-nav-links,
+      body[data-active-view="tasks"] #tracker-nav-links,
+      body[data-active-view="calendar"] #tracker-nav-links,
+      body[data-active-view="summary"] #tracker-nav-links,
+      body[data-active-view="configuration"] #tracker-nav-links {
+        grid-template-columns:1fr !important;
+        gap:3px !important;
+        margin:6px 0 0 !important;
+        padding:5px !important;
+        border:1px solid rgba(60,60,67,.14) !important;
+        border-radius:var(--section-radius) !important;
+        background:rgba(255,255,255,.78) !important;
+      }
+      .tracker-nav-title {
+        grid-column:1 !important;
+        padding:6px 8px 4px !important;
+        color:#3a3a3c !important;
+        font-size:11px !important;
+        font-weight:700 !important;
+        letter-spacing:0 !important;
+        text-transform:none !important;
+      }
+      #site-root .tracker-nav-link {
+        justify-content:flex-start !important;
+        min-height:32px !important;
+        padding:0 9px !important;
+        font-weight:600 !important;
+      }
+      .tracker-options-toggle { display:none !important; }
+
+      /* The scroll container owns scrolling; the configuration editor owns one complete outline. */
+      #category-screen-categories {
+        width:100% !important;
+        min-width:0 !important;
+        overflow:auto !important;
+        padding:1px !important;
+      }
+      #category-editor.category-editor {
+        display:inline-block !important;
+        width:auto !important;
+        min-width:100% !important;
+        overflow:hidden !important;
+        border:1px solid #c9c9ce !important;
+        border-radius:var(--section-radius) !important;
+        background:#fff !important;
+      }
+      #category-editor .category-header,
+      #category-editor .category-row {
+        width:100% !important;
+        min-width:1046px !important;
+        grid-template-columns:44px 118px 220px 96px 110px 76px 72px 72px 76px 80px minmax(82px, 1fr) !important;
+      }
+      #category-editor .category-row:last-child { border-bottom:0 !important; }
+
+      /* A tracker check is displayed as its count, matching the number-entry cells. */
+      .tracker-card td input[type="checkbox"][data-count] {
+        width:44px !important;
+        min-width:44px !important;
+        max-width:44px !important;
+        height:24px !important;
+        min-height:24px !important;
+        max-height:24px !important;
+        margin:0 auto !important;
+        border:1px solid var(--line) !important;
+        border-radius:var(--control-radius) !important;
+        background:#fff !important;
+        box-shadow:none !important;
+        color:var(--ink) !important;
+      }
+      .tracker-card td input[type="checkbox"][data-count]::before {
+        content:attr(data-count) !important;
+        position:absolute !important;
+        inset:0 !important;
+        width:auto !important;
+        height:auto !important;
+        display:grid !important;
+        place-items:center !important;
+        border-radius:inherit !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        color:inherit !important;
+        font-size:10pt !important;
+        font-weight:400 !important;
+        line-height:1 !important;
+      }
+      .tracker-card td input[type="checkbox"][data-count="0"]::before { content:"" !important; }
+      .tracker-card td input[type="checkbox"][data-count]:hover { border-color:#aeb4bc !important; background:#f8f9fa !important; }
+      .tracker-card td input[type="checkbox"][data-count]:focus-visible {
+        border-color:#0071e3 !important;
+        box-shadow:0 0 0 3px rgba(0,113,227,.16) !important;
+      }
+
+      @media (max-width:899px) {
+        .tracker-options-toggle {
+          display:flex !important;
+          width:100% !important;
+          min-height:34px !important;
+          margin:6px 0 0 !important;
+          justify-content:space-between !important;
+          font-weight:700 !important;
+          background:#fff !important;
+        }
+        .tracker-options-toggle::after { content:"+"; font-size:16px; line-height:1; }
+        body.tracker-options-open .tracker-options-toggle::after { content:"\2212"; }
+        #tracker-nav-links,
+        body.subpage-active #tracker-nav-links,
+        body[data-active-view="tracker"] #tracker-nav-links,
+        body[data-active-view="tasks"] #tracker-nav-links,
+        body[data-active-view="calendar"] #tracker-nav-links,
+        body[data-active-view="summary"] #tracker-nav-links,
+        body[data-active-view="configuration"] #tracker-nav-links {
+          display:none !important;
+        }
+        body[data-active-view="tracker"].tracker-options-open #tracker-nav-links {
+          display:grid !important;
+        }
+        body.subpage-active .tracker-options-toggle,
+        body.category-note-page .tracker-options-toggle { display:none !important; }
+      }
+
+      /* Compact workspace pass. Keep information dense and reserve navigation for its owning view. */
+      :root {
+        --rail:184px;
+        --gap:10px;
+        --workspace-table-row:27px;
+        --workspace-table-header:30px;
+        --ui-page-inset:12px;
+      }
+      body { font-size:9.5pt !important; }
+      .top-bar { padding:8px !important; gap:8px !important; }
+      #kid-views,
+      #screen-view,
+      body.subpage-active #screen-view { padding:10px 12px 14px !important; }
+      .tracker-workspace { gap:10px !important; }
+      .work-grid { gap:8px !important; }
+      .panel { padding:10px !important; }
+      .panel-head,
+      .family-tasks-head,
+      .goal-band-head { min-height:28px !important; margin-bottom:6px !important; padding:0 !important; }
+      #site-root .btn,
+      #site-root input,
+      #site-root select,
+      #site-root textarea { min-height:28px; }
+      #site-root table th { height:var(--workspace-table-header) !important; min-height:var(--workspace-table-header) !important; }
+      #site-root table td { height:var(--workspace-table-row) !important; min-height:var(--workspace-table-row) !important; }
+      th, td { padding:2px 4px !important; }
+      .tab-container { gap:2px !important; }
+      #site-root #kid-tabs .tab { min-height:30px !important; padding:3px 6px !important; }
+      .kid-name { font-size:10pt !important; }
+      .rank-circle { height:20px !important; }
+      .task-item,
+      .log-item { min-height:27px !important; padding:3px 0 !important; }
+      .family-task-table th,
+      .family-task-table td,
+      .family-task-table .family-task-row > *,
+      .family-task-table .family-task-header > * { height:27px !important; min-height:27px !important; }
+      .family-task-table .family-task-cell,
+      .family-task-table .family-task-actions { height:26px !important; min-height:26px !important; padding:2px 5px !important; }
+      .summary-table th,
+      .summary-table td { height:27px !important; min-height:27px !important; }
+      .family-task-section { margin-bottom:10px !important; }
+      .family-task-summary-wrap { margin:10px 10px 8px !important; }
+
+      .people-nav-title {
+        padding:2px 7px 3px;
+        color:#3a3a3c;
+        font-size:11px;
+        font-weight:700;
+      }
+      body.subpage-active .people-nav-title { display:none !important; }
+
+      #tracker-nav-links,
+      body.subpage-active #tracker-nav-links,
+      body[data-active-view="tasks"] #tracker-nav-links,
+      body[data-active-view="calendar"] #tracker-nav-links,
+      body[data-active-view="summary"] #tracker-nav-links,
+      body[data-active-view="configuration"] #tracker-nav-links { display:none !important; }
+      body:not(.subpage-active)[data-active-view="tracker"] #tracker-nav-links { display:grid !important; }
+
+      /* Check categories show only the count; the cell grid supplies the structure. */
+      .tracker-card td input[type="checkbox"][data-count],
+      .tracker-card td input[type="checkbox"][data-count]:hover,
+      .tracker-card td input[type="checkbox"][data-count]:checked {
+        width:28px !important;
+        min-width:28px !important;
+        max-width:28px !important;
+        height:22px !important;
+        min-height:22px !important;
+        max-height:22px !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      .tracker-card td input[type="checkbox"][data-count]:focus-visible {
+        outline:2px solid rgba(0,113,227,.35) !important;
+        outline-offset:0 !important;
+        box-shadow:none !important;
+      }
+
+      /* Dates remain directly editable; the extra calendar glyph is unnecessary. */
+      .family-task-calendar-button { display:none !important; }
+
+      /* Calendar is a straight grid: square cells and uninterrupted borders. */
+      .calendar-table,
+      .calendar-table-wrap,
+      .calendar-header,
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell {
+        border-radius:0 !important;
+        box-shadow:none !important;
+      }
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell {
+        height:34px !important;
+        min-height:34px !important;
+        max-height:34px !important;
+        padding:2px 6px !important;
+      }
+
+      /* On condensed task layouts, preserve the useful identity/date fields and drop metrics. */
+      @media (max-width:1100px) {
+        .family-task-table th:nth-child(5),
+        .family-task-table td:nth-child(5),
+        .family-task-table th:nth-child(6),
+        .family-task-table td:nth-child(6) { display:none !important; }
+        .family-task-table { width:auto !important; min-width:570px !important; }
+      }
+      @media (max-width:899px) {
+        .people-nav-title { padding:2px 4px 1px; }
+        .tracker-options-toggle { margin-top:4px !important; }
+        body[data-active-view="tracker"].tracker-options-open #tracker-nav-links { display:grid !important; }
+      }
+
+      /* ChatGPT-like light treatment: white data surfaces and quiet borders instead of gray fills. */
+      :root {
+        --bg:#fff;
+        --surface:#fff;
+        --surface-soft:#fff;
+        --line:#e5e5e5;
+        --line-strong:#d4d4d4;
+      }
+      body,
+      .site-container,
+      #kid-views,
+      #screen-view,
+      #screen-content { background:#fff !important; }
+      .top-bar { background:#fafafa !important; }
+      .tracker-card,
+      .panel,
+      .summary-table-wrap,
+      .family-task-list,
+      .family-task-summary-wrap,
+      .category-editor,
+      .goal-band-editor,
+      .calendar-table { background:#fff !important; }
+      #site-root table th,
+      .family-task-table th,
+      .summary-table th,
+      .calendar-header,
+      #category-editor .category-header {
+        background:#fff !important;
+        color:#4b4b4f !important;
+      }
+      #category-editor .category-row,
+      #category-editor .category-row:nth-child(odd),
+      #category-editor .category-row:hover,
+      .family-task-table tr.status-now td,
+      .family-task-table tr.status-next td,
+      .family-task-table tr.status-soon td,
+      .family-task-table tr.status-waiting td,
+      .family-task-table tr.status-parked td,
+      .family-task-table tr.complete td,
+      .calendar-cell.has-content { background:#fff !important; }
+      .calendar-cell.color-filtered { background:var(--calendar-cell-color) !important; }
+      #site-root textarea.calendar-cell {
+        border-radius:0 !important;
+        background-clip:border-box !important;
+      }
+      .summary-goal-gray,
+      .tracker-card tbody tr.total-row > td.summary-goal-gray,
+      .tracker-card td.goal-progress-cell.summary-goal-gray,
+      .calendar-total.summary-goal-gray {
+        background:#fff !important;
+        color:#3a3a3c !important;
+      }
+      th,
+      td,
+      .family-task-table th,
+      .family-task-table td,
+      .calendar-header,
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell,
+      #category-editor .category-row > *,
+      #category-editor .category-header > span { border-color:#e5e5e5 !important; }
+
+      /* Final density pass: compact, system-font UI with section headers inside their borders. */
+      :root {
+        --font:ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --rail:176px;
+        --workspace-table-row:26px;
+        --workspace-table-header:28px;
+        --content-radius:10px;
+        --control-height:30px;
+        --compact-height:26px;
+      }
+      html, body, button, input, select, textarea, table, th, td {
+        font-family:var(--font) !important;
+      }
+      #site-root, #site-root * { font-size:12px !important; }
+      .site-container { grid-template-columns:var(--rail) minmax(0,1fr) !important; }
+      .top-bar { padding:7px !important; gap:6px !important; }
+      .top-controls { gap:5px !important; row-gap:6px !important; }
+      #week-select,
+      .top-controls select,
+      #site-root .btn,
+      #site-root input:not([type="checkbox"]),
+      #site-root select,
+      #site-root .config-nav,
+      #site-root .family-filter-pill {
+        height:30px !important;
+        min-height:30px !important;
+      }
+      .app-switch { padding:2px !important; gap:1px !important; }
+      .app-switch-button {
+        min-height:28px !important;
+        padding:3px 5px !important;
+        font-size:11px !important;
+      }
+      #kid-views,
+      #screen-view,
+      body.subpage-active #screen-view { padding:8px 10px 10px !important; }
+      .tracker-workspace,
+      .work-grid,
+      .category-config-layout,
+      .household-layout,
+      .family-tasks-app { gap:7px !important; }
+
+      .people-nav-box {
+        display:block;
+        overflow:hidden;
+        border:1px solid var(--line) !important;
+        border-radius:10px !important;
+        background:#fff !important;
+      }
+      .people-nav-title {
+        min-height:27px;
+        box-sizing:border-box;
+        display:flex;
+        align-items:center;
+        padding:5px 7px !important;
+        border-bottom:1px solid var(--line);
+        color:#202123;
+        font-weight:650 !important;
+      }
+      #kid-tabs.tab-container {
+        gap:0 !important;
+        padding:3px !important;
+        border:0 !important;
+        border-radius:0 !important;
+      }
+      #site-root #kid-tabs .tab {
+        height:27px !important;
+        min-height:27px !important;
+        padding:2px 6px !important;
+        border-radius:7px !important;
+      }
+      #site-root #kid-tabs .kid-name { font-size:12px !important; }
+      #site-root #kid-tabs .rank-circle {
+        width:38px !important;
+        min-width:38px !important;
+        max-width:38px !important;
+        height:19px !important;
+        min-height:19px !important;
+      }
+      body.subpage-active .people-nav-box,
+      body[data-active-view="tasks"] .people-nav-box,
+      body[data-active-view="calendar"] .people-nav-box,
+      body[data-active-view="summary"] .people-nav-box,
+      body[data-active-view="configuration"] .people-nav-box { display:none !important; }
+
+      .tracker-nav-links {
+        gap:1px !important;
+        padding:3px !important;
+        border-radius:10px !important;
+      }
+      .tracker-nav-title {
+        min-height:26px !important;
+        padding:5px 7px !important;
+      }
+      .tracker-nav-link { min-height:27px !important; padding:4px 7px !important; border-radius:7px !important; }
+
+      .tracker-card,
+      .panel,
+      .summary-table-wrap,
+      .category-editor,
+      .goal-band-editor,
+      .calendar-card,
+      .family-task-section .family-task-list,
+      .family-task-section .family-task-summary-wrap {
+        border-radius:10px !important;
+        box-shadow:none !important;
+      }
+      .tracker-card th:first-child,
+      .tracker-card td:first-child { padding-left:7px !important; padding-right:6px !important; }
+      #site-root table th {
+        height:28px !important;
+        min-height:28px !important;
+        padding:2px 5px !important;
+      }
+      #site-root table td {
+        height:26px !important;
+        min-height:26px !important;
+        padding:2px 5px !important;
+      }
+      .tracker-card .category-label {
+        min-height:0 !important;
+        height:21px !important;
+        line-height:21px !important;
+      }
+      .tracker-card td input[type="checkbox"][data-count],
+      .tracker-card td input[type="number"] {
+        height:20px !important;
+        min-height:20px !important;
+        max-height:20px !important;
+        line-height:20px !important;
+      }
+      .panel { padding:0 !important; }
+      #site-root .panel-head,
+      #site-root .family-tasks-head,
+      #site-root .goal-band-head {
+        box-sizing:border-box;
+        height:30px !important;
+        min-height:30px !important;
+        margin:0 !important;
+        padding:0 9px !important;
+      }
+      .empty-state { min-height:34px !important; padding:8px !important; }
+      .task-item,
+      .log-item,
+      .note-check-item { min-height:26px !important; padding:2px 8px !important; }
+
+      .family-tasks-side,
+      .summary-controls,
+      .category-side,
+      .household-side { gap:7px !important; padding:8px !important; border-radius:10px !important; }
+      .family-filter-block { gap:3px !important; }
+      .family-filter-title { min-height:24px !important; padding:3px 4px !important; }
+      .family-filter-list { gap:2px !important; }
+      .family-filter-pill { padding:3px 7px !important; }
+      .family-task-section { margin-bottom:7px !important; }
+      .family-tasks-head { padding:0 8px !important; }
+      .family-task-table th,
+      .family-task-table td,
+      .family-task-table .family-task-row > *,
+      .family-task-table .family-task-header > * { height:26px !important; min-height:26px !important; }
+      .family-task-table .family-task-cell,
+      .family-task-table .family-task-actions { height:25px !important; min-height:25px !important; padding:1px 4px !important; }
+      .family-task-summary-wrap { margin:7px 0 0 !important; }
+
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell {
+        height:30px !important;
+        min-height:30px !important;
+        max-height:30px !important;
+        padding:2px 5px !important;
+      }
+
+      @media (max-width:899px) {
+        :root { --rail:0px; }
+        .people-nav-box { border-radius:9px !important; }
+        .people-nav-title { min-height:25px; padding:4px 6px !important; }
+        #kid-tabs.tab-container { padding:2px !important; }
+        #site-root #kid-tabs .tab { height:26px !important; min-height:26px !important; }
+      }
+
+      /* Quiet, Windows-like table rhythm: flat white surfaces and light hairlines. */
+      :root {
+        --table-hairline:rgba(60,60,67,.12);
+        --table-section-line:rgba(60,60,67,.16);
+      }
+      .app-switch {
+        box-sizing:border-box !important;
+        min-height:32px !important;
+        padding:2px !important;
+        gap:0 !important;
+        border:1px solid var(--line) !important;
+        border-radius:10px !important;
+        background:#fff !important;
+      }
+      #site-root .app-switch-button {
+        height:26px !important;
+        min-height:26px !important;
+        padding:2px 6px !important;
+        border-radius:8px !important;
+        font-size:12px !important;
+        line-height:1 !important;
+      }
+      #site-root .app-switch-button.active {
+        background:#f2f2f2 !important;
+        color:#202123 !important;
+        box-shadow:none !important;
+      }
+
+      #site-root table th,
+      #site-root table td,
+      .calendar-header,
+      .calendar-total,
+      .calendar-day,
+      .calendar-cell {
+        border-color:var(--table-hairline) !important;
+      }
+      .tracker-card tbody tr.group-start > td,
+      .tracker-card tbody tr.total-row > td,
+      .family-task-table tr.group-start > td,
+      .summary-table tbody tr.group-start > td,
+      .calendar-total.week-start-row,
+      .calendar-day.week-start-row,
+      .calendar-cell.week-start-row,
+      .calendar-total.sunday-row,
+      .calendar-day.sunday-row,
+      .calendar-cell.sunday-row {
+        border-top:1px solid var(--table-section-line) !important;
+      }
+      .calendar-total.today-row,
+      .calendar-day.today-row,
+      .calendar-cell.today-row {
+        border-top:1px solid rgba(0,113,227,.55) !important;
+      }
+      .tracker-card thead th,
+      .family-task-table thead th,
+      .calendar-table > .calendar-header {
+        background:#fff !important;
+        color:#3a3a3c !important;
+        box-shadow:inset 0 -1px 0 var(--table-section-line) !important;
+      }
+      .tracker-card,
+      .family-task-list,
+      .calendar-table {
+        border-color:var(--table-section-line) !important;
+      }
+
+      /* Dates stay compact and fully visible as MM/DD. */
+      .family-task-table th:nth-child(4),
+      .family-task-table td:nth-child(4) {
+        width:76px !important;
+        min-width:76px !important;
+        max-width:76px !important;
+      }
+      #site-root .family-task-table .family-task-date {
+        padding:1px 3px !important;
+        overflow:visible !important;
+        text-overflow:clip !important;
+        white-space:nowrap !important;
+        font-size:11px !important;
+        font-variant-numeric:tabular-nums;
+      }
+      .family-task-date-wrap {
+        grid-template-columns:minmax(0,1fr) !important;
+        min-height:25px !important;
+      }
+
+      /* Calendar columns may expand horizontally and rows grow with their content. */
+      .calendar-table-wrap {
+        overflow:auto !important;
+        scrollbar-gutter:stable;
+      }
+      .calendar-table {
+        width:max-content !important;
+        min-width:100% !important;
+        max-width:none !important;
+        grid-auto-rows:minmax(28px, auto) !important;
+        overflow:visible !important;
+        border-radius:8px !important;
+      }
+      #site-root .calendar-table > .calendar-header {
+        background-color:#fff !important;
+        background-image:none !important;
+      }
+      #site-root .calendar-header {
+        height:30px !important;
+        min-height:30px !important;
+        max-height:none !important;
+        padding:3px 4px !important;
+        font-size:10px !important;
+        line-height:1.1 !important;
+        white-space:normal !important;
+        overflow:visible !important;
+      }
+      #site-root .calendar-total,
+      #site-root .calendar-day {
+        height:auto !important;
+        min-height:28px !important;
+        max-height:none !important;
+        display:flex !important;
+        align-items:center !important;
+        padding:3px 4px !important;
+        font-size:10px !important;
+        line-height:1.15 !important;
+      }
+      #site-root textarea.calendar-cell {
+        field-sizing:content !important;
+        box-sizing:border-box !important;
+        width:100% !important;
+        height:auto !important;
+        min-height:28px !important;
+        max-height:none !important;
+        padding:3px 4px !important;
+        overflow:hidden !important;
+        resize:none !important;
+        white-space:pre-wrap !important;
+        overflow-wrap:anywhere !important;
+        font-size:9px !important;
+        line-height:1.18 !important;
+      }
+
+      /* One left-rail grid and card system across Tracker, Tasks, and Calendar. */
+      body.subpage-active #subpage-rail {
+        width:100% !important;
+        align-self:start !important;
+        align-content:start !important;
+        gap:10px !important;
+      }
+      #subpage-rail > .family-tasks-side,
+      #subpage-rail > .calendar-side {
+        box-sizing:border-box !important;
+        width:100% !important;
+        height:auto !important;
+        min-height:0 !important;
+        align-self:start !important;
+        align-content:start !important;
+        gap:10px !important;
+        padding:0 !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      #subpage-rail .family-filter-block {
+        box-sizing:border-box !important;
+        width:100% !important;
+        gap:0 !important;
+        padding:0 !important;
+        overflow:hidden !important;
+        border:1px solid var(--line) !important;
+        border-radius:10px !important;
+        background:#fff !important;
+        box-shadow:none !important;
+      }
+      #subpage-rail .family-filter-title {
+        box-sizing:border-box !important;
+        min-height:27px !important;
+        margin:0 !important;
+        padding:5px 7px !important;
+        border-bottom:1px solid var(--line) !important;
+        border-radius:0 !important;
+        background:#fff !important;
+        color:#202123 !important;
+        font-weight:650 !important;
+      }
+      #subpage-rail .family-filter-list,
+      #subpage-rail .family-status-list,
+      #subpage-rail .calendar-range-list,
+      #subpage-rail .calendar-column-list {
+        box-sizing:border-box !important;
+        width:100% !important;
+        padding:3px !important;
+      }
+      body#site-root #tracker-nav-links {
+        box-sizing:border-box !important;
+        width:100% !important;
+        gap:0 !important;
+        padding:0 !important;
+        overflow:hidden !important;
+        border:1px solid var(--line) !important;
+        border-radius:10px !important;
+        background:#fff !important;
+        box-shadow:none !important;
+      }
+      body#site-root .tracker-nav-title {
+        box-sizing:border-box !important;
+        min-height:27px !important;
+        margin:0 !important;
+        padding:5px 7px !important;
+        border-bottom:1px solid var(--line) !important;
+        background:#fff !important;
+        color:#202123 !important;
+        font-weight:650 !important;
+      }
+      body#site-root #tracker-nav-links .tracker-nav-link {
+        width:calc(100% - 6px) !important;
+        margin:3px 3px 0 !important;
+      }
+      body#site-root #tracker-nav-links .tracker-nav-link:last-child { margin-bottom:3px !important; }
+
+      /* Configuration/table system refresh. Tables use one restrained outline. */
+      :root { --table-radius:6px; }
+      #site-root .tracker-card,
+      #site-root .family-task-section .family-task-list,
+      #site-root .family-task-section .family-task-summary-wrap,
+      #site-root .summary-table-wrap,
+      #site-root #category-editor.category-editor,
+      #site-root .calendar-table {
+        border-radius:var(--table-radius) !important;
+      }
+
+      /* Selection means the same thing everywhere: a quiet blue highlight. */
+      #site-root #kid-tabs .tab.active,
+      #site-root .config-nav.active,
+      #site-root .family-filter-pill.active,
+      #site-root .category-person-choice.active,
+      #site-root .tracker-nav-link.active,
+      #site-root [data-calendar-range].active {
+        background:#e8f2ff !important;
+        color:#0066cc !important;
+        box-shadow:none !important;
+      }
+      #site-root #kid-tabs .tab.active .rank-circle { color:#0066cc !important; }
+
+      /* The Tracker total label does not need a gray band. */
+      #site-root .tracker-card tbody tr.total-row > td:first-child {
+        background:#fff !important;
+        color:#1d1d1f !important;
+      }
+
+      /* Import From is a compact inline control, not two stacked bubbles. */
+      #site-root .category-side .import-bubble {
+        grid-template-columns:minmax(0,1fr) auto !important;
+        gap:0 !important;
+      }
+      #site-root .category-side .import-bubble > .family-filter-title { grid-column:1 / -1 !important; }
+      #site-root #category-import-person {
+        grid-column:1 !important;
+        width:100% !important;
+        min-width:0 !important;
+        height:27px !important;
+        min-height:27px !important;
+        margin:3px 0 3px 3px !important;
+        padding:0 5px !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      #site-root #import-categories {
+        grid-column:2 !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:27px !important;
+        min-height:27px !important;
+        margin:3px !important;
+        padding:0 7px !important;
+        border-radius:6px !important;
+        font-size:11px !important;
+      }
+
+      /* Configuration is a compact table until the user enters a row. */
+      #site-root #category-editor.category-editor {
+        overflow:hidden !important;
+        border:1px solid var(--line-strong) !important;
+        background:#fff !important;
+        box-shadow:none !important;
+      }
+      #site-root #category-editor .category-header {
+        height:30px !important;
+        min-height:30px !important;
+        max-height:30px !important;
+        background:#fff !important;
+      }
+      #site-root #category-editor .category-header > span,
+      #site-root #category-editor .category-row > * {
+        box-sizing:border-box !important;
+        margin:0 !important;
+        border:0 !important;
+        border-right:1px solid var(--table-hairline) !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+      }
+      #site-root #category-editor .category-header > :last-child,
+      #site-root #category-editor .category-row > :last-child { border-right:0 !important; }
+      #site-root #category-editor .category-row {
+        background:#fff !important;
+        border-bottom:1px solid var(--table-hairline) !important;
+      }
+      #site-root #category-editor .category-row:nth-child(odd),
+      #site-root #category-editor .category-row:hover { background:#fff !important; }
+      #site-root #category-editor .category-row > input,
+      #site-root #category-editor .category-row > select,
+      #site-root #category-editor .config-note-editor {
+        width:100% !important;
+        min-width:0 !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        outline:0 !important;
+      }
+      #site-root #category-editor .category-row:focus-within {
+        background:#fbfdff !important;
+        box-shadow:inset 0 0 0 1px rgba(0,113,227,.42) !important;
+      }
+      #site-root #category-editor .category-row > input:focus,
+      #site-root #category-editor .category-row > select:focus,
+      #site-root #category-editor .config-note-editor:focus {
+        background:#fff !important;
+        box-shadow:inset 0 0 0 1px rgba(0,113,227,.55) !important;
+      }
+      @media (min-width:900px) {
+        #site-root #category-editor .category-row {
+          height:32px !important;
+          min-height:32px !important;
+          max-height:32px !important;
+          overflow:hidden !important;
+        }
+        #site-root #category-editor .category-row > * {
+          height:32px !important;
+          min-height:32px !important;
+          max-height:32px !important;
+          padding:4px 7px !important;
+          overflow:hidden !important;
+        }
+        #site-root #category-editor .row-tools { padding:4px 3px !important; }
+        #site-root #category-editor .config-note-editor {
+          white-space:nowrap !important;
+          text-overflow:ellipsis !important;
+        }
+        #site-root #category-editor .category-row:focus-within {
+          height:auto !important;
+          min-height:64px !important;
+          max-height:none !important;
+          overflow:visible !important;
+        }
+        #site-root #category-editor .category-row:focus-within > * {
+          height:auto !important;
+          min-height:64px !important;
+          max-height:none !important;
+          overflow:visible !important;
+        }
+        #site-root #category-editor .category-row:focus-within .config-note-editor {
+          white-space:normal !important;
+          overflow-wrap:anywhere !important;
+        }
+      }
+
+      /* Calendar header geometry must match its first two grid columns exactly. */
+      #site-root .calendar-table > .calendar-header:nth-child(1),
+      #site-root .calendar-total {
+        left:0 !important;
+        width:auto !important;
+      }
+      #site-root .calendar-table > .calendar-header:nth-child(2),
+      #site-root .calendar-day {
+        left:48px !important;
+        width:auto !important;
+      }
+      #site-root .calendar-table > .calendar-header:nth-child(1),
+      #site-root .calendar-table > .calendar-header:nth-child(2) {
+        box-sizing:border-box !important;
+        height:30px !important;
+        min-height:30px !important;
+        max-height:30px !important;
+        padding:3px 4px !important;
+        border-radius:0 !important;
+        background:#fff !important;
+        box-shadow:inset 0 -1px 0 var(--table-section-line) !important;
+      }
     </style>
 </head>
-<body id="site-root">
+<body id="site-root" data-active-view="tracker">
 <div class="auth-screen" id="auth-screen">
   <div class="auth-card">
     <h3 class="modal-title">Daily Progress</h3>
@@ -7022,8 +8016,13 @@ tbody tr.total-row > td:first-child {
         <button class="app-switch-button" id="app-switch-calendar" type="button" data-app-view="calendar">Calendar</button>
       </nav>
       </div>
-      <div class="tab-container" id="kid-tabs"></div>
+      <div class="people-nav-box">
+        <div class="people-nav-title">Names</div>
+        <div class="tab-container" id="kid-tabs"></div>
+      </div>
+      <button class="btn tracker-options-toggle" id="tracker-options-toggle" type="button" aria-expanded="false" aria-controls="tracker-nav-links">Options</button>
       <div class="tracker-nav-links" id="tracker-nav-links">
+        <div class="tracker-nav-title">Options</div>
         <button class="tracker-nav-link" id="tracker-summary-link" type="button">Summary</button>
         <button class="tracker-nav-link" id="tracker-config-link" type="button">Configuration</button>
       </div>
@@ -7091,7 +8090,7 @@ tbody tr.total-row > td:first-child {
   </div>
 </div>
 <datalist id="family-task-date-options"><option value="Parked"></option></datalist>
- 
+
 <div class="modal" id="calendar-modal">
   <div class="modal-content calendar-content">
     <aside class="calendar-side">
@@ -7456,7 +8455,7 @@ function memberLabel(memberId) {
 function memberInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || "").join("") || "?";
 }
- 
+
 function memberTaskInitial(memberId) {
   const member = householdMembers.find(item => item.id === memberId);
   const configured = String(member?.initials || "").trim();
@@ -7965,7 +8964,7 @@ function checkboxCountFromValue(value) {
   if (value === true) return 1;
   if (value === false || value === null || value === undefined || value === "") return 0;
   const number = Number(value);
-  return Number.isFinite(number) && number > 0 ? Math.min(Math.round(number), 4) : 0;
+  return Number.isFinite(number) && number > 0 ? Math.min(Math.round(number), 10) : 0;
 }
  
 function setTrackerCheckboxCount(input, count) {
@@ -7980,7 +8979,7 @@ function trackerCheckboxCount(input) {
 }
  
 function incrementTrackerCheckbox(input) {
-  const nextCount = (trackerCheckboxCount(input) + 1) % 5;
+  const nextCount = (trackerCheckboxCount(input) + 1) % 11;
   setTrackerCheckboxCount(input, nextCount);
   input.dispatchEvent(new Event("change", {bubbles:true}));
 }
@@ -8474,7 +9473,7 @@ async function loadTasks(kid) {
 function orderTasksByCompletion(items = []) {
   return items.map((item, index) => ({item, index})).sort((a, b) => Number(!!a.item.done) - Number(!!b.item.done) || a.index - b.index).map(entry => entry.item);
 }
- 
+
 function orderTrackerTasks(items = []) {
   return items.map((item, index) => ({item, index})).sort((a, b) => {
     const completionOrder = Number(!!a.item.done) - Number(!!b.item.done);
@@ -8708,7 +9707,7 @@ function openCategoryDetail(key, kid = activeKid) {
   document.body.classList.add("category-note-page");
   document.getElementById("kid-tabs").style.display = "";
 }
- 
+
 async function saveCategoryDetail({refresh = false, close = false} = {}) {
   if (!activeCategory || !activeCategoryKid) return;
   const saveVersion = categoryDetailSaveVersion;
@@ -8745,7 +9744,7 @@ async function saveCategoryDetail({refresh = false, close = false} = {}) {
     throw error;
   }
 }
- 
+
 function scheduleCategoryDetailSave() {
   categoryDetailSaveVersion += 1;
   categoryDetailSavePending = true;
@@ -9404,22 +10403,22 @@ function taskAssignees(value) {
   const selected = Array.isArray(value) ? value : [value];
   return [...new Set(selected.filter(kid => kids.includes(kid)))];
 }
- 
+
 function taskPeopleOptions(selected = []) {
   const selectedPeople = taskAssignees(selected);
   return kids.map(kid => `<option value="${escapeAttr(kid)}" ${selectedPeople.includes(kid) ? "selected" : ""}>${escapeHtml(memberLabel(kid))}</option>`).join("");
 }
- 
+
 function selectedTaskPeople(control) {
   if (!control) return [];
   if (control.matches?.("select")) return [...control.selectedOptions].map(option => option.value).filter(kid => kids.includes(kid));
   return [...control.querySelectorAll('[data-family-task-person-check]:checked')].map(input => input.value).filter(kid => kids.includes(kid));
 }
- 
+
 function taskAssigneeBubbles(selected, personColors) {
   return taskAssignees(selected).map(kid => `<span class="family-task-initial-bubble ${personColors[kid] || "person-color-7"}" title="${escapeAttr(memberLabel(kid))}">${escapeHtml(memberTaskInitial(kid))}</span><span class="family-task-assignee-name">${escapeHtml(memberLabel(kid))}</span>`).join("");
 }
- 
+
 function taskPeopleChecklist(selected = [], taskId = "") {
   const selectedPeople = taskAssignees(selected);
   return kids.map(kid => `<label class="family-task-who-option"><input type="checkbox" data-family-task-person-check value="${escapeAttr(kid)}" ${taskId ? `data-task-id="${escapeAttr(taskId)}"` : ""} ${selectedPeople.includes(kid) ? "checked" : ""}><span>${escapeHtml(memberLabel(kid))}</span></label>`).join("");
@@ -9545,13 +10544,19 @@ function formatShortDate(value = "") {
   if (!value) return "";
   const [year, month, day] = String(value).split("-");
   if (!year || !month || !day) return value;
-  return `${month}/${day}/${year.slice(-2)}`;
+  return `${month}/${day}`;
 }
  
 function parseShortDate(value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
   if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  const monthDay = trimmed.match(/^(\d{1,2})\/(\d{1,2})$/);
+  if (monthDay) {
+    const month = monthDay[1].padStart(2, "0");
+    const day = monthDay[2].padStart(2, "0");
+    return `${new Date().getFullYear()}-${month}-${day}`;
+  }
   const match = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
   if (!match) return trimmed;
   const month = match[1].padStart(2, "0");
@@ -9559,7 +10564,7 @@ function parseShortDate(value = "") {
   const year = match[3].length === 2 ? `20${match[3]}` : match[3];
   return `${year}-${month}-${day}`;
 }
- 
+
 function taskStatusForDate(value = "") {
   const normalized = parseShortDate(value);
   const due = /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? new Date(`${normalized}T00:00:00`) : null;
@@ -9575,7 +10580,7 @@ function taskStatusForDate(value = "") {
   if (due <= thisMonthEnd) return "soon";
   return "parked";
 }
- 
+
 function taskHasDate(value = "") {
   const normalized = parseShortDate(value);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return false;
@@ -9631,8 +10636,9 @@ function renderCalendar() {
   const max = totals.length ? Math.max(...totals) : 0;
   const periodTotalNode = document.getElementById("calendar-period-total");
   if (periodTotalNode) periodTotalNode.textContent = String(calendarRangeTotal(calendarRange));
-  let html = `<div class="calendar-table" style="grid-template-columns:42px 74px repeat(${calendarColumns.length}, minmax(0, 1fr));">`;
-  html += `<div class="calendar-header"></div><div class="calendar-header">Day</div>`;
+  const calendarMinWidth = 124 + (calendarColumns.length * 118);
+  let html = `<div class="calendar-table" style="grid-template-columns:48px 76px repeat(${calendarColumns.length}, minmax(118px, 1fr)); min-width:${calendarMinWidth}px;">`;
+  html += `<div class="calendar-header">Total</div><div class="calendar-header">Day</div>`;
   calendarColumns.forEach(column => { html += `<div class="calendar-header calendar-column-head">${escapeHtml(column)}</div>`; });
   dates.forEach(date => {
     const key = dateKey(date);
@@ -9653,7 +10659,7 @@ function renderCalendar() {
   wrap.innerHTML = html;
   applyCalendarColorFilters(wrap);
 }
- 
+
 function calendarTaskSummary(dayKey) {
   return familyTasksCache
     .filter(task => !task.completed && parseShortDate(task.endDate || "") === dayKey)
@@ -9887,26 +10893,26 @@ function taskCreatedMillis(value) {
   const parsed = new Date(value || 0).getTime();
   return Number.isFinite(parsed) ? parsed : 0;
 }
- 
+
 function lastFamilyTaskWho() {
   const latest = familyTasksCache.slice().sort((a, b) => taskCreatedMillis(b.createdAt) - taskCreatedMillis(a.createdAt))[0];
   return taskAssignees(latest?.who)[0] || kids[0];
 }
- 
+
 function familyTaskDraftRow(personColors) {
   const who = lastFamilyTaskWho();
   const endDate = new Date().toISOString().slice(0, 10);
   const status = taskStatusForDate(endDate);
   const colorClass = `status-${status}`;
-  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><details class="family-task-owner-control" id="new-family-task-who"><summary class="family-task-owner-toggle" aria-label="Choose new task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles([who], personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist([who])}</div></details></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" list="family-task-date-options" placeholder="MM/DD/YY or Parked" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><input class="family-task-cell family-task-hours" id="new-family-task-hours" type="number" min="0" step="1" placeholder="0" aria-label="New task time in hours"></td><td><input class="family-task-cell family-task-cost" id="new-family-task-cost" type="number" min="0" step="1" placeholder="0" aria-label="New task cost"></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
+  return `<tr class="family-task-row family-task-new-row ${colorClass}" data-family-task-new-row><td class="family-task-owner-cell"><div class="family-task-owner-inline"><span class="family-task-check-placeholder"></span><details class="family-task-owner-control" id="new-family-task-who"><summary class="family-task-owner-toggle" aria-label="Choose new task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles([who], personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist([who])}</div></details></div></td><td><input class="family-task-cell family-task-project" id="new-family-task-project" value="" placeholder="Project" aria-label="New task project"></td><td><textarea class="family-task-cell family-task-title" id="new-family-task-title" rows="1" placeholder="Task" aria-label="New task name"></textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" id="new-family-task-end" type="text" list="family-task-date-options" placeholder="MM/DD or Parked" aria-label="New task date" value="${escapeAttr(formatShortDate(endDate))}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" id="new-family-task-date-picker" type="date" value="${escapeAttr(endDate)}" aria-label="Choose new task date"></span></span></td><td><input class="family-task-cell family-task-hours" id="new-family-task-hours" type="number" min="0" step="1" placeholder="0" aria-label="New task time in hours"></td><td><input class="family-task-cell family-task-cost" id="new-family-task-cost" type="number" min="0" step="1" placeholder="0" aria-label="New task cost"></td><td><div class="family-task-new-actions"><button class="mini-action" data-save-new-family-task aria-label="Save new task" title="Save task">✓</button></div></td></tr>`;
 }
- 
+
 function resizeFamilyTaskTitle(field) {
   if (!field) return;
   field.style.height = "auto";
   field.style.height = `${Math.max(field.scrollHeight, 29)}px`;
 }
- 
+
 function renderFamilyTaskProjectSummary(tasks) {
   const host = document.getElementById("family-task-summary");
   if (!host) return;
@@ -9967,7 +10973,7 @@ function renderFamilyTaskProjectSummary(tasks) {
   };
   host.innerHTML = `<table class="family-task-summary"><thead><tr>${header("project", "Project")}${header("tasks", "Total tasks")}${header("hours", "Total hours")}${header("cost", "Total $")}${header("minDate", "Earliest date")}${header("maxDate", "Latest date")}</tr></thead><tbody>${rows.map(row => renderSummaryRow(row)).join("")}${renderSummaryRow(total, true)}</tbody></table>`;
 }
- 
+
 function renderFamilyTaskList() {
   renderTaskFilters();
   const activeList = document.getElementById("family-task-list");
@@ -9991,7 +10997,7 @@ function renderFamilyTaskList() {
       const colorClass = `status-${dateStatus}`;
       const assignees = taskAssignees(task.who).length ? taskAssignees(task.who) : [kids[0]];
       const dateLabel = taskHasDate(task.endDate) ? formatShortDate(task.endDate) : "Parked";
-      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" list="family-task-date-options" placeholder="Parked" data-family-task-field="endDate" data-task-id="${task.id}" value="${escapeAttr(dateLabel)}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><input class="family-task-cell family-task-hours" type="number" min="0" step="1" data-family-task-field="hours" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.hours) || 0))}" placeholder="0" aria-label="Task time in hours"></td><td><input class="family-task-cell family-task-cost" type="number" min="0" step="1" data-family-task-field="cost" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.cost) || 0))}" placeholder="0" aria-label="Task cost"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
+      return `<tr class="family-task-row ${colorClass} ${task.completed ? "complete" : ""} ${task.groupStart ? "group-start" : ""}" data-family-task-row="${task.id}"><td class="family-task-owner-cell"><div class="family-task-owner-inline">${completeAction}<details class="family-task-owner-control"><summary class="family-task-owner-toggle" aria-label="Choose task assignees"><span class="family-task-owner-stack">${taskAssigneeBubbles(assignees, personColors)}</span></summary><div class="family-task-who-menu">${taskPeopleChecklist(assignees, task.id)}</div></details></div></td><td><input class="family-task-cell family-task-project" data-family-task-field="project" data-task-id="${task.id}" value="${escapeAttr(task.project || "")}" placeholder="Project"></td><td><textarea class="family-task-cell family-task-title" data-family-task-field="title" data-task-id="${task.id}" rows="1" placeholder="Task">${escapeHtml(task.title || "")}</textarea></td><td><span class="family-task-date-wrap"><input class="family-task-cell family-task-date" type="text" list="family-task-date-options" placeholder="Parked" data-family-task-field="endDate" data-task-id="${task.id}" data-stored-date="${escapeAttr(task.endDate || "")}" value="${escapeAttr(dateLabel)}"><span class="family-task-calendar-button">▦<input class="family-task-date-picker" type="date" data-family-task-date-picker data-task-id="${task.id}" value="${escapeAttr(parseShortDate(task.endDate || ""))}" aria-label="Choose task date"></span></span></td><td><input class="family-task-cell family-task-hours" type="number" min="0" step="1" data-family-task-field="hours" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.hours) || 0))}" placeholder="0" aria-label="Task time in hours"></td><td><input class="family-task-cell family-task-cost" type="number" min="0" step="1" data-family-task-field="cost" data-task-id="${task.id}" value="${escapeAttr(Math.round(Number(task.cost) || 0))}" placeholder="0" aria-label="Task cost"></td><td><div class="family-task-actions">${noteIcon}<button class="mini-action delete" data-delete-family-task="${task.id}" aria-label="Delete task">×</button></div></td></tr>`;
     };
     const renderTable = (rows, includeDraft = false) => `<table class="family-task-table"><thead><tr class="family-task-header"><th><span class="family-task-header-cell">Name</span></th><th><span class="family-task-header-cell">Project</span></th><th><span class="family-task-header-cell">Task</span></th><th><span class="family-task-header-cell">Date</span></th><th><span class="family-task-header-cell">Time (hrs)</span></th><th><span class="family-task-header-cell">Cost ($)</span></th><th><span class="family-task-header-cell">Edit</span></th></tr></thead><tbody>${includeDraft ? familyTaskDraftRow(personColors) : ""}${rows}</tbody></table>`;
   const sortTasks = tasks => tasks.slice().sort((a, b) => {
@@ -10154,6 +11160,8 @@ function openMainScreen(modalId, title, backLabel = "Tracker") {
     document.body.classList.add("subpage-active");
     setActiveAppView(modalId === "tasks-modal" ? "tasks" : modalId === "calendar-modal" ? "calendar" : modalId === "summary-modal" ? "summary" : modalId === "category-modal" ? "configuration" : "tracker");
     document.body.classList.remove("mobile-options-open");
+    document.body.classList.remove("tracker-options-open");
+    document.getElementById("tracker-options-toggle")?.setAttribute("aria-expanded", "false");
     document.getElementById("kid-views").style.display = "none";
   document.getElementById("kid-tabs").style.display = "none";
   document.getElementById("screen-view").classList.add("active");
@@ -10204,6 +11212,8 @@ function showTrackerScreen(restore = true) {
     document.body.classList.remove("category-note-page");
     setActiveAppView("tracker");
     document.body.classList.remove("mobile-options-open");
+    document.body.classList.remove("tracker-options-open");
+    document.getElementById("tracker-options-toggle")?.setAttribute("aria-expanded", "false");
   document.getElementById("screen-view")?.classList.remove("active");
   const content = document.getElementById("screen-content");
   if (content && !currentScreen) content.innerHTML = "";
@@ -10211,7 +11221,7 @@ function showTrackerScreen(restore = true) {
   document.getElementById("kid-tabs").style.display = "";
   document.getElementById("subpage-rail")?.replaceChildren();
 }
- 
+
 function setActiveAppView(view) {
   document.body.dataset.activeView = view;
   document.querySelectorAll("[data-app-view]").forEach(button => {
@@ -10230,7 +11240,7 @@ function escapeHtml(text = "") {
 function escapeAttr(text = "") {
   return escapeHtml(String(text));
 }
- 
+
 function sanitizeNoteHtml(value = "") {
   const template = document.createElement("template");
   template.innerHTML = String(value);
@@ -10258,13 +11268,13 @@ function sanitizeNoteHtml(value = "") {
   });
   return template.innerHTML.trim();
 }
- 
+
 function normalizeNoteHtml(value = "") {
   const text = String(value || "");
   const containsRichText = /<\/?(?:b|strong|i|em|u|br|div|p|ul|ol|li|input|span)\b/i.test(text);
   return containsRichText ? sanitizeNoteHtml(text) : escapeHtml(text).replace(/\r?\n/g, "<br>");
 }
- 
+
 function noteCaretOffset(root) {
   const selection = window.getSelection();
   if (!selection?.rangeCount || !root.contains(selection.anchorNode)) return null;
@@ -10273,7 +11283,7 @@ function noteCaretOffset(root) {
   range.setEnd(selection.anchorNode, selection.anchorOffset);
   return range.toString().length;
 }
- 
+
 function restoreNoteCaret(root, offset) {
   if (offset === null) return;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -10292,7 +11302,7 @@ function restoreNoteCaret(root, offset) {
     remaining -= node.textContent.length;
   }
 }
- 
+
 function normalizeNoteChecklist(editor, preserveCaret = false) {
   if (!editor) return;
   const caret = preserveCaret ? noteCaretOffset(editor) : null;
@@ -10423,7 +11433,7 @@ document.getElementById("more-actions").addEventListener("click", event => {
  
 document.body.addEventListener("click", async event => {
   if (!event.target.closest(".menu-wrap")) closeActionsMenu();
- 
+
   const summarySort = event.target.closest("[data-family-task-summary-sort]");
   if (summarySort) {
     const field = summarySort.dataset.familyTaskSummarySort;
@@ -10433,7 +11443,7 @@ document.body.addEventListener("click", async event => {
     renderFamilyTaskList();
     return;
   }
- 
+
   if (!event.target.closest(".family-task-owner-control")) {
     document.querySelectorAll(".family-task-owner-control[open]").forEach(item => item.removeAttribute("open"));
   }
@@ -10519,7 +11529,7 @@ document.body.addEventListener("click", async event => {
     await addFamilyTask();
     return;
   }
- 
+
   const familyPersonFilter = event.target.closest("[data-family-task-person]");
   if (familyPersonFilter) {
     familyTaskPersonFilter = familyPersonFilter.dataset.familyTaskPerson;
@@ -10631,7 +11641,10 @@ document.body.addEventListener("change", async event => {
   const datePicker = event.target.closest(".family-task-date-picker");
   if (datePicker) {
     const visibleDate = datePicker.closest(".family-task-date-wrap")?.querySelector(".family-task-date");
-    if (visibleDate) visibleDate.value = formatShortDate(datePicker.value);
+    if (visibleDate) {
+      visibleDate.value = formatShortDate(datePicker.value);
+      visibleDate.dataset.storedDate = datePicker.value;
+    }
     if (datePicker.dataset.taskId) await updateFamilyTaskField(datePicker.dataset.taskId, "endDate", datePicker.value);
     return;
   }
@@ -10639,7 +11652,11 @@ document.body.addEventListener("change", async event => {
   if (taskField) updateTaskAutomatically(taskField);
   const field = event.target.closest("[data-family-task-field]");
   if (field) {
-    const value = field.multiple ? selectedTaskPeople(field) : (field.value.trim ? field.value.trim() : field.value);
+    let value = field.multiple ? selectedTaskPeople(field) : (field.value.trim ? field.value.trim() : field.value);
+    if (field.dataset.familyTaskField === "endDate" && /^\d{1,2}\/\d{1,2}$/.test(String(value))) {
+      const storedYear = String(field.dataset.storedDate || "").match(/^(\d{4})-/)?.[1];
+      value = `${value}/${storedYear || new Date().getFullYear()}`;
+    }
     await updateFamilyTaskField(field.dataset.taskId, field.dataset.familyTaskField, value);
   }
   const calendarCell = event.target.closest("[data-calendar-day][data-calendar-column]");
@@ -10756,6 +11773,10 @@ document.getElementById("screen-back").addEventListener("click", async () => {
 });
 document.getElementById("subpage-options-toggle").addEventListener("click", () => {
   document.body.classList.toggle("mobile-options-open");
+});
+document.getElementById("tracker-options-toggle")?.addEventListener("click", event => {
+  const open = document.body.classList.toggle("tracker-options-open");
+  event.currentTarget.setAttribute("aria-expanded", String(open));
 });
 document.getElementById("auth-signin").addEventListener("click", () => signInOrCreate(false));
 document.getElementById("auth-create").addEventListener("click", () => signInOrCreate(true));
